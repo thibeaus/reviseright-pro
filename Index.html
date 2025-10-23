@@ -2,902 +2,959 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#4f46e5">
-    <title>ReviseRight Pro - Production</title>
+    <title>ReviseRight Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
-    <script src="https://js.stripe.com/v3/"></script>
-    
     <style>
-        /* Mobile Optimizations */
         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
         }
         
-        html {
-            -webkit-text-size-adjust: 100%;
-            touch-action: manipulation;
-        }
-        
-        body {
-            overscroll-behavior-y: contain;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* Improve button touch targets for mobile */
-        button, a, input[type="submit"] {
-            min-height: 44px; /* Apple's recommended touch target */
-            min-width: 44px;
-        }
-
-        /* Better input focus for mobile */
-        input:focus, textarea:focus, select:focus {
-            font-size: 16px !important; /* Prevents zoom on iOS */
-        }
-
-        /* Smooth scrolling on mobile */
-        .modal-content {
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Theme Variables */
         :root {
             --bg-primary: #f7f9fb;
             --bg-secondary: #ffffff;
-            --bg-gradient-start: #eef2ff;
-            --bg-gradient-end: #fae8ff;
             --text-primary: #111827;
             --text-secondary: #6b7280;
-            --accent-primary: #4f46e5;
-            --accent-secondary: #7c3aed;
-            --border-color: #e5e7eb;
-            --card-bg: rgba(255, 255, 255, 0.95);
+            --accent: #4f46e5;
+            --border: #e5e7eb;
         }
-
+        
         body.theme-dark {
             --bg-primary: #1f2937;
             --bg-secondary: #111827;
-            --bg-gradient-start: #1f2937;
-            --bg-gradient-end: #312e81;
             --text-primary: #f9fafb;
             --text-secondary: #d1d5db;
-            --accent-primary: #818cf8;
-            --accent-secondary: #a78bfa;
-            --border-color: #374151;
-            --card-bg: rgba(31, 41, 55, 0.95);
+            --accent: #818cf8;
+            --border: #374151;
         }
-
+        
         body.theme-dyslexia {
             --bg-primary: #fef3c7;
             --bg-secondary: #fffbeb;
-            --bg-gradient-start: #fef3c7;
-            --bg-gradient-end: #fde68a;
             --text-primary: #000000;
             --text-secondary: #1f2937;
-            --accent-primary: #059669;
-            --accent-secondary: #10b981;
-            --border-color: #fbbf24;
-            --card-bg: rgba(254, 249, 195, 0.95);
-            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            --accent: #059669;
+            --border: #fbbf24;
+            font-family: 'Comic Sans MS', Arial, sans-serif !important;
             letter-spacing: 0.05em;
             line-height: 1.8;
         }
-
-        /* --- Custom Themes --- */
-        body.theme-blue {
-            --bg-primary: #dbeafe;
-            --bg-secondary: #eff6ff;
-            --bg-gradient-start: #dbeafe;
-            --bg-gradient-end: #bfdbfe;
-            --text-primary: #1e3a8a;
-            --text-secondary: #1e40af;
-            --accent-primary: #2563eb;
-            --accent-secondary: #3b82f6;
-            --border-color: #93c5fd;
-            --card-bg: rgba(239, 246, 255, 0.95);
-        }
-
-        body.theme-pink {
-            --bg-primary: #fce7f3;
-            --bg-secondary: #fef3f9;
-            --bg-gradient-start: #fce7f3;
-            --bg-gradient-end: #fbcfe8;
-            --text-primary: #831843;
-            --text-secondary: #9f1239;
-            --accent-primary: #db2777;
-            --accent-secondary: #ec4899;
-            --border-color: #f9a8d4;
-            --card-bg: rgba(254, 243, 249, 0.95);
-        }
-        /* --------------------- */
-
-
-        body.font-small { font-size: 14px; }
-        body.font-medium { font-size: 16px; }
-        body.font-large { font-size: 18px; }
-        body.font-xlarge { font-size: 20px; }
-
+        
         body {
-            background: linear-gradient(to bottom right, var(--bg-gradient-start), var(--bg-gradient-end));
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
-            min-height: -webkit-fill-available; /* iOS Safari */
         }
-
-        .glass-effect {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
         
-        .gradient-text {
-            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .hidden { display: none !important; }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
+        
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 16px;
+            margin-top: 8px;
+        }
+        
+        .nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 20px;
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+        
+        .nav-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .grade-box {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        .grade-9 { background: #10b981; color: white; }
+        .grade-8 { background: #3b82f6; color: white; }
+        .grade-7 { background: #8b5cf6; color: white; }
+        .grade-6 { background: #f59e0b; color: white; }
+        .grade-5 { background: #ef4444; color: white; }
+        .grade-4 { background: #dc2626; color: white; }
+        .grade-u { background: #6b7280; color: white; }
         
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-        }
-        .modal.show {
-            display: flex;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
             align-items: center;
             justify-content: center;
         }
-        .modal-content {
-            background: var(--bg-secondary);
-            margin: auto;
-            padding: 0;
-            border-radius: 1rem;
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        
+        .modal.show {
+            display: flex;
         }
         
-        .tab-button.active {
-            background-color: var(--accent-primary);
-            color: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
         }
-
-        /* Mobile-specific improvements */
+        
         @media (max-width: 768px) {
-            .modal-content {
-                width: 95%;
-                max-height: 85vh;
-            }
-            
-            /* Larger touch targets on mobile */
-            button {
-                padding: 12px 16px;
-            }
-            
-            /* Better spacing on small screens */
-            .space-y-4 > * + * {
-                margin-top: 1rem;
-            }
-        }
-
-        /* Prevent iOS zoom on input focus */
-        @supports (-webkit-touch-callout: none) {
-            input, select, textarea {
-                font-size: 16px !important;
+            .container {
+                padding: 10px;
             }
         }
     </style>
 </head>
-<body class="font-medium">
-    <div id="loadingScreen" class="fixed inset-0 bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center z-50">
-        <div class="text-center">
-            <div class="text-6xl mb-4 animate-bounce">📚</div>
-            <h2 class="text-3xl font-bold text-white mb-2">ReviseRight Pro</h2>
-            <p class="text-indigo-200">Connecting to Firebase...</p>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div style="text-align: center; color: white;">
+            <div style="font-size: 60px; margin-bottom: 20px;">📚</div>
+            <h2 style="font-size: 32px; margin-bottom: 10px;">ReviseRight Pro</h2>
+            <p>Loading...</p>
         </div>
     </div>
 
-    <div id="authScreen" class="hidden fixed inset-0 bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center z-40">
-        <div class="glass-effect rounded-3xl shadow-2xl p-8 max-w-md w-full mx-4" style="background: rgba(255,255,255,0.95)">
-            <div class="text-center mb-8">
-                <div class="text-6xl mb-4">📚</div>
-                <h1 class="text-3xl font-bold gradient-text mb-2">ReviseRight Pro</h1>
-                <p class="text-gray-600">Your complete study companion</p>
+    <!-- Auth Screen -->
+    <div id="authScreen" class="hidden" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px;">
+        <div style="background: white; border-radius: 20px; padding: 40px; max-width: 400px; width: 100%;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="font-size: 50px; margin-bottom: 15px;">📚</div>
+                <h1 style="font-size: 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ReviseRight Pro</h1>
+                <p style="color: #666; margin-top: 10px;">Your complete study companion</p>
             </div>
 
+            <div id="messageBox"></div>
+
+            <!-- Login Form -->
             <div id="loginForm">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Sign In</h2>
-                <form onsubmit="handleLogin(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="loginEmail" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="your@email.com">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input type="password" id="loginPassword" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="••••••••">
-                    </div>
-                    <button type="submit" class="w-full px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-bold hover:shadow-lg transition-all">
-                        Sign In
-                    </button>
-                </form>
-                <p class="text-center text-sm text-gray-600 mt-4">
-                    Don't have an account? 
-                    <button onclick="showSignup()" class="text-indigo-600 font-semibold hover:underline">Sign Up</button>
+                <h2 style="margin-bottom: 20px; color: #333;">Sign In</h2>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #666; margin-bottom: 5px;">Email</label>
+                    <input type="email" id="loginEmail" placeholder="your@email.com" style="border: 1px solid #ddd;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #666; margin-bottom: 5px;">Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" style="border: 1px solid #ddd;">
+                </div>
+                <button onclick="handleLogin()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px; border-radius: 10px; font-weight: bold; margin-top: 10px;">Sign In</button>
+                <p style="text-align: center; margin-top: 15px; color: #666; font-size: 14px;">
+                    Don't have an account? <a onclick="showSignup()" style="color: #667eea; font-weight: bold; cursor: pointer;">Sign Up</a>
                 </p>
             </div>
 
+            <!-- Signup Form -->
             <div id="signupForm" class="hidden">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Create Account</h2>
-                <form onsubmit="handleSignup(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                        <input type="text" id="signupName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Your name">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="signupEmail" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="your@email.com">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input type="password" id="signupPassword" required minlength="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="At least 6 characters">
-                    </div>
-                    <button type="submit" class="w-full px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-bold hover:shadow-lg transition-all">
-                        Create Account
-                    </button>
-                </form>
-                <p class="text-center text-sm text-gray-600 mt-4">
-                    Already have an account? 
-                    <button onclick="showLogin()" class="text-indigo-600 font-semibold hover:underline">Sign In</button>
+                <h2 style="margin-bottom: 20px; color: #333;">Create Account</h2>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #666; margin-bottom: 5px;">Name</label>
+                    <input type="text" id="signupName" placeholder="Your name" style="border: 1px solid #ddd;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #666; margin-bottom: 5px;">Email</label>
+                    <input type="email" id="signupEmail" placeholder="your@email.com" style="border: 1px solid #ddd;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #666; margin-bottom: 5px;">Password</label>
+                    <input type="password" id="signupPassword" placeholder="At least 6 characters" style="border: 1px solid #ddd;">
+                </div>
+                <button onclick="handleSignup()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px; border-radius: 10px; font-weight: bold; margin-top: 10px;">Create Account</button>
+                <p style="text-align: center; margin-top: 15px; color: #666; font-size: 14px;">
+                    Already have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bold; cursor: pointer;">Sign In</a>
                 </p>
             </div>
         </div>
     </div>
 
-    <div id="app" class="hidden"></div> 
-    
-    <div id="settingsModal" class="modal">
-        <div class="modal-content animate-fade-in">
-            <div class="p-6">
-                <h3 class="text-2xl font-bold mb-4" style="color: var(--text-primary)">⚙️ App Settings</h3>
-                <div class="space-y-6">
-                    
-                    <div>
-                        <label class="block text-lg font-medium mb-2" style="color: var(--text-primary)">Theme</label>
-                        <div class="grid grid-cols-3 md:grid-cols-5 gap-3">
-                            <button onclick="updateSettings('theme', 'default')" class="p-3 rounded-lg text-sm font-medium border-2 hover:border-indigo-500 theme-btn" data-theme="default" style="background-color: #eef2ff; color: #111827;">Default</button>
-                            <button onclick="updateSettings('theme', 'dark')" class="p-3 rounded-lg text-sm font-medium border-2 hover:border-indigo-500 theme-btn" data-theme="dark" style="background-color: #1f2937; color: #f9fafb;">Dark</button>
-                            <button onclick="updateSettings('theme', 'dyslexia')" class="p-3 rounded-lg text-sm font-medium border-2 hover:border-indigo-500 theme-btn" data-theme="dyslexia" style="background-color: #fef3c7; color: #000000;">Dyslexia</button>
-                            <button onclick="updateSettings('theme', 'blue')" class="p-3 rounded-lg text-sm font-medium border-2 hover:border-indigo-500 theme-btn" data-theme="blue" style="background-color: #dbeafe; color: #1e3a8a;">Blue</button>
-                            <button onclick="updateSettings('theme', 'pink')" class="p-3 rounded-lg text-sm font-medium border-2 hover:border-indigo-500 theme-btn" data-theme="pink" style="background-color: #fce7f3; color: #831843;">Pink</button>
-                        </div>
-                    </div>
+    <!-- Main App -->
+    <div id="app" class="hidden">
+        <!-- Navigation -->
+        <div class="nav">
+            <button class="nav-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="nav-btn" onclick="switchTab('progress8')">🎯 Progress 8</button>
+            <button class="nav-btn" onclick="switchTab('subjects')">📚 Subjects</button>
+            <button class="nav-btn" onclick="switchTab('topics')">📝 Topics</button>
+            <button class="nav-btn" onclick="switchTab('schedule')">📅 Schedule</button>
+            <button class="nav-btn" onclick="switchTab('settings')">⚙️ Settings</button>
+        </div>
 
-                    <div>
-                        <label class="block text-lg font-medium mb-2" style="color: var(--text-primary)">Font Size</label>
-                        <div class="flex space-x-2">
-                            <button onclick="updateSettings('fontSize', 'small')" class="px-3 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-indigo-500 font-btn" data-size="small">A Small</button>
-                            <button onclick="updateSettings('fontSize', 'medium')" class="px-3 py-2 rounded-lg font-medium border border-gray-300 hover:border-indigo-500 font-btn" data-size="medium">A Medium</button>
-                            <button onclick="updateSettings('fontSize', 'large')" class="px-3 py-2 rounded-lg text-lg font-medium border border-gray-300 hover:border-indigo-500 font-btn" data-size="large">A Large</button>
-                            <button onclick="updateSettings('fontSize', 'xlarge')" class="px-3 py-2 rounded-lg text-xl font-medium border border-gray-300 hover:border-indigo-500 font-btn" data-size="xlarge">A XL</button>
+        <div class="container">
+            <!-- Dashboard Tab -->
+            <div id="dashboardTab">
+                <div class="card">
+                    <h2 style="margin-bottom: 10px;">Welcome back, <span id="userName"></span>!</h2>
+                    <p style="color: var(--text-secondary);">Here's your study overview</p>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 15px;">📊 Quick Stats</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                        <div style="text-align: center; padding: 15px; background: var(--bg-primary); border-radius: 8px;">
+                            <div style="font-size: 32px; font-weight: bold; color: var(--accent);" id="subjectCount">0</div>
+                            <div style="color: var(--text-secondary); font-size: 14px;">Subjects</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: var(--bg-primary); border-radius: 8px;">
+                            <div style="font-size: 32px; font-weight: bold; color: var(--accent);" id="topicCount">0</div>
+                            <div style="color: var(--text-secondary); font-size: 14px;">Topics</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: var(--bg-primary); border-radius: 8px;">
+                            <div style="font-size: 32px; font-weight: bold; color: var(--accent);" id="scheduleCount">0</div>
+                            <div style="color: var(--text-secondary); font-size: 14px;">Schedule Items</div>
                         </div>
                     </div>
                 </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 15px;">📚 Recent Subjects</h3>
+                    <div id="recentSubjects"></div>
+                </div>
             </div>
-            <div class="p-6 border-t" style="border-color: var(--border-color)">
-                <button onclick="closeModal('settingsModal')" class="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition-colors">
-                    Close
-                </button>
+
+            <!-- Progress 8 Tab -->
+            <div id="progress8Tab" class="hidden">
+                <div class="card">
+                    <h2 style="margin-bottom: 10px;">🎯 Progress 8 Tracker</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">Track your GCSE grades across 8 qualifications</p>
+                    
+                    <div id="progress8List"></div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: var(--bg-primary); border-radius: 8px;">
+                        <h4 style="margin-bottom: 10px;">Progress 8 Score: <span id="p8Score" style="color: var(--accent); font-size: 24px;">0.00</span></h4>
+                        <p style="color: var(--text-secondary); font-size: 14px;">Average points per qualification</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subjects Tab -->
+            <div id="subjectsTab" class="hidden">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>📚 My Subjects</h2>
+                        <button class="btn-primary" onclick="showAddSubject()">+ Add Subject</button>
+                    </div>
+                    <div id="subjectsList"></div>
+                </div>
+            </div>
+
+            <!-- Topics Tab -->
+            <div id="topicsTab" class="hidden">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>📝 Study Topics</h2>
+                        <button class="btn-primary" onclick="showAddTopic()">+ Add Topic</button>
+                    </div>
+                    <div id="topicsList"></div>
+                </div>
+            </div>
+
+            <!-- Schedule Tab -->
+            <div id="scheduleTab" class="hidden">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>📅 Study Schedule</h2>
+                        <button class="btn-primary" onclick="showAddSchedule()">+ Add Session</button>
+                    </div>
+                    <div id="scheduleList"></div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settingsTab" class="hidden">
+                <div class="card">
+                    <h2 style="margin-bottom: 20px;">⚙️ Settings</h2>
+                    
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Theme</label>
+                        <select id="themeSelect" onchange="changeTheme()" style="width: 100%;">
+                            <option value="default">Default</option>
+                            <option value="dark">Dark Mode</option>
+                            <option value="dyslexia">Dyslexia Friendly</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Font Size</label>
+                        <select id="fontSelect" onchange="changeFontSize()" style="width: 100%;">
+                            <option value="14px">Small</option>
+                            <option value="16px" selected>Medium</option>
+                            <option value="18px">Large</option>
+                            <option value="20px">Extra Large</option>
+                        </select>
+                    </div>
+
+                    <button class="btn-secondary" onclick="logout()" style="width: 100%; margin-top: 20px;">Sign Out</button>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Add Subject Modal -->
+    <div id="addSubjectModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">Add Subject</h3>
+            <div style="margin-bottom: 15px;">
+                <label>Subject Name</label>
+                <input type="text" id="subjectName" placeholder="e.g., Mathematics">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Teacher</label>
+                <input type="text" id="subjectTeacher" placeholder="e.g., Mr. Smith">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Target Grade</label>
+                <select id="subjectTarget">
+                    <option value="">Select grade...</option>
+                    <option value="9">9</option>
+                    <option value="8">8</option>
+                    <option value="7">7</option>
+                    <option value="6">6</option>
+                    <option value="5">5</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-primary" onclick="addSubject()" style="flex: 1;">Add</button>
+                <button class="btn-secondary" onclick="closeModal('addSubjectModal')" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Topic Modal -->
+    <div id="addTopicModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">Add Topic</h3>
+            <div style="margin-bottom: 15px;">
+                <label>Subject</label>
+                <select id="topicSubject"></select>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Topic Name</label>
+                <input type="text" id="topicName" placeholder="e.g., Quadratic Equations">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Confidence</label>
+                <select id="topicConfidence">
+                    <option value="low">😟 Low</option>
+                    <option value="medium">😐 Medium</option>
+                    <option value="high">😊 High</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-primary" onclick="addTopic()" style="flex: 1;">Add</button>
+                <button class="btn-secondary" onclick="closeModal('addTopicModal')" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Schedule Modal -->
+    <div id="addScheduleModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">Add Study Session</h3>
+            <div style="margin-bottom: 15px;">
+                <label>Subject</label>
+                <select id="scheduleSubject"></select>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Date</label>
+                <input type="date" id="scheduleDate">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Time</label>
+                <input type="time" id="scheduleTime">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Duration (minutes)</label>
+                <input type="number" id="scheduleDuration" placeholder="60">
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-primary" onclick="addSchedule()" style="flex: 1;">Add</button>
+                <button class="btn-secondary" onclick="closeModal('addScheduleModal')" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // ===============================================
-        // FIX: Reworked the initialization logic for stability
-        // This prevents the "stuck on loading screen" issue.
-        // ===============================================
-        function initializeApp() {
-            // Check if Firebase loaded
-            if (typeof firebase === 'undefined' || typeof firebase.app === 'undefined') {
-                console.warn('Firebase SDK not fully loaded yet. Waiting...');
-                setTimeout(initializeApp, 500); 
+        setTimeout(function() {
+            if (typeof firebase === 'undefined') {
+                alert('Firebase failed to load. Please refresh.');
                 return;
             }
 
-            console.log('✅ Firebase SDK confirmed available.');
+            const firebaseConfig = {
+                apiKey: "AIzaSyAyonlIqfTusq_ST6PKbzSED0s_HGRmA1o",
+                authDomain: "reviseright-pro.firebaseapp.com",
+                projectId: "reviseright-pro",
+                storageBucket: "reviseright-pro.firebasestorage.app",
+                messagingSenderId: "709040682753",
+                appId: "1:709040682753:web:645212006b33e06610cd00",
+                measurementId: "G-T6BNH4JP6Z"
+            };
 
-            try {
-                // FIREBASE CONFIGURATION (Placeholder keys)
-                const firebaseConfig = {
-                    apiKey: "AIzaSyAyonlIqfTusq_ST6PKbzSED0s_HGRmA1o",
-                    authDomain: "reviseright-pro.firebaseapp.com",
-                    projectId: "reviseright-pro",
-                    storageBucket: "reviseright-pro.firebasestorage.app",
-                    messagingSenderId: "709040682753",
-                    appId: "1:709040682753:web:645212006b33e06610cd00",
-                    measurementId: "G-T6BNH4JP6Z"
-                };
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
 
-                // Initialize Firebase
-                if (!firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
+            let currentUser = null;
+            let state = {
+                activeTab: 'dashboard',
+                subjects: [],
+                topics: [],
+                schedule: [],
+                progress8: {
+                    english: { target: '', current: '', subject: 'English Language' },
+                    maths: { target: '', current: '', subject: 'Maths' },
+                    ebacc1: { target: '', current: '', subject: 'Science' },
+                    ebacc2: { target: '', current: '', subject: 'History/Geography' },
+                    ebacc3: { target: '', current: '', subject: 'Language' },
+                    open1: { target: '', current: '', subject: 'Open Slot 1' },
+                    open2: { target: '', current: '', subject: 'Open Slot 2' },
+                    open3: { target: '', current: '', subject: 'Open Slot 3' }
+                },
+                theme: 'default',
+                fontSize: '16px'
+            };
+
+            // Auth functions
+            window.handleLogin = async function() {
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value;
+                
+                if (!email || !password) {
+                    showMessage('Please fill in all fields', 'error');
+                    return;
                 }
-                
-                window.auth = firebase.auth();
-                window.db = firebase.firestore();
-                console.log('✅ Firebase initialized and services are ready!');
 
-                // Initialize Stripe (Placeholder Key)
-                window.stripe = typeof Stripe !== 'undefined' ? Stripe('pk_test_YOUR_KEY_HERE') : null;
-
-                // Start auth listener to handle routing
-                startApp();
-            } catch (error) {
-                console.error('CRITICAL ERROR initializing Firebase:', error);
-                // Ensure the loading screen is hidden even on critical failure
-                document.getElementById('loadingScreen').classList.add('hidden');
-                document.getElementById('authScreen').classList.remove('hidden');
-                alert('Error loading app. Please check console for details: ' + error.message);
-            }
-        }
-
-        function startApp() {
-            const auth = window.auth;
-            const db = window.db;
-
-        // ============================================
-        // APPLICATION STATE
-        // ============================================
-        let currentUser = null;
-        let state = {
-            activeTab: 'dashboard',
-            educationLevel: 'gcse',
-            isPremium: false,
-            isTeacher: false, // Flag for teacher/school license
-            theme: 'default',
-            fontSize: 'medium',
-            subjects: [],
-            topics: [],
-            schedule: {},
-            // Default Progress 8 data using 9-1 grades
-            progress8: {
-                englishLang: { target: '7', current: '6', subject: 'English Language (Dbl)' },
-                maths: { target: '8', current: '7', subject: 'Maths (Dbl)' },
-                ebacc1: { target: '6', current: '5', subject: 'History' },
-                ebacc2: { target: '5', current: '4', subject: 'French' },
-                ebacc3: { target: '6', current: '6', subject: 'Physics' },
-                open1: { target: '7', current: '7', subject: 'Art & Design' },
-                open2: { target: '5', current: '5', subject: 'Business Studies' },
-                open3: { target: '4', current: '3', subject: 'Religious Studies' }
-            }
-        };
-
-        // ============================================
-        // UTILITY FUNCTIONS (Grade Conversion)
-        // ============================================
-
-        // Converts a 9-1 GCSE grade string to Attainment 8 points
-        function gradeToPoint(grade) {
-            const point = parseInt(grade);
-            return isNaN(point) ? 0 : point;
-        }
-
-        function calculateAttainment8Score() {
-            let score = 0;
-            // Define the 8 slots (10 point slots total due to double weighting)
-            const slots = [
-                { key: 'englishLang', weight: 2 }, 
-                { key: 'maths', weight: 2 },
-                { key: 'ebacc1', weight: 1 },
-                { key: 'ebacc2', weight: 1 },
-                { key: 'ebacc3', weight: 1 },
-                { key: 'open1', weight: 1 },
-                { key: 'open2', weight: 1 },
-                { key: 'open3', weight: 1 }
-            ];
-
-            slots.forEach(slot => {
-                const currentGrade = state.progress8[slot.key].current;
-                const points = gradeToPoint(currentGrade);
-                score += points * slot.weight;
-            });
-
-            return score;
-        }
-
-
-        // ============================================
-        // AUTHENTICATION FUNCTIONS
-        // ============================================
-        
-        async function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            try {
-                await window.auth.signInWithEmailAndPassword(email, password);
-            } catch (error) {
-                alert('❌ Login failed: ' + error.message);
-            }
-        }
-
-        async function handleSignup(event) {
-            event.preventDefault();
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            
-            try {
-                const userCredential = await window.auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-
-                // Simple demo check for 'teacher' account creation (e.g., via a special email domain)
-                const isTeacher = email.endsWith('@revisedrightacademy.edu');
-                
-                await user.updateProfile({ displayName: name });
-                
-                await window.db.collection('users').doc(user.uid).set({
-                    name: name,
-                    email: email,
-                    isPremium: isTeacher, 
-                    isTeacher: isTeacher, // Set teacher flag
-                    educationLevel: 'gcse',
-                    theme: 'default',
-                    fontSize: 'medium',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                alert('✅ Account created! Welcome, ' + name + (isTeacher ? ' (Teacher)' : '') + '!');
-            } catch (error) {
-                alert('❌ Signup failed: ' + error.message);
-            }
-        }
-
-        async function logout() {
-            if (confirm('Are you sure you want to sign out?')) {
                 try {
-                    await window.auth.signOut();
+                    await auth.signInWithEmailAndPassword(email, password);
                 } catch (error) {
-                    alert('Error signing out: ' + error.message);
+                    showMessage('Login failed: ' + error.message, 'error');
                 }
+            };
+
+            window.handleSignup = async function() {
+                const name = document.getElementById('signupName').value.trim();
+                const email = document.getElementById('signupEmail').value.trim();
+                const password = document.getElementById('signupPassword').value;
+                
+                if (!name || !email || !password) {
+                    showMessage('Please fill in all fields', 'error');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showMessage('Password must be at least 6 characters', 'error');
+                    return;
+                }
+
+                try {
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    await userCredential.user.updateProfile({ displayName: name });
+                    
+                    await db.collection('users').doc(userCredential.user.uid).set({
+                        name: name,
+                        email: email,
+                        subjects: [],
+                        topics: [],
+                        schedule: [],
+                        progress8: state.progress8,
+                        theme: 'default',
+                        fontSize: '16px',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    showMessage('Account created!', 'success');
+                } catch (error) {
+                    showMessage('Signup failed: ' + error.message, 'error');
+                }
+            };
+
+            window.logout = async function() {
+                if (confirm('Sign out?')) {
+                    await auth.signOut();
+                }
+            };
+
+            window.showLogin = function() {
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('signupForm').classList.add('hidden');
+            };
+
+            window.showSignup = function() {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('signupForm').classList.remove('hidden');
+            };
+
+            function showMessage(msg, type) {
+                const box = document.getElementById('messageBox');
+                const colors = {
+                    error: 'background: #fee; color: #c33; border: 1px solid #fcc;',
+                    success: 'background: #efe; color: #3c3; border: 1px solid #cfc;',
+                    info: 'background: #eef; color: #33c; border: 1px solid #ccf;'
+                };
+                box.innerHTML = `<div style="padding: 12px; border-radius: 8px; margin-bottom: 15px; ${colors[type]}">${msg}</div>`;
+                setTimeout(() => box.innerHTML = '', 3000);
             }
-        }
 
-        function setupAuthListener() {
-            window.auth.onAuthStateChanged(async (user) => {
-                // FIX: Hide the loading screen immediately once Firebase Auth is checking state
-                document.getElementById('loadingScreen').classList.add('hidden');
-
+            // Auth state
+            auth.onAuthStateChanged(async function(user) {
                 if (user) {
                     currentUser = {
                         uid: user.uid,
                         email: user.email,
-                        name: user.displayName || 'Student'
+                        name: user.displayName || 'User'
                     };
                     
                     await loadUserData();
-                    hideAuthScreen();
-                    // Show the main app container
-                    document.getElementById('app').classList.remove('hidden'); 
+                    
+                    document.getElementById('loadingScreen').classList.add('hidden');
+                    document.getElementById('authScreen').classList.add('hidden');
+                    document.getElementById('app').classList.remove('hidden');
+                    
+                    renderApp();
                 } else {
                     currentUser = null;
+                    document.getElementById('loadingScreen').classList.add('hidden');
                     document.getElementById('authScreen').classList.remove('hidden');
-                    // Hide the app container
-                    document.getElementById('app').classList.add('hidden'); 
-                }
-            });
-        }
-
-        // ============================================
-        // DATA MANAGEMENT
-        // ============================================
-        
-        async function loadUserData() {
-            if (!currentUser) return;
-            
-            try {
-                const doc = await window.db.collection('users').doc(currentUser.uid).get();
-                
-                if (doc.exists) {
-                    const data = doc.data();
-                    state.educationLevel = data.educationLevel || 'gcse';
-                    state.isPremium = data.isPremium || false;
-                    state.isTeacher = data.isTeacher || false;
-                    state.theme = data.theme || 'default';
-                    state.fontSize = data.fontSize || 'medium';
-                    state.subjects = data.subjects || [];
-                    state.topics = data.topics || [];
-                    state.schedule = data.schedule || {};
-                    state.progress8 = data.progress8 || state.progress8;
-                }
-                
-                applyTheme();
-                render();
-            } catch (error) {
-                console.error('Error loading data:', error);
-                render();
-            }
-        }
-
-        async function saveToCloud() {
-            if (!currentUser) return;
-            
-            try {
-                const dataToSave = {
-                    subjects: state.subjects,
-                    topics: state.topics,
-                    schedule: state.schedule,
-                    educationLevel: state.educationLevel,
-                    theme: state.theme,
-                    fontSize: state.fontSize,
-                    progress8: state.progress8,
-                    isPremium: state.isPremium,
-                    isTeacher: state.isTeacher,
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                await window.db.collection('users').doc(currentUser.uid).update(dataToSave);
-                
-                showSyncIndicator();
-            } catch (error) {
-                console.error('Error saving:', error);
-            }
-        }
-
-        // Auto-save every 30 seconds
-        setInterval(() => {
-            if (currentUser) saveToCloud();
-        }, 30000);
-
-        // ============================================
-        // UI & SETTINGS
-        // ============================================
-        
-        function updateSettings(key, value) {
-            state[key] = value;
-            applyTheme();
-            saveToCloud();
-            
-            document.querySelectorAll(`.${key}-btn`).forEach(btn => {
-                if (btn.dataset[key] === value) {
-                    btn.classList.add('ring-2', 'ring-offset-2', 'ring-indigo-500');
-                    btn.style.borderColor = 'var(--accent-primary)';
-                } else {
-                    btn.classList.remove('ring-2', 'ring-offset-2', 'ring-indigo-500');
-                    btn.style.borderColor = '#d1d5db';
+                    document.getElementById('app').classList.add('hidden');
                 }
             });
 
-            if (key !== 'fontSize' && key !== 'theme') {
-                render();
-            }
-        }
-
-        function showSettings() {
-            const modal = document.getElementById('settingsModal');
-            modal.classList.add('show');
-            
-            updateSettings('theme', state.theme);
-            updateSettings('fontSize', state.fontSize);
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('show');
-        }
-
-        function showSyncIndicator() {
-            const indicator = document.createElement('div');
-            indicator.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-            indicator.innerHTML = '☁️ Synced!';
-            document.body.appendChild(indicator);
-            setTimeout(() => indicator.remove(), 2000);
-        }
-
-        function showLogin() {
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('signupForm').classList.add('hidden');
-        }
-
-        function showSignup() {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('signupForm').classList.remove('hidden');
-        }
-
-        function hideAuthScreen() {
-            document.getElementById('authScreen').classList.add('hidden');
-        }
-
-        function applyTheme() {
-            document.body.className = '';
-            
-            if (state.theme && state.theme !== 'default') {
-                document.body.classList.add(`theme-${state.theme}`);
-            }
-            
-            document.body.classList.add(`font-${state.fontSize || 'medium'}`);
-        }
-
-        // ============================================
-        // COMPONENT RENDERING
-        // ============================================
-
-        function renderProgress8Dashboard() {
-            const attainment8Score = calculateAttainment8Score();
-            
-            const slots = Object.keys(state.progress8).map(key => ({
-                ...state.progress8[key],
-                key: key,
-                points: gradeToPoint(state.progress8[key].current),
-                isDoubleWeighted: key === 'englishLang' || key === 'maths',
-                basket: key.startsWith('ebacc') ? 'EBacc' : (key.startsWith('open') ? 'Open' : 'Core')
-            }));
-
-            return `
-                <div class="glass-effect rounded-2xl shadow-xl p-6 mb-6 animate-fade-in">
-                    <h2 class="text-2xl font-bold mb-4 gradient-text">Progress 8 & Attainment 8 Tracker</h2>
-                    <p style="color: var(--text-secondary)" class="mb-4">
-                        This view tracks your performance across the 8 subject slots (10 point slots total) used for Attainment 8.
-                    </p>
-
-                    <div class="p-4 rounded-xl mb-6 flex justify-between items-center" style="background-color: var(--bg-primary); border: 1px solid var(--border-color);">
-                        <div>
-                            <p class="text-sm font-semibold" style="color: var(--text-secondary)">Current Attainment 8 Score (Max 90)</p>
-                            <div class="text-4xl font-extrabold gradient-text">${attainment8Score.toFixed(0)}</div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-semibold" style="color: var(--text-secondary)">Progress 8 Estimate</p>
-                            <div class="text-2xl font-bold text-green-600">+0.25</div>
-                            <p class="text-xs" style="color: var(--text-secondary)">(Above National Average)</p>
-                        </div>
-                    </div>
-
-                    <h3 class="text-xl font-bold mb-3" style="color: var(--text-primary)">Subject Slots (8/10)</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        ${slots.map(slot => `
-                            <div class="p-4 rounded-lg flex justify-between items-center transition-shadow border" 
-                                style="background-color: var(--bg-secondary); border-color: var(--border-color); box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05);">
-                                <div>
-                                    <p class="text-sm font-medium" style="color: var(--text-primary)">
-                                        ${slot.subject}
-                                    </p>
-                                    <p class="text-xs" style="color: var(--text-secondary)">
-                                        Basket: ${slot.basket} ${slot.isDoubleWeighted ? '(x2)' : ''}
-                                    </p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-sm" style="color: var(--text-secondary)">Grade</p>
-                                    <p class="text-2xl font-bold ${slot.points >= gradeToPoint(slot.target) ? 'text-green-500' : 'text-red-500'}">
-                                        ${slot.current}
-                                    </p>
-                                    <p class="text-xs" style="color: var(--text-secondary)">
-                                        (${slot.points} Pts)
-                                    </p>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    
-                    <div class="mt-6 text-center">
-                        <button onclick="saveToCloud()" class="px-6 py-3 bg-indigo-500 text-white rounded-lg font-bold hover:bg-indigo-600 transition-colors">
-                            Update Grades
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderTeacherDashboard() {
-            return `
-                <div class="glass-effect rounded-2xl shadow-xl p-6 mb-6 animate-fade-in">
-                    <h2 class="text-2xl font-bold mb-4 text-green-600">🍎 Teacher Dashboard</h2>
-                    <p style="color: var(--text-secondary)" class="mb-6">
-                        Welcome, ${currentUser.name}. This view is active for your school license.
-                    </p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="p-6 rounded-xl border-2 border-green-200" style="background-color: var(--bg-secondary);">
-                            <h3 class="text-xl font-bold text-green-700 mb-2">School Progress 8</h3>
-                            <p class="text-4xl font-extrabold text-green-500">+0.12</p>
-                            <p class="text-sm text-gray-500 mt-2">Target: +0.05. Cohort A8: 48.2</p>
-                            <p class="text-xs mt-1 text-green-600">✅ Meeting DfE floor standards.</p>
-                        </div>
-
-                        <div class="p-6 rounded-xl border-2 border-yellow-200" style="background-color: var(--bg-secondary);">
-                            <h3 class="text-xl font-bold text-yellow-700 mb-2">Class Gaps Identified</h3>
-                            <ul class="list-disc list-inside text-sm space-y-1">
-                                <li>42% struggle with Topic: Photosynthesis.</li>
-                                <li>12 students behind on revision schedule.</li>
-                                <li>Action: Assign remedial quiz to Year 10 Group B.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 text-center">
-                        <button class="px-6 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition-colors">
-                            View Full Student Analytics
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderStudentApp() {
-            let content = `
-                <div class="glass-effect rounded-2xl shadow-xl p-8 text-center animate-fade-in">
-                    <div class="text-6xl mb-4">🎉</div>
-                    <h2 class="text-2xl font-bold mb-4" style="color: var(--text-primary)">
-                        Welcome, ${currentUser.name}!
-                    </h2>
-                    <p class="mb-6" style="color: var(--text-secondary)">
-                        Your ReviseRight Pro is now fully connected. Use the tabs above to navigate.
-                    </p>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                        <div class="p-4 bg-green-50 rounded-xl">
-                            <div class="text-3xl mb-2">🎯</div>
-                            <div class="font-bold text-green-900">Today's Focus</div>
-                            <div class="text-sm text-green-700">Complete 2 science quizzes</div>
-                        </div>
-                        <div class="p-4 bg-blue-50 rounded-xl">
-                            <div class="text-3xl mb-2">🗓️</div>
-                            <div class="font-bold text-blue-900">Next Exam</div>
-                            <div class="text-sm text-blue-700">Maths Paper 1 (3 weeks)</div>
-                        </div>
-                        <div class="p-4 bg-purple-50 rounded-xl">
-                            <div class="text-3xl mb-2">⭐</div>
-                            <div class="font-bold text-purple-900">Attainment 8</div>
-                            <div class="text-sm text-purple-700">${calculateAttainment8Score().toFixed(0)} Points</div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-6">
-                        <button onclick="changeTab('progress8')" class="px-6 py-3 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition-colors">
-                            View Progress 8 Tracker
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            if (state.activeTab === 'progress8') {
-                content = renderProgress8Dashboard();
-            } else if (state.activeTab === 'teacher') {
-                content = renderTeacherDashboard();
-            }
-
-            return content;
-        }
-
-        function changeTab(tabName) {
-            state.activeTab = tabName;
-            render();
-        }
-
-        function render() {
-            if (!currentUser) return;
-            
-            const premiumButton = !state.isPremium ? `
-                <button onclick="upgradeToPremium('monthly')" class="px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 rounded-lg font-bold text-sm">
-                    ⭐ Upgrade
-                </button>
-            ` : '';
-
-            const teacherButton = state.isTeacher ? `
-                <button onclick="changeTab('teacher')" class="px-4 py-2 bg-green-500 text-white rounded-lg font-bold text-sm hover:bg-green-600">
-                    🧑‍🏫 Teacher Dashboard
-                </button>
-            ` : '';
-            
-            document.getElementById('app').innerHTML = `
-                <div class="min-h-screen p-4">
-                    <div class="max-w-7xl mx-auto">
-                        <div class="glass-effect rounded-2xl shadow-xl p-6 mb-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h1 class="text-3xl font-bold gradient-text">ReviseRight Pro</h1>
-                                    <p style="color: var(--text-secondary)">
-                                        ${currentUser.name} • ${state.isPremium ? '⭐ Premium' : 'Free'}
-                                    </p>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    ${teacherButton}
-                                    ${premiumButton}
-                                    <button onclick="showSettings()" class="p-3 bg-gray-200 rounded-lg font-semibold hover:bg-gray-300">
-                                        ⚙️
-                                    </button>
-                                    <button onclick="logout()" class="px-4 py-2 bg-gray-200 rounded-lg font-semibold text-sm hover:bg-gray-300">
-                                        Sign Out
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-6 flex space-x-2 p-2 rounded-xl glass-effect">
-                            <button onclick="changeTab('dashboard')" class="tab-button px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${state.activeTab === 'dashboard' ? 'active' : 'bg-transparent'}" style="color: ${state.activeTab === 'dashboard' ? 'white' : 'var(--text-primary)'}">
-                                Home
-                            </button>
-                            <button onclick="changeTab('progress8')" class="tab-button px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${state.activeTab === 'progress8' ? 'active' : 'bg-transparent'}" style="color: ${state.activeTab === 'progress8' ? 'white' : 'var(--text-primary)'}">
-                                Progress 8
-                            </button>
-                            <button onclick="changeTab('revision')" class="tab-button px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${state.activeTab === 'revision' ? 'active' : 'bg-transparent'}" style="color: ${state.activeTab === 'revision' ? 'white' : 'var(--text-primary)'}">
-                                Revision Planner
-                            </button>
-                            ${state.isTeacher ? `
-                                <button onclick="changeTab('teacher')" class="tab-button px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${state.activeTab === 'teacher' ? 'active' : 'bg-transparent'}" style="background-color: ${state.activeTab === 'teacher' ? 'var(--accent-primary)' : 'transparent'}; color: ${state.activeTab === 'teacher' ? 'white' : 'var(--text-primary)'}">
-                                    Teacher
-                                </button>
-                            ` : ''}
-                        </div>
+            async function loadUserData() {
+                try {
+                    const doc = await db.collection('users').doc(currentUser.uid).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        state.subjects = data.subjects || [];
+                        state.topics = data.topics || [];
+                        state.schedule = data.schedule || [];
+                        state.progress8 = data.progress8 || state.progress8;
+                        state.theme = data.theme || 'default';
+                        state.fontSize = data.fontSize || '16px';
                         
-                        ${renderStudentApp()}
+                        applyTheme();
+                        applyFontSize();
+                    }
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                }
+            }
 
-                    </div>
-                </div>
-            `;
-            
-        }
+            async function saveData() {
+                if (!currentUser) return;
+                try {
+                    await db.collection('users').doc(currentUser.uid).update({
+                        subjects: state.subjects,
+                        topics: state.topics,
+                        schedule: state.schedule,
+                        progress8: state.progress8,
+                        theme: state.theme,
+                        fontSize: state.fontSize,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } catch (error) {
+                    console.error('Save error:', error);
+                }
+            }
 
-        // ============================================
-        // PAYMENT FUNCTIONS
-        // ============================================
-        
-        async function upgradeToPremium(plan) {
-            alert('💳 Payment integration coming soon!\n\nFor demo: Upgrading to Premium ' + plan);
-            
-            try {
-                await window.db.collection('users').doc(currentUser.uid).update({
-                    isPremium: true,
-                    plan: plan,
-                    upgradeDate: firebase.firestore.FieldValue.serverTimestamp()
+            function applyTheme() {
+                document.body.className = state.theme !== 'default' ? `theme-${state.theme}` : '';
+                if (document.getElementById('themeSelect')) {
+                    document.getElementById('themeSelect').value = state.theme;
+                }
+            }
+
+            function applyFontSize() {
+                document.body.style.fontSize = state.fontSize;
+                if (document.getElementById('fontSelect')) {
+                    document.getElementById('fontSelect').value = state.fontSize;
+                }
+            }
+
+            window.changeTheme = function() {
+                state.theme = document.getElementById('themeSelect').value;
+                applyTheme();
+                saveData();
+            };
+
+            window.changeFontSize = function() {
+                state.fontSize = document.getElementById('fontSelect').value;
+                applyFontSize();
+                saveData();
+            };
+
+            // Navigation
+            window.switchTab = function(tab) {
+                state.activeTab = tab;
+                
+                // Hide all tabs
+                ['dashboard', 'progress8', 'subjects', 'topics', 'schedule', 'settings'].forEach(t => {
+                    document.getElementById(t + 'Tab').classList.add('hidden');
                 });
                 
-                state.isPremium = true;
-                render();
-                alert('🎉 Demo upgrade successful! Premium features unlocked.');
-            } catch (error) {
-                alert('Error: ' + error.message);
+                // Show active tab
+                document.getElementById(tab + 'Tab').classList.remove('hidden');
+                
+                // Update nav buttons
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                renderApp();
+            };
+
+            // Subjects
+            window.showAddSubject = function() {
+                document.getElementById('addSubjectModal').classList.add('show');
+            };
+
+            window.addSubject = function() {
+                const name = document.getElementById('subjectName').value.trim();
+                const teacher = document.getElementById('subjectTeacher').value.trim();
+                const target = document.getElementById('subjectTarget').value;
+                
+                if (!name) {
+                    alert('Please enter subject name');
+                    return;
+                }
+                
+                state.subjects.push({
+                    id: Date.now(),
+                    name,
+                    teacher,
+                    target
+                });
+                
+                saveData();
+                closeModal('addSubjectModal');
+                renderApp();
+                
+                // Clear inputs
+                document.getElementById('subjectName').value = '';
+                document.getElementById('subjectTeacher').value = '';
+                document.getElementById('subjectTarget').value = '';
+            };
+
+            window.deleteSubject = function(id) {
+                if (confirm('Delete this subject?')) {
+                    state.subjects = state.subjects.filter(s => s.id !== id);
+                    saveData();
+                    renderApp();
+                }
+            };
+
+            // Topics
+            window.showAddTopic = function() {
+                const select = document.getElementById('topicSubject');
+                select.innerHTML = '<option value="">Select subject...</option>';
+                state.subjects.forEach(s => {
+                    select.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+                });
+                document.getElementById('addTopicModal').classList.add('show');
+            };
+
+            window.addTopic = function() {
+                const subject = document.getElementById('topicSubject').value;
+                const name = document.getElementById('topicName').value.trim();
+                const confidence = document.getElementById('topicConfidence').value;
+                
+                if (!subject || !name) {
+                    alert('Please fill all fields');
+                    return;
+                }
+                
+                state.topics.push({
+                    id: Date.now(),
+                    subject,
+                    name,
+                    confidence
+                });
+                
+                saveData();
+                closeModal('addTopicModal');
+                renderApp();
+                
+                document.getElementById('topicName').value = '';
+            };
+
+            window.deleteTopic = function(id) {
+                if (confirm('Delete this topic?')) {
+                    state.topics = state.topics.filter(t => t.id !== id);
+                    saveData();
+                    renderApp();
+                }
+            };
+
+            // Schedule
+            window.showAddSchedule = function() {
+                const select = document.getElementById('scheduleSubject');
+                select.innerHTML = '<option value="">Select subject...</option>';
+                state.subjects.forEach(s => {
+                    select.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+                });
+                document.getElementById('addScheduleModal').classList.add('show');
+            };
+
+            window.addSchedule = function() {
+                const subject = document.getElementById('scheduleSubject').value;
+                const date = document.getElementById('scheduleDate').value;
+                const time = document.getElementById('scheduleTime').value;
+                const duration = document.getElementById('scheduleDuration').value;
+                
+                if (!subject || !date || !time) {
+                    alert('Please fill all fields');
+                    return;
+                }
+                
+                state.schedule.push({
+                    id: Date.now(),
+                    subject,
+                    date,
+                    time,
+                    duration: duration || 60
+                });
+                
+                state.schedule.sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
+                
+                saveData();
+                closeModal('addScheduleModal');
+                renderApp();
+                
+                document.getElementById('scheduleDate').value = '';
+                document.getElementById('scheduleTime').value = '';
+                document.getElementById('scheduleDuration').value = '';
+            };
+
+            window.deleteSchedule = function(id) {
+                if (confirm('Delete this session?')) {
+                    state.schedule = state.schedule.filter(s => s.id !== id);
+                    saveData();
+                    renderApp();
+                }
+            };
+
+            // Progress 8
+            window.updateProgress8 = function(slot, field, value) {
+                state.progress8[slot][field] = value;
+                saveData();
+                renderApp();
+            };
+
+            function calculateP8Score() {
+                const grades = { '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2, '1': 1, 'U': 0 };
+                let totalTarget = 0, totalCurrent = 0, count = 0;
+                
+                Object.values(state.progress8).forEach(slot => {
+                    if (slot.target) {
+                        totalTarget += grades[slot.target] || 0;
+                        count++;
+                    }
+                    if (slot.current) {
+                        totalCurrent += grades[slot.current] || 0;
+                    }
+                });
+                
+                return count > 0 ? ((totalCurrent / count) - (totalTarget / count)).toFixed(2) : '0.00';
             }
-        }
 
-        // Set up auth listener
-        setupAuthListener();
-        
-        console.log('🔥 App ready!');
-        } // End startApp function
+            // Modals
+            window.closeModal = function(id) {
+                document.getElementById(id).classList.remove('show');
+            };
 
-        // Start initialization when page loads
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeApp);
-        } else {
-            initializeApp();
-        }
+            // Render
+            function renderApp() {
+                if (!currentUser) return;
+                
+                document.getElementById('userName').textContent = currentUser.name;
+                
+                // Dashboard
+                document.getElementById('subjectCount').textContent = state.subjects.length;
+                document.getElementById('topicCount').textContent = state.topics.length;
+                document.getElementById('scheduleCount').textContent = state.schedule.length;
+                
+                const recentSubjects = document.getElementById('recentSubjects');
+                if (state.subjects.length === 0) {
+                    recentSubjects.innerHTML = '<p style="color: var(--text-secondary);">No subjects yet. Add one to get started!</p>';
+                } else {
+                    recentSubjects.innerHTML = state.subjects.slice(0, 3).map(s => `
+                        <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 10px;">
+                            <strong>${s.name}</strong>
+                            ${s.teacher ? `<div style="font-size: 14px; color: var(--text-secondary); margin-top: 5px;">${s.teacher}</div>` : ''}
+                            ${s.target ? `<span class="grade-box grade-${s.target}" style="margin-top: 5px;">Target: ${s.target}</span>` : ''}
+                        </div>
+                    `).join('');
+                }
+                
+                // Progress 8
+                const p8List = document.getElementById('progress8List');
+                p8List.innerHTML = Object.entries(state.progress8).map(([key, slot]) => `
+                    <div style="padding: 15px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 10px;">
+                        <div style="margin-bottom: 10px;">
+                            <input type="text" value="${slot.subject}" onchange="updateProgress8('${key}', 'subject', this.value)" placeholder="Subject name" style="font-weight: 600; border: 1px solid var(--border); padding: 8px;">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div>
+                                <label style="font-size: 12px; color: var(--text-secondary);">Target Grade</label>
+                                <select onchange="updateProgress8('${key}', 'target', this.value)" style="width: 100%; margin-top: 5px;">
+                                    <option value="">-</option>
+                                    ${[9,8,7,6,5,4,3,2,1].map(g => `<option value="${g}" ${slot.target == g ? 'selected' : ''}>${g}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 12px; color: var(--text-secondary);">Current Grade</label>
+                                <select onchange="updateProgress8('${key}', 'current', this.value)" style="width: 100%; margin-top: 5px;">
+                                    <option value="">-</option>
+                                    ${[9,8,7,6,5,4,3,2,1,'U'].map(g => `<option value="${g}" ${slot.current == g ? 'selected' : ''}>${g}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('p8Score').textContent = calculateP8Score();
+                
+                // Subjects
+                const subjectsList = document.getElementById('subjectsList');
+                if (state.subjects.length === 0) {
+                    subjectsList.innerHTML = '<p style="color: var(--text-secondary);">No subjects yet. Click "Add Subject" to get started!</p>';
+                } else {
+                    subjectsList.innerHTML = state.subjects.map(s => `
+                        <div style="padding: 15px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 5px;">${s.name}</div>
+                                ${s.teacher ? `<div style="font-size: 14px; color: var(--text-secondary);">Teacher: ${s.teacher}</div>` : ''}
+                                ${s.target ? `<span class="grade-box grade-${s.target}" style="margin-top: 8px;">Target: ${s.target}</span>` : ''}
+                            </div>
+                            <button onclick="deleteSubject(${s.id})" style="background: #ef4444; color: white; padding: 8px 12px; border-radius: 6px; font-size: 14px;">Delete</button>
+                        </div>
+                    `).join('');
+                }
+                
+                // Topics
+                const topicsList = document.getElementById('topicsList');
+                if (state.topics.length === 0) {
+                    topicsList.innerHTML = '<p style="color: var(--text-secondary);">No topics yet. Click "Add Topic" to start tracking!</p>';
+                } else {
+                    const grouped = {};
+                    state.topics.forEach(t => {
+                        if (!grouped[t.subject]) grouped[t.subject] = [];
+                        grouped[t.subject].push(t);
+                    });
+                    
+                    topicsList.innerHTML = Object.entries(grouped).map(([subject, topics]) => `
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="margin-bottom: 10px; color: var(--accent);">${subject}</h4>
+                            ${topics.map(t => `
+                                <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-weight: 500;">${t.name}</div>
+                                        <div style="font-size: 14px; margin-top: 5px;">
+                                            ${t.confidence === 'high' ? '😊 High' : t.confidence === 'medium' ? '😐 Medium' : '😟 Low'} confidence
+                                        </div>
+                                    </div>
+                                    <button onclick="deleteTopic(${t.id})" style="background: #ef4444; color: white; padding: 6px 10px; border-radius: 6px; font-size: 12px;">Delete</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `).join('');
+                }
+                
+                // Schedule
+                const scheduleList = document.getElementById('scheduleList');
+                if (state.schedule.length === 0) {
+                    scheduleList.innerHTML = '<p style="color: var(--text-secondary);">No scheduled sessions. Click "Add Session" to plan your study time!</p>';
+                } else {
+                    scheduleList.innerHTML = state.schedule.map(s => `
+                        <div style="padding: 15px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 5px;">${s.subject}</div>
+                                <div style="font-size: 14px; color: var(--text-secondary);">
+                                    📅 ${new Date(s.date).toLocaleDateString()} at ${s.time}
+                                </div>
+                                <div style="font-size: 14px; color: var(--text-secondary); margin-top: 3px;">
+                                    ⏱️ ${s.duration} minutes
+                                </div>
+                            </div>
+                            <button onclick="deleteSchedule(${s.id})" style="background: #ef4444; color: white; padding: 8px 12px; border-radius: 6px; font-size: 14px;">Delete</button>
+                        </div>
+                    `).join('');
+                }
+            }
+
+        }, 1000);
     </script>
 </body>
 </html>
