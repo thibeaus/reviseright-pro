@@ -20,223 +20,438 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+        :root {
+            --bg-primary: #f7f9fb;
+            --bg-secondary: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --accent: #4f46e5;
+            --border: #e5e7eb;
         }
         
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px 30px;
-            max-width: 420px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        body.theme-dark {
+            --bg-primary: #1f2937;
+            --bg-secondary: #111827;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --accent: #818cf8;
+            --border: #374151;
+        }
+        
+        body.theme-dyslexia {
+            --bg-primary: #fef3c7;
+            --bg-secondary: #fffbeb;
+            --text-primary: #000000;
+            --text-secondary: #1f2937;
+            --accent: #059669;
+            --border: #fbbf24;
+            font-family: 'Comic Sans MS', Arial, sans-serif !important;
+            letter-spacing: 0.05em;
+            line-height: 1.8;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
         }
         
         .hidden { display: none !important; }
         
-        h1 {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 36px;
-            text-align: center;
-            margin-bottom: 10px;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
         
-        .subtitle {
-            color: #666;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-        
-        .form-group { margin-bottom: 20px; }
-        
-        label {
-            display: block;
-            color: #333;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-        
-        input {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-        }
-        
-        input:focus {
-            outline: none;
-            border-color: #667eea;
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
         
         button {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 12px 20px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             font-size: 16px;
+            margin-top: 8px;
+        }
+        
+        .nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 20px;
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+        
+        .nav-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .grade-box {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 8px;
             font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
+            margin: 5px;
         }
         
-        button:active { transform: scale(0.98); }
+        .grade-9 { background: #10b981; color: white; }
+        .grade-8 { background: #3b82f6; color: white; }
+        .grade-7 { background: #8b5cf6; color: white; }
+        .grade-6 { background: #f59e0b; color: white; }
+        .grade-5 { background: #ef4444; color: white; }
+        .grade-4 { background: #dc2626; color: white; }
+        .grade-u { background: #6b7280; color: white; }
         
-        .toggle {
-            text-align: center;
-            margin-top: 20px;
-            color: #666;
-            font-size: 14px;
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
         
-        .toggle a {
-            color: #667eea;
-            font-weight: bold;
-            text-decoration: none;
-            cursor: pointer;
+        .modal.show {
+            display: flex;
         }
         
-        .message {
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 14px;
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         
-        .error {
-            background: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
-        }
-        
-        .success {
-            background: #efe;
-            color: #3c3;
-            border: 1px solid #cfc;
-        }
-        
-        .info {
-            background: #eef;
-            color: #33c;
-            border: 1px solid #ccf;
-        }
-        
-        .dashboard {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .dashboard h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        
-        .user-info {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Loading Screen -->
-    <div id="loadingScreen" class="container">
-        <h1>📚 ReviseRight Pro</h1>
-        <div class="message info">Loading Firebase...</div>
-    </div>
-
-    <!-- Auth Container -->
-    <div id="authContainer" class="container hidden">
-        <h1>📚 ReviseRight Pro</h1>
-        <p class="subtitle">Your complete study companion</p>
-
-        <div id="messageBox"></div>
-
-        <!-- Login Form -->
-        <div id="loginForm">
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="loginEmail" placeholder="your@email.com">
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="loginPassword" placeholder="••••••••">
-            </div>
-            <button onclick="handleLogin()">Sign In</button>
-            <div class="toggle">
-                Don't have an account? <a onclick="showSignup()">Sign Up</a>
-            </div>
-        </div>
-
-        <!-- Signup Form -->
-        <div id="signupForm" class="hidden">
-            <div class="form-group">
-                <label>Name</label>
-                <input type="text" id="signupName" placeholder="Your name">
-            </div>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="signupEmail" placeholder="your@email.com">
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="signupPassword" placeholder="At least 6 characters">
-            </div>
-            <button onclick="handleSignup()">Create Account</button>
-            <div class="toggle">
-                Already have an account? <a onclick="showLogin()">Sign In</a>
-            </div>
+    <div id="loadingScreen" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div style="text-align: center; color: white;">
+            <div style="font-size: 60px; margin-bottom: 20px;">📚</div>
+            <h2 style="font-size: 32px; margin-bottom: 10px;">ReviseRight Pro</h2>
+            <p>Loading...</p>
         </div>
     </div>
 
-    <!-- App Container -->
-    <div id="appContainer" class="container hidden">
-        <div class="dashboard">
-            <h2>🎉 Welcome!</h2>
-            <div class="user-info">
-                <p><strong id="userName"></strong></p>
-                <p id="userEmail" style="color: #666; font-size: 14px;"></p>
+    <!-- Auth Screen -->
+    <div id="authScreen" class="hidden" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px;">
+        <div style="background: white; border-radius: 20px; padding: 40px; max-width: 400px; width: 100%;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="font-size: 50px; margin-bottom: 15px;">📚</div>
+                <h1 style="font-size: 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ReviseRight Pro</h1>
+                <p style="color: #666; margin-top: 10px;">Your complete study companion</p>
             </div>
-            <div class="message success">
-                ✅ Firebase connected!<br>
-                Authentication working!<br>
-                Database active!
+
+            <div id="messageBox"></div>
+
+            <!-- Login Form -->
+            <div id="loginForm">
+                <h2 style="margin-bottom: 20px; color: #333;">Sign In</h2>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #666; margin-bottom: 5px;">Email</label>
+                    <input type="email" id="loginEmail" placeholder="your@email.com" style="border: 1px solid #ddd;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #666; margin-bottom: 5px;">Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" style="border: 1px solid #ddd;">
+                </div>
+                <button onclick="handleLogin()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px; border-radius: 10px; font-weight: bold; margin-top: 10px;">Sign In</button>
+                <p style="text-align: center; margin-top: 15px; color: #666; font-size: 14px;">
+                    Don't have an account? <a onclick="showSignup()" style="color: #667eea; font-weight: bold; cursor: pointer;">Sign Up</a>
+                </p>
             </div>
-            <button onclick="logout()">Sign Out</button>
+
+            <!-- Signup Form -->
+            <div id="signupForm" class="hidden">
+                <h2 style="margin-bottom: 20px; color: #333;">Create Account</h2>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #666; margin-bottom: 5px;">Name</label>
+                    <input type="text" id="signupName" placeholder="Your name" style="border: 1px solid #ddd;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #666; margin-bottom: 5px;">Email</label>
+                    <input type="email" id="signupEmail" placeholder="your@email.com" style="border: 1px solid #ddd;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #666; margin-bottom: 5px;">Password</label>
+                    <input type="password" id="signupPassword" placeholder="At least 6 characters" style="border: 1px solid #ddd;">
+                </div>
+                <button onclick="handleSignup()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px; border-radius: 10px; font-weight: bold; margin-top: 10px;">Create Account</button>
+                <p style="text-align: center; margin-top: 15px; color: #666; font-size: 14px;">
+                    Already have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bold; cursor: pointer;">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="hidden">
+        <!-- Navigation -->
+        <div class="nav">
+            <button class="nav-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="nav-btn" onclick="switchTab('progress8')">🎯 Progress 8</button>
+            <button class="nav-btn" onclick="switchTab('subjects')">📚 Subjects</button>
+            <button class="nav-btn" onclick="switchTab('topics')">📝 Topics</button>
+            <button class="nav-btn" onclick="switchTab('schedule')">📅 Schedule</button>
+            <button class="nav-btn" onclick="switchTab('settings')">⚙️ Settings</button>
+        </div>
+
+        <div class="container">
+            <!-- Dashboard Tab -->
+            <div id="dashboardTab">
+                <div class="card">
+                    <h2 style="margin-bottom: 10px;">Welcome back, <span id="userName"></span>!</h2>
+                    <p style="color: var(--text-secondary);">Here's your study overview</p>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 15px;">📊 Quick Stats</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                        <div style="text-align: center; padding: 15px; background: var(--bg-primary); border-radius: 8px;">
+                            <div style="font-size: 32px; font-weight: bold; color: var(--accent);" id="subjectCount">0</div>
+                            <div style="color: var(--text-secondary); font-size: 14px;">Subjects</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: var(--bg-primary); border-radius: 8px;">
+                            <div style="font-size: 32px; font-weight: bold; color: var(--accent);" id="topicCount">0</div>
+                            <div style="color: var(--text-secondary); font-size: 14px;">Topics</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: var(--bg-primary); border-radius: 8px;">
+                            <div style="font-size: 32px; font-weight: bold; color: var(--accent);" id="scheduleCount">0</div>
+                            <div style="color: var(--text-secondary); font-size: 14px;">Schedule Items</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 15px;">📚 Recent Subjects</h3>
+                    <div id="recentSubjects"></div>
+                </div>
+            </div>
+
+            <!-- Progress 8 Tab -->
+            <div id="progress8Tab" class="hidden">
+                <div class="card">
+                    <h2 style="margin-bottom: 10px;">🎯 Progress 8 Tracker</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">Track your GCSE grades across 8 qualifications</p>
+                    
+                    <div id="progress8List"></div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: var(--bg-primary); border-radius: 8px;">
+                        <h4 style="margin-bottom: 10px;">Progress 8 Score: <span id="p8Score" style="color: var(--accent); font-size: 24px;">0.00</span></h4>
+                        <p style="color: var(--text-secondary); font-size: 14px;">Average points per qualification</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subjects Tab -->
+            <div id="subjectsTab" class="hidden">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>📚 My Subjects</h2>
+                        <button class="btn-primary" onclick="showAddSubject()">+ Add Subject</button>
+                    </div>
+                    <div id="subjectsList"></div>
+                </div>
+            </div>
+
+            <!-- Topics Tab -->
+            <div id="topicsTab" class="hidden">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>📝 Study Topics</h2>
+                        <button class="btn-primary" onclick="showAddTopic()">+ Add Topic</button>
+                    </div>
+                    <div id="topicsList"></div>
+                </div>
+            </div>
+
+            <!-- Schedule Tab -->
+            <div id="scheduleTab" class="hidden">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>📅 Study Schedule</h2>
+                        <button class="btn-primary" onclick="showAddSchedule()">+ Add Session</button>
+                    </div>
+                    <div id="scheduleList"></div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settingsTab" class="hidden">
+                <div class="card">
+                    <h2 style="margin-bottom: 20px;">⚙️ Settings</h2>
+                    
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Theme</label>
+                        <select id="themeSelect" onchange="changeTheme()" style="width: 100%;">
+                            <option value="default">Default</option>
+                            <option value="dark">Dark Mode</option>
+                            <option value="dyslexia">Dyslexia Friendly</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Font Size</label>
+                        <select id="fontSelect" onchange="changeFontSize()" style="width: 100%;">
+                            <option value="14px">Small</option>
+                            <option value="16px" selected>Medium</option>
+                            <option value="18px">Large</option>
+                            <option value="20px">Extra Large</option>
+                        </select>
+                    </div>
+
+                    <button class="btn-secondary" onclick="logout()" style="width: 100%; margin-top: 20px;">Sign Out</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Subject Modal -->
+    <div id="addSubjectModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">Add Subject</h3>
+            <div style="margin-bottom: 15px;">
+                <label>Subject Name</label>
+                <input type="text" id="subjectName" placeholder="e.g., Mathematics">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Teacher</label>
+                <input type="text" id="subjectTeacher" placeholder="e.g., Mr. Smith">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Target Grade</label>
+                <select id="subjectTarget">
+                    <option value="">Select grade...</option>
+                    <option value="9">9</option>
+                    <option value="8">8</option>
+                    <option value="7">7</option>
+                    <option value="6">6</option>
+                    <option value="5">5</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-primary" onclick="addSubject()" style="flex: 1;">Add</button>
+                <button class="btn-secondary" onclick="closeModal('addSubjectModal')" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Topic Modal -->
+    <div id="addTopicModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">Add Topic</h3>
+            <div style="margin-bottom: 15px;">
+                <label>Subject</label>
+                <select id="topicSubject"></select>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Topic Name</label>
+                <input type="text" id="topicName" placeholder="e.g., Quadratic Equations">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Confidence</label>
+                <select id="topicConfidence">
+                    <option value="low">😟 Low</option>
+                    <option value="medium">😐 Medium</option>
+                    <option value="high">😊 High</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-primary" onclick="addTopic()" style="flex: 1;">Add</button>
+                <button class="btn-secondary" onclick="closeModal('addTopicModal')" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Schedule Modal -->
+    <div id="addScheduleModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">Add Study Session</h3>
+            <div style="margin-bottom: 15px;">
+                <label>Subject</label>
+                <select id="scheduleSubject"></select>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Date</label>
+                <input type="date" id="scheduleDate">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Time</label>
+                <input type="time" id="scheduleTime">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Duration (minutes)</label>
+                <input type="number" id="scheduleDuration" placeholder="60">
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-primary" onclick="addSchedule()" style="flex: 1;">Add</button>
+                <button class="btn-secondary" onclick="closeModal('addScheduleModal')" style="flex: 1;">Cancel</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Wait for Firebase to load
         setTimeout(function() {
             if (typeof firebase === 'undefined') {
-                document.getElementById('loadingScreen').innerHTML = `
-                    <h1>❌ Error</h1>
-                    <div class="message error">
-                        Firebase failed to load.<br>
-                        Please refresh the page.
-                    </div>
-                `;
+                alert('Firebase failed to load. Please refresh.');
                 return;
             }
 
-            // Firebase config
             const firebaseConfig = {
                 apiKey: "AIzaSyAyonlIqfTusq_ST6PKbzSED0s_HGRmA1o",
                 authDomain: "reviseright-pro.firebaseapp.com",
@@ -247,18 +462,31 @@
                 measurementId: "G-T6BNH4JP6Z"
             };
 
-            // Initialize Firebase
             firebase.initializeApp(firebaseConfig);
             const auth = firebase.auth();
             const db = firebase.firestore();
 
-            console.log('✅ Firebase initialized!');
+            let currentUser = null;
+            let state = {
+                activeTab: 'dashboard',
+                subjects: [],
+                topics: [],
+                schedule: [],
+                progress8: {
+                    english: { target: '', current: '', subject: 'English Language' },
+                    maths: { target: '', current: '', subject: 'Maths' },
+                    ebacc1: { target: '', current: '', subject: 'Science' },
+                    ebacc2: { target: '', current: '', subject: 'History/Geography' },
+                    ebacc3: { target: '', current: '', subject: 'Language' },
+                    open1: { target: '', current: '', subject: 'Open Slot 1' },
+                    open2: { target: '', current: '', subject: 'Open Slot 2' },
+                    open3: { target: '', current: '', subject: 'Open Slot 3' }
+                },
+                theme: 'default',
+                fontSize: '16px'
+            };
 
-            // Hide loading, show auth
-            document.getElementById('loadingScreen').classList.add('hidden');
-            document.getElementById('authContainer').classList.remove('hidden');
-
-            // Login function
+            // Auth functions
             window.handleLogin = async function() {
                 const email = document.getElementById('loginEmail').value.trim();
                 const password = document.getElementById('loginPassword').value;
@@ -268,18 +496,13 @@
                     return;
                 }
 
-                showMessage('Signing in...', 'info');
-                
                 try {
                     await auth.signInWithEmailAndPassword(email, password);
-                    showMessage('✅ Signed in!', 'success');
                 } catch (error) {
-                    console.error('Login error:', error);
-                    showMessage('❌ ' + error.message, 'error');
+                    showMessage('Login failed: ' + error.message, 'error');
                 }
             };
 
-            // Signup function
             window.handleSignup = async function() {
                 const name = document.getElementById('signupName').value.trim();
                 const email = document.getElementById('signupEmail').value.trim();
@@ -295,8 +518,6 @@
                     return;
                 }
 
-                showMessage('Creating account...', 'info');
-                
                 try {
                     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                     await userCredential.user.updateProfile({ displayName: name });
@@ -304,57 +525,434 @@
                     await db.collection('users').doc(userCredential.user.uid).set({
                         name: name,
                         email: email,
-                        isPremium: false,
+                        subjects: [],
+                        topics: [],
+                        schedule: [],
+                        progress8: state.progress8,
+                        theme: 'default',
+                        fontSize: '16px',
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                     
-                    showMessage('🎉 Account created!', 'success');
+                    showMessage('Account created!', 'success');
                 } catch (error) {
-                    console.error('Signup error:', error);
-                    showMessage('❌ ' + error.message, 'error');
+                    showMessage('Signup failed: ' + error.message, 'error');
                 }
             };
 
-            // Logout function
             window.logout = async function() {
-                try {
+                if (confirm('Sign out?')) {
                     await auth.signOut();
-                } catch (error) {
-                    alert('Error: ' + error.message);
                 }
             };
 
-            // Show/hide forms
             window.showLogin = function() {
                 document.getElementById('loginForm').classList.remove('hidden');
                 document.getElementById('signupForm').classList.add('hidden');
-                document.getElementById('messageBox').innerHTML = '';
             };
 
             window.showSignup = function() {
                 document.getElementById('loginForm').classList.add('hidden');
                 document.getElementById('signupForm').classList.remove('hidden');
-                document.getElementById('messageBox').innerHTML = '';
             };
 
-            // Show message
-            function showMessage(message, type) {
-                const messageBox = document.getElementById('messageBox');
-                messageBox.innerHTML = `<div class="message ${type}">${message}</div>`;
+            function showMessage(msg, type) {
+                const box = document.getElementById('messageBox');
+                const colors = {
+                    error: 'background: #fee; color: #c33; border: 1px solid #fcc;',
+                    success: 'background: #efe; color: #3c3; border: 1px solid #cfc;',
+                    info: 'background: #eef; color: #33c; border: 1px solid #ccf;'
+                };
+                box.innerHTML = `<div style="padding: 12px; border-radius: 8px; margin-bottom: 15px; ${colors[type]}">${msg}</div>`;
+                setTimeout(() => box.innerHTML = '', 3000);
             }
 
-            // Auth state listener
-            auth.onAuthStateChanged(function(user) {
+            // Auth state
+            auth.onAuthStateChanged(async function(user) {
                 if (user) {
-                    document.getElementById('authContainer').classList.add('hidden');
-                    document.getElementById('appContainer').classList.remove('hidden');
-                    document.getElementById('userName').textContent = user.displayName || 'User';
-                    document.getElementById('userEmail').textContent = user.email;
+                    currentUser = {
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName || 'User'
+                    };
+                    
+                    await loadUserData();
+                    
+                    document.getElementById('loadingScreen').classList.add('hidden');
+                    document.getElementById('authScreen').classList.add('hidden');
+                    document.getElementById('app').classList.remove('hidden');
+                    
+                    renderApp();
                 } else {
-                    document.getElementById('authContainer').classList.remove('hidden');
-                    document.getElementById('appContainer').classList.add('hidden');
+                    currentUser = null;
+                    document.getElementById('loadingScreen').classList.add('hidden');
+                    document.getElementById('authScreen').classList.remove('hidden');
+                    document.getElementById('app').classList.add('hidden');
                 }
             });
+
+            async function loadUserData() {
+                try {
+                    const doc = await db.collection('users').doc(currentUser.uid).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        state.subjects = data.subjects || [];
+                        state.topics = data.topics || [];
+                        state.schedule = data.schedule || [];
+                        state.progress8 = data.progress8 || state.progress8;
+                        state.theme = data.theme || 'default';
+                        state.fontSize = data.fontSize || '16px';
+                        
+                        applyTheme();
+                        applyFontSize();
+                    }
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                }
+            }
+
+            async function saveData() {
+                if (!currentUser) return;
+                try {
+                    await db.collection('users').doc(currentUser.uid).update({
+                        subjects: state.subjects,
+                        topics: state.topics,
+                        schedule: state.schedule,
+                        progress8: state.progress8,
+                        theme: state.theme,
+                        fontSize: state.fontSize,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } catch (error) {
+                    console.error('Save error:', error);
+                }
+            }
+
+            function applyTheme() {
+                document.body.className = state.theme !== 'default' ? `theme-${state.theme}` : '';
+                if (document.getElementById('themeSelect')) {
+                    document.getElementById('themeSelect').value = state.theme;
+                }
+            }
+
+            function applyFontSize() {
+                document.body.style.fontSize = state.fontSize;
+                if (document.getElementById('fontSelect')) {
+                    document.getElementById('fontSelect').value = state.fontSize;
+                }
+            }
+
+            window.changeTheme = function() {
+                state.theme = document.getElementById('themeSelect').value;
+                applyTheme();
+                saveData();
+            };
+
+            window.changeFontSize = function() {
+                state.fontSize = document.getElementById('fontSelect').value;
+                applyFontSize();
+                saveData();
+            };
+
+            // Navigation
+            window.switchTab = function(tab) {
+                state.activeTab = tab;
+                
+                // Hide all tabs
+                ['dashboard', 'progress8', 'subjects', 'topics', 'schedule', 'settings'].forEach(t => {
+                    document.getElementById(t + 'Tab').classList.add('hidden');
+                });
+                
+                // Show active tab
+                document.getElementById(tab + 'Tab').classList.remove('hidden');
+                
+                // Update nav buttons
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                renderApp();
+            };
+
+            // Subjects
+            window.showAddSubject = function() {
+                document.getElementById('addSubjectModal').classList.add('show');
+            };
+
+            window.addSubject = function() {
+                const name = document.getElementById('subjectName').value.trim();
+                const teacher = document.getElementById('subjectTeacher').value.trim();
+                const target = document.getElementById('subjectTarget').value;
+                
+                if (!name) {
+                    alert('Please enter subject name');
+                    return;
+                }
+                
+                state.subjects.push({
+                    id: Date.now(),
+                    name,
+                    teacher,
+                    target
+                });
+                
+                saveData();
+                closeModal('addSubjectModal');
+                renderApp();
+                
+                // Clear inputs
+                document.getElementById('subjectName').value = '';
+                document.getElementById('subjectTeacher').value = '';
+                document.getElementById('subjectTarget').value = '';
+            };
+
+            window.deleteSubject = function(id) {
+                if (confirm('Delete this subject?')) {
+                    state.subjects = state.subjects.filter(s => s.id !== id);
+                    saveData();
+                    renderApp();
+                }
+            };
+
+            // Topics
+            window.showAddTopic = function() {
+                const select = document.getElementById('topicSubject');
+                select.innerHTML = '<option value="">Select subject...</option>';
+                state.subjects.forEach(s => {
+                    select.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+                });
+                document.getElementById('addTopicModal').classList.add('show');
+            };
+
+            window.addTopic = function() {
+                const subject = document.getElementById('topicSubject').value;
+                const name = document.getElementById('topicName').value.trim();
+                const confidence = document.getElementById('topicConfidence').value;
+                
+                if (!subject || !name) {
+                    alert('Please fill all fields');
+                    return;
+                }
+                
+                state.topics.push({
+                    id: Date.now(),
+                    subject,
+                    name,
+                    confidence
+                });
+                
+                saveData();
+                closeModal('addTopicModal');
+                renderApp();
+                
+                document.getElementById('topicName').value = '';
+            };
+
+            window.deleteTopic = function(id) {
+                if (confirm('Delete this topic?')) {
+                    state.topics = state.topics.filter(t => t.id !== id);
+                    saveData();
+                    renderApp();
+                }
+            };
+
+            // Schedule
+            window.showAddSchedule = function() {
+                const select = document.getElementById('scheduleSubject');
+                select.innerHTML = '<option value="">Select subject...</option>';
+                state.subjects.forEach(s => {
+                    select.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+                });
+                document.getElementById('addScheduleModal').classList.add('show');
+            };
+
+            window.addSchedule = function() {
+                const subject = document.getElementById('scheduleSubject').value;
+                const date = document.getElementById('scheduleDate').value;
+                const time = document.getElementById('scheduleTime').value;
+                const duration = document.getElementById('scheduleDuration').value;
+                
+                if (!subject || !date || !time) {
+                    alert('Please fill all fields');
+                    return;
+                }
+                
+                state.schedule.push({
+                    id: Date.now(),
+                    subject,
+                    date,
+                    time,
+                    duration: duration || 60
+                });
+                
+                state.schedule.sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
+                
+                saveData();
+                closeModal('addScheduleModal');
+                renderApp();
+                
+                document.getElementById('scheduleDate').value = '';
+                document.getElementById('scheduleTime').value = '';
+                document.getElementById('scheduleDuration').value = '';
+            };
+
+            window.deleteSchedule = function(id) {
+                if (confirm('Delete this session?')) {
+                    state.schedule = state.schedule.filter(s => s.id !== id);
+                    saveData();
+                    renderApp();
+                }
+            };
+
+            // Progress 8
+            window.updateProgress8 = function(slot, field, value) {
+                state.progress8[slot][field] = value;
+                saveData();
+                renderApp();
+            };
+
+            function calculateP8Score() {
+                const grades = { '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2, '1': 1, 'U': 0 };
+                let totalTarget = 0, totalCurrent = 0, count = 0;
+                
+                Object.values(state.progress8).forEach(slot => {
+                    if (slot.target) {
+                        totalTarget += grades[slot.target] || 0;
+                        count++;
+                    }
+                    if (slot.current) {
+                        totalCurrent += grades[slot.current] || 0;
+                    }
+                });
+                
+                return count > 0 ? ((totalCurrent / count) - (totalTarget / count)).toFixed(2) : '0.00';
+            }
+
+            // Modals
+            window.closeModal = function(id) {
+                document.getElementById(id).classList.remove('show');
+            };
+
+            // Render
+            function renderApp() {
+                if (!currentUser) return;
+                
+                document.getElementById('userName').textContent = currentUser.name;
+                
+                // Dashboard
+                document.getElementById('subjectCount').textContent = state.subjects.length;
+                document.getElementById('topicCount').textContent = state.topics.length;
+                document.getElementById('scheduleCount').textContent = state.schedule.length;
+                
+                const recentSubjects = document.getElementById('recentSubjects');
+                if (state.subjects.length === 0) {
+                    recentSubjects.innerHTML = '<p style="color: var(--text-secondary);">No subjects yet. Add one to get started!</p>';
+                } else {
+                    recentSubjects.innerHTML = state.subjects.slice(0, 3).map(s => `
+                        <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 10px;">
+                            <strong>${s.name}</strong>
+                            ${s.teacher ? `<div style="font-size: 14px; color: var(--text-secondary); margin-top: 5px;">${s.teacher}</div>` : ''}
+                            ${s.target ? `<span class="grade-box grade-${s.target}" style="margin-top: 5px;">Target: ${s.target}</span>` : ''}
+                        </div>
+                    `).join('');
+                }
+                
+                // Progress 8
+                const p8List = document.getElementById('progress8List');
+                p8List.innerHTML = Object.entries(state.progress8).map(([key, slot]) => `
+                    <div style="padding: 15px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 10px;">
+                        <div style="margin-bottom: 10px;">
+                            <input type="text" value="${slot.subject}" onchange="updateProgress8('${key}', 'subject', this.value)" placeholder="Subject name" style="font-weight: 600; border: 1px solid var(--border); padding: 8px;">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div>
+                                <label style="font-size: 12px; color: var(--text-secondary);">Target Grade</label>
+                                <select onchange="updateProgress8('${key}', 'target', this.value)" style="width: 100%; margin-top: 5px;">
+                                    <option value="">-</option>
+                                    ${[9,8,7,6,5,4,3,2,1].map(g => `<option value="${g}" ${slot.target == g ? 'selected' : ''}>${g}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 12px; color: var(--text-secondary);">Current Grade</label>
+                                <select onchange="updateProgress8('${key}', 'current', this.value)" style="width: 100%; margin-top: 5px;">
+                                    <option value="">-</option>
+                                    ${[9,8,7,6,5,4,3,2,1,'U'].map(g => `<option value="${g}" ${slot.current == g ? 'selected' : ''}>${g}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('p8Score').textContent = calculateP8Score();
+                
+                // Subjects
+                const subjectsList = document.getElementById('subjectsList');
+                if (state.subjects.length === 0) {
+                    subjectsList.innerHTML = '<p style="color: var(--text-secondary);">No subjects yet. Click "Add Subject" to get started!</p>';
+                } else {
+                    subjectsList.innerHTML = state.subjects.map(s => `
+                        <div style="padding: 15px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 5px;">${s.name}</div>
+                                ${s.teacher ? `<div style="font-size: 14px; color: var(--text-secondary);">Teacher: ${s.teacher}</div>` : ''}
+                                ${s.target ? `<span class="grade-box grade-${s.target}" style="margin-top: 8px;">Target: ${s.target}</span>` : ''}
+                            </div>
+                            <button onclick="deleteSubject(${s.id})" style="background: #ef4444; color: white; padding: 8px 12px; border-radius: 6px; font-size: 14px;">Delete</button>
+                        </div>
+                    `).join('');
+                }
+                
+                // Topics
+                const topicsList = document.getElementById('topicsList');
+                if (state.topics.length === 0) {
+                    topicsList.innerHTML = '<p style="color: var(--text-secondary);">No topics yet. Click "Add Topic" to start tracking!</p>';
+                } else {
+                    const grouped = {};
+                    state.topics.forEach(t => {
+                        if (!grouped[t.subject]) grouped[t.subject] = [];
+                        grouped[t.subject].push(t);
+                    });
+                    
+                    topicsList.innerHTML = Object.entries(grouped).map(([subject, topics]) => `
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="margin-bottom: 10px; color: var(--accent);">${subject}</h4>
+                            ${topics.map(t => `
+                                <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-weight: 500;">${t.name}</div>
+                                        <div style="font-size: 14px; margin-top: 5px;">
+                                            ${t.confidence === 'high' ? '😊 High' : t.confidence === 'medium' ? '😐 Medium' : '😟 Low'} confidence
+                                        </div>
+                                    </div>
+                                    <button onclick="deleteTopic(${t.id})" style="background: #ef4444; color: white; padding: 6px 10px; border-radius: 6px; font-size: 12px;">Delete</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `).join('');
+                }
+                
+                // Schedule
+                const scheduleList = document.getElementById('scheduleList');
+                if (state.schedule.length === 0) {
+                    scheduleList.innerHTML = '<p style="color: var(--text-secondary);">No scheduled sessions. Click "Add Session" to plan your study time!</p>';
+                } else {
+                    scheduleList.innerHTML = state.schedule.map(s => `
+                        <div style="padding: 15px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 5px;">${s.subject}</div>
+                                <div style="font-size: 14px; color: var(--text-secondary);">
+                                    📅 ${new Date(s.date).toLocaleDateString()} at ${s.time}
+                                </div>
+                                <div style="font-size: 14px; color: var(--text-secondary); margin-top: 3px;">
+                                    ⏱️ ${s.duration} minutes
+                                </div>
+                            </div>
+                            <button onclick="deleteSchedule(${s.id})" style="background: #ef4444; color: white; padding: 8px 12px; border-radius: 6px; font-size: 14px;">Delete</button>
+                        </div>
+                    `).join('');
+                }
+            }
 
         }, 1000);
     </script>
