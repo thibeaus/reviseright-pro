@@ -26,7 +26,11 @@
             --text-primary: #111827;
             --text-secondary: #6b7280;
             --accent: #4f46e5;
+            --accent-light: #818cf8;
             --border: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
         }
         
         body.theme-dark {
@@ -35,6 +39,7 @@
             --text-primary: #f9fafb;
             --text-secondary: #d1d5db;
             --accent: #818cf8;
+            --accent-light: #a78bfa;
             --border: #374151;
         }
         
@@ -44,10 +49,31 @@
             --text-primary: #000000;
             --text-secondary: #1f2937;
             --accent: #059669;
+            --accent-light: #10b981;
             --border: #fbbf24;
             font-family: 'Comic Sans MS', Arial, sans-serif !important;
             letter-spacing: 0.05em;
             line-height: 1.8;
+        }
+        
+        body.theme-blue {
+            --bg-primary: #dbeafe;
+            --bg-secondary: #eff6ff;
+            --text-primary: #1e3a8a;
+            --text-secondary: #1e40af;
+            --accent: #2563eb;
+            --accent-light: #3b82f6;
+            --border: #93c5fd;
+        }
+        
+        body.theme-pink {
+            --bg-primary: #fce7f3;
+            --bg-secondary: #fef3f9;
+            --text-primary: #831843;
+            --text-secondary: #9f1239;
+            --accent: #db2777;
+            --accent-light: #ec4899;
+            --border: #f9a8d4;
         }
         
         body {
@@ -73,6 +99,15 @@
             margin-bottom: 20px;
         }
         
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+        
         button {
             padding: 12px 20px;
             border: none;
@@ -80,7 +115,10 @@
             font-weight: 600;
             cursor: pointer;
             font-size: 14px;
+            transition: all 0.2s;
         }
+        
+        button:active { transform: scale(0.98); }
         
         .btn-primary {
             background: var(--accent);
@@ -91,6 +129,16 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             border: 1px solid var(--border);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
         }
         
         input, select, textarea {
@@ -109,7 +157,7 @@
             border-bottom: 1px solid var(--border);
             padding: 15px 20px;
             display: flex;
-            gap: 15px;
+            gap: 10px;
             overflow-x: auto;
         }
         
@@ -120,6 +168,7 @@
             border: none;
             border-radius: 8px;
             white-space: nowrap;
+            font-weight: 500;
         }
         
         .nav-btn.active {
@@ -127,12 +176,13 @@
             color: white;
         }
         
-        .grade-box {
+        .grade-badge {
             display: inline-block;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 6px 14px;
+            border-radius: 6px;
             font-weight: bold;
-            margin: 5px;
+            font-size: 13px;
+            margin: 3px;
         }
         
         .grade-9 { background: #10b981; color: white; }
@@ -141,7 +191,71 @@
         .grade-6 { background: #f59e0b; color: white; }
         .grade-5 { background: #ef4444; color: white; }
         .grade-4 { background: #dc2626; color: white; }
-        .grade-u { background: #6b7280; color: white; }
+        .grade-3 { background: #991b1b; color: white; }
+        .grade-2 { background: #7f1d1d; color: white; }
+        .grade-1 { background: #6b7280; color: white; }
+        .grade-U { background: #374151; color: white; }
+        
+        .stat-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .p8-slot {
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+        
+        .p8-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .points-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .points-positive {
+            background: #10b981;
+            color: white;
+        }
+        
+        .points-neutral {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .points-negative {
+            background: #ef4444;
+            color: white;
+        }
         
         .modal {
             display: none;
@@ -154,6 +268,7 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            overflow-y: auto;
         }
         
         .modal.show {
@@ -164,15 +279,44 @@
             background: var(--bg-secondary);
             border-radius: 12px;
             padding: 25px;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
-            max-height: 80vh;
+            max-height: 90vh;
             overflow-y: auto;
+            margin: 20px;
+        }
+        
+        .teacher-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .student-row {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
+            }
+            
+            .stat-card {
+                padding: 15px;
+            }
+            
+            .stat-value {
+                font-size: 28px;
             }
         }
     </style>
@@ -198,8 +342,22 @@
 
             <div id="messageBox"></div>
 
+            <!-- Account Type Selection -->
+            <div id="accountTypeSelection">
+                <h3 style="margin-bottom: 20px; text-align: center; color: #333;">Choose Account Type</h3>
+                <button onclick="selectAccountType('student')" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px; border-radius: 10px; font-weight: bold; margin-bottom: 10px;">
+                    👨‍🎓 Student Account
+                </button>
+                <button onclick="selectAccountType('teacher')" style="width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); color: white; padding: 16px; border-radius: 10px; font-weight: bold;">
+                    👨‍🏫 Teacher Account
+                </button>
+                <p style="text-align: center; margin-top: 15px; color: #666; font-size: 14px;">
+                    Have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bold; cursor: pointer;">Sign In</a>
+                </p>
+            </div>
+
             <!-- Login Form -->
-            <div id="loginForm">
+            <div id="loginForm" class="hidden">
                 <h2 style="margin-bottom: 20px; color: #333;">Sign In</h2>
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; color: #666; margin-bottom: 5px;">Email</label>
@@ -211,13 +369,13 @@
                 </div>
                 <button onclick="handleLogin()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px; border-radius: 10px; font-weight: bold; margin-top: 10px;">Sign In</button>
                 <p style="text-align: center; margin-top: 15px; color: #666; font-size: 14px;">
-                    Don't have an account? <a onclick="showSignup()" style="color: #667eea; font-weight: bold; cursor: pointer;">Sign Up</a>
+                    <a onclick="showAccountType()" style="color: #667eea; font-weight: bold; cursor: pointer;">← Back</a>
                 </p>
             </div>
 
             <!-- Signup Form -->
             <div id="signupForm" class="hidden">
-                <h2 style="margin-bottom: 20px; color: #333;">Create Account</h2>
+                <h2 style="margin-bottom: 20px; color: #333;">Create <span id="accountTypeLabel">Student</span> Account</h2>
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; color: #666; margin-bottom: 5px;">Name</label>
                     <input type="text" id="signupName" placeholder="Your name" style="border: 1px solid #ddd;">
@@ -230,9 +388,13 @@
                     <label style="display: block; color: #666; margin-bottom: 5px;">Password</label>
                     <input type="password" id="signupPassword" placeholder="At least 6 characters" style="border: 1px solid #ddd;">
                 </div>
+                <div id="teacherFields" class="hidden" style="margin-bottom: 15px;">
+                    <label style="display: block; color: #666; margin-bottom: 5px;">School Name</label>
+                    <input type="text" id="schoolName" placeholder="Your school" style="border: 1px solid #ddd;">
+                </div>
                 <button onclick="handleSignup()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px; border-radius: 10px; font-weight: bold; margin-top: 10px;">Create Account</button>
                 <p style="text-align: center; margin-top: 15px; color: #666; font-size: 14px;">
-                    Already have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bold; cursor: pointer;">Sign In</a>
+                    <a onclick="showAccountType()" style="color: #667eea; font-weight: bold; cursor: pointer;">← Back</a>
                 </p>
             </div>
         </div>
@@ -244,9 +406,10 @@
         <div class="nav">
             <button class="nav-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
             <button class="nav-btn" onclick="switchTab('progress8')">🎯 Progress 8</button>
-            <button class="nav-btn" onclick="switchTab('subjects')">📚 Subjects</button>
-            <button class="nav-btn" onclick="switchTab('topics')">📝 Topics</button>
-            <button class="nav-btn" onclick="switchTab('schedule')">📅 Schedule</button>
+            <button class="nav-btn" id="teacherTab" onclick="switchTab('teacher')" class="hidden">👨‍🏫 Students</button>
+            <button class="nav-btn" id="studentTab" onclick="switchTab('subjects')">📚 Subjects</button>
+            <button class="nav-btn" id="topicsTab" onclick="switchTab('topics')">📝 Topics</button>
+            <button class="nav-btn" id="scheduleTab" onclick="switchTab('schedule')">📅 Schedule</button>
             <button class="nav-btn" onclick="switchTab('settings')">⚙️ Settings</button>
         </div>
 
@@ -254,25 +417,26 @@
             <!-- Dashboard Tab -->
             <div id="dashboardTab">
                 <div class="card">
-                    <h2 style="margin-bottom: 10px;">Welcome back, <span id="userName"></span>!</h2>
+                    <h2 style="margin-bottom: 10px;">Welcome back, <span id="userName"></span>! <span id="teacherBadge" class="hidden teacher-badge">TEACHER</span></h2>
                     <p style="color: var(--text-secondary);">Here's your study overview</p>
                 </div>
 
-                <div class="card">
-                    <h3 style="margin-bottom: 15px;">📊 Quick Stats</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
-                        <div style="text-align: center; padding: 15px; background: var(--bg-primary); border-radius: 8px;">
-                            <div style="font-size: 32px; font-weight: bold; color: var(--accent);" id="subjectCount">0</div>
-                            <div style="color: var(--text-secondary); font-size: 14px;">Subjects</div>
-                        </div>
-                        <div style="text-align: center; padding: 15px; background: var(--bg-primary); border-radius: 8px;">
-                            <div style="font-size: 32px; font-weight: bold; color: var(--accent);" id="topicCount">0</div>
-                            <div style="color: var(--text-secondary); font-size: 14px;">Topics</div>
-                        </div>
-                        <div style="text-align: center; padding: 15px; background: var(--bg-primary); border-radius: 8px;">
-                            <div style="font-size: 32px; font-weight: bold; color: var(--accent);" id="scheduleCount">0</div>
-                            <div style="color: var(--text-secondary); font-size: 14px;">Schedule Items</div>
-                        </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div class="stat-card">
+                        <div class="stat-value" id="subjectCount">0</div>
+                        <div class="stat-label">Subjects</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="topicCount">0</div>
+                        <div class="stat-label">Topics</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="scheduleCount">0</div>
+                        <div class="stat-label">Schedule Items</div>
+                    </div>
+                    <div class="stat-card" id="studentCountCard" style="display: none;">
+                        <div class="stat-value" id="studentCount">0</div>
+                        <div class="stat-label">Students</div>
                     </div>
                 </div>
 
@@ -285,22 +449,72 @@
             <!-- Progress 8 Tab -->
             <div id="progress8Tab" class="hidden">
                 <div class="card">
-                    <h2 style="margin-bottom: 10px;">🎯 Progress 8 Tracker</h2>
-                    <p style="color: var(--text-secondary); margin-bottom: 20px;">Track your GCSE grades across 8 qualifications</p>
+                    <div class="card-header">
+                        <div>
+                            <h2 style="margin-bottom: 5px;">🎯 Progress 8 Tracker</h2>
+                            <p style="color: var(--text-secondary); font-size: 14px;">Track your GCSE grades with the official Progress 8 points system</p>
+                        </div>
+                    </div>
+                    
+                    <!-- P8 Summary Dashboard -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                        <div class="stat-card" style="border: 3px solid var(--accent);">
+                            <div class="stat-value" id="p8Score">0.00</div>
+                            <div class="stat-label">Progress 8 Score</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="avgTarget">0.0</div>
+                            <div class="stat-label">Avg Target Grade</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="avgCurrent">0.0</div>
+                            <div class="stat-label">Avg Current Grade</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalPoints">0</div>
+                            <div class="stat-label">Total Points</div>
+                        </div>
+                    </div>
+
+                    <!-- Grade to Points Reference -->
+                    <div style="background: var(--bg-primary); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 10px; font-size: 14px; color: var(--text-secondary);">📊 Grade Points Reference:</h4>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span class="grade-badge grade-9">9 = 9pts</span>
+                            <span class="grade-badge grade-8">8 = 8pts</span>
+                            <span class="grade-badge grade-7">7 = 7pts</span>
+                            <span class="grade-badge grade-6">6 = 6pts</span>
+                            <span class="grade-badge grade-5">5 = 5pts</span>
+                            <span class="grade-badge grade-4">4 = 4pts</span>
+                            <span class="grade-badge grade-3">3 = 3pts</span>
+                            <span class="grade-badge grade-2">2 = 2pts</span>
+                            <span class="grade-badge grade-1">1 = 1pt</span>
+                            <span class="grade-badge grade-U">U = 0pts</span>
+                        </div>
+                    </div>
                     
                     <div id="progress8List"></div>
-                    
-                    <div style="margin-top: 20px; padding: 15px; background: var(--bg-primary); border-radius: 8px;">
-                        <h4 style="margin-bottom: 10px;">Progress 8 Score: <span id="p8Score" style="color: var(--accent); font-size: 24px;">0.00</span></h4>
-                        <p style="color: var(--text-secondary); font-size: 14px;">Average points per qualification</p>
+                </div>
+            </div>
+
+            <!-- Teacher Tab -->
+            <div id="teacherTab" class="hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2>👨‍🏫 Student Management</h2>
+                            <p style="color: var(--text-secondary); font-size: 14px;">Manage Year 10 & 11 students</p>
+                        </div>
+                        <button class="btn-primary" onclick="showAddStudent()">+ Add Student</button>
                     </div>
+                    <div id="studentsList"></div>
                 </div>
             </div>
 
             <!-- Subjects Tab -->
             <div id="subjectsTab" class="hidden">
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div class="card-header">
                         <h2>📚 My Subjects</h2>
                         <button class="btn-primary" onclick="showAddSubject()">+ Add Subject</button>
                     </div>
@@ -311,7 +525,7 @@
             <!-- Topics Tab -->
             <div id="topicsTab" class="hidden">
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div class="card-header">
                         <h2>📝 Study Topics</h2>
                         <button class="btn-primary" onclick="showAddTopic()">+ Add Topic</button>
                     </div>
@@ -322,7 +536,7 @@
             <!-- Schedule Tab -->
             <div id="scheduleTab" class="hidden">
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div class="card-header">
                         <h2>📅 Study Schedule</h2>
                         <button class="btn-primary" onclick="showAddSchedule()">+ Add Session</button>
                     </div>
@@ -338,8 +552,10 @@
                     <div style="margin-bottom: 25px;">
                         <label style="display: block; margin-bottom: 10px; font-weight: 600;">Theme</label>
                         <select id="themeSelect" onchange="changeTheme()" style="width: 100%;">
-                            <option value="default">Default</option>
+                            <option value="default">Default (Light)</option>
                             <option value="dark">Dark Mode</option>
+                            <option value="blue">Blue Theme</option>
+                            <option value="pink">Pink Theme</option>
                             <option value="dyslexia">Dyslexia Friendly</option>
                         </select>
                     </div>
@@ -352,6 +568,11 @@
                             <option value="18px">Large</option>
                             <option value="20px">Extra Large</option>
                         </select>
+                    </div>
+
+                    <div style="background: var(--bg-primary); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <p style="font-weight: 600; margin-bottom: 5px;">Account Type: <span id="accountTypeDisplay"></span></p>
+                        <p style="color: var(--text-secondary); font-size: 14px;" id="schoolDisplay"></p>
                     </div>
 
                     <button class="btn-secondary" onclick="logout()" style="width: 100%; margin-top: 20px;">Sign Out</button>
@@ -445,6 +666,44 @@
         </div>
     </div>
 
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">Add Student</h3>
+            <div style="margin-bottom: 15px;">
+                <label>Student Name</label>
+                <input type="text" id="studentName" placeholder="Full name">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Year Group</label>
+                <select id="studentYear">
+                    <option value="10">Year 10</option>
+                    <option value="11">Year 11</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Student Email (optional)</label>
+                <input type="email" id="studentEmail" placeholder="student@school.com">
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-primary" onclick="addStudent()" style="flex: 1;">Add</button>
+                <button class="btn-secondary" onclick="closeModal('addStudentModal')" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Student P8 Modal -->
+    <div id="viewStudentModal" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 id="studentModalName">Student Progress 8</h3>
+                <button onclick="closeModal('viewStudentModal')" style="background: transparent; color: var(--text-secondary); padding: 8px;">✕</button>
+            </div>
+            <div id="studentP8Content"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         setTimeout(function() {
             if (typeof firebase === 'undefined') {
@@ -467,11 +726,15 @@
             const db = firebase.firestore();
 
             let currentUser = null;
+            let selectedAccountType = 'student';
             let state = {
                 activeTab: 'dashboard',
+                accountType: 'student',
+                schoolName: '',
                 subjects: [],
                 topics: [],
                 schedule: [],
+                students: [],
                 progress8: {
                     english: { target: '', current: '', subject: 'English Language' },
                     maths: { target: '', current: '', subject: 'Maths' },
@@ -484,6 +747,32 @@
                 },
                 theme: 'default',
                 fontSize: '16px'
+            };
+
+            // Grade points mapping (official Progress 8)
+            const gradePoints = {
+                '9': 9, '8': 8, '7': 7, '6': 6, '5': 5,
+                '4': 4, '3': 3, '2': 2, '1': 1, 'U': 0
+            };
+
+            // Account type selection
+            window.selectAccountType = function(type) {
+                selectedAccountType = type;
+                document.getElementById('accountTypeSelection').classList.add('hidden');
+                document.getElementById('signupForm').classList.remove('hidden');
+                document.getElementById('accountTypeLabel').textContent = type === 'teacher' ? 'Teacher' : 'Student';
+                
+                if (type === 'teacher') {
+                    document.getElementById('teacherFields').classList.remove('hidden');
+                } else {
+                    document.getElementById('teacherFields').classList.add('hidden');
+                }
+            };
+
+            window.showAccountType = function() {
+                document.getElementById('accountTypeSelection').classList.remove('hidden');
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('signupForm').classList.add('hidden');
             };
 
             // Auth functions
@@ -507,9 +796,15 @@
                 const name = document.getElementById('signupName').value.trim();
                 const email = document.getElementById('signupEmail').value.trim();
                 const password = document.getElementById('signupPassword').value;
+                const schoolName = document.getElementById('schoolName').value.trim();
                 
                 if (!name || !email || !password) {
                     showMessage('Please fill in all fields', 'error');
+                    return;
+                }
+
+                if (selectedAccountType === 'teacher' && !schoolName) {
+                    showMessage('Please enter school name', 'error');
                     return;
                 }
 
@@ -525,9 +820,12 @@
                     await db.collection('users').doc(userCredential.user.uid).set({
                         name: name,
                         email: email,
+                        accountType: selectedAccountType,
+                        schoolName: schoolName || '',
                         subjects: [],
                         topics: [],
                         schedule: [],
+                        students: [],
                         progress8: state.progress8,
                         theme: 'default',
                         fontSize: '16px',
@@ -547,13 +845,9 @@
             };
 
             window.showLogin = function() {
+                document.getElementById('accountTypeSelection').classList.add('hidden');
                 document.getElementById('loginForm').classList.remove('hidden');
                 document.getElementById('signupForm').classList.add('hidden');
-            };
-
-            window.showSignup = function() {
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('signupForm').classList.remove('hidden');
             };
 
             function showMessage(msg, type) {
@@ -582,6 +876,16 @@
                     document.getElementById('authScreen').classList.add('hidden');
                     document.getElementById('app').classList.remove('hidden');
                     
+                    // Show/hide teacher features
+                    if (state.accountType === 'teacher') {
+                        document.getElementById('teacherTab').classList.remove('hidden');
+                        document.getElementById('teacherBadge').classList.remove('hidden');
+                        document.getElementById('studentCountCard').style.display = 'block';
+                        document.getElementById('studentTab').classList.add('hidden');
+                        document.getElementById('topicsTab').classList.add('hidden');
+                        document.getElementById('scheduleTab').classList.add('hidden');
+                    }
+                    
                     renderApp();
                 } else {
                     currentUser = null;
@@ -596,9 +900,12 @@
                     const doc = await db.collection('users').doc(currentUser.uid).get();
                     if (doc.exists) {
                         const data = doc.data();
+                        state.accountType = data.accountType || 'student';
+                        state.schoolName = data.schoolName || '';
                         state.subjects = data.subjects || [];
                         state.topics = data.topics || [];
                         state.schedule = data.schedule || [];
+                        state.students = data.students || [];
                         state.progress8 = data.progress8 || state.progress8;
                         state.theme = data.theme || 'default';
                         state.fontSize = data.fontSize || '16px';
@@ -618,6 +925,7 @@
                         subjects: state.subjects,
                         topics: state.topics,
                         schedule: state.schedule,
+                        students: state.students,
                         progress8: state.progress8,
                         theme: state.theme,
                         fontSize: state.fontSize,
@@ -658,20 +966,58 @@
             window.switchTab = function(tab) {
                 state.activeTab = tab;
                 
-                // Hide all tabs
-                ['dashboard', 'progress8', 'subjects', 'topics', 'schedule', 'settings'].forEach(t => {
-                    document.getElementById(t + 'Tab').classList.add('hidden');
+                const tabs = ['dashboard', 'progress8', 'subjects', 'topics', 'schedule', 'settings', 'teacher'];
+                tabs.forEach(t => {
+                    const el = document.getElementById(t + 'Tab');
+                    if (el) el.classList.add('hidden');
                 });
                 
-                // Show active tab
                 document.getElementById(tab + 'Tab').classList.remove('hidden');
                 
-                // Update nav buttons
                 document.querySelectorAll('.nav-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
                 event.target.classList.add('active');
                 
+                renderApp();
+            };
+
+            // Progress 8 calculations
+            function calculateP8Stats() {
+                let totalTarget = 0, totalCurrent = 0, count = 0, currentCount = 0;
+                
+                Object.values(state.progress8).forEach(slot => {
+                    if (slot.target && gradePoints[slot.target] !== undefined) {
+                        totalTarget += gradePoints[slot.target];
+                        count++;
+                    }
+                    if (slot.current && gradePoints[slot.current] !== undefined) {
+                        totalCurrent += gradePoints[slot.current];
+                        currentCount++;
+                    }
+                });
+                
+                const avgTarget = count > 0 ? (totalTarget / count).toFixed(1) : '0.0';
+                const avgCurrent = currentCount > 0 ? (totalCurrent / currentCount).toFixed(1) : '0.0';
+                const p8Score = count > 0 ? ((totalCurrent / count) - (totalTarget / count)).toFixed(2) : '0.00';
+                
+                return {
+                    p8Score,
+                    avgTarget,
+                    avgCurrent,
+                    totalPoints: totalCurrent
+                };
+            }
+
+            function getPointsDiff(target, current) {
+                if (!target || !current) return 0;
+                return gradePoints[current] - gradePoints[target];
+            }
+
+            // Progress 8
+            window.updateProgress8 = function(slot, field, value) {
+                state.progress8[slot][field] = value;
+                saveData();
                 renderApp();
             };
 
@@ -701,7 +1047,6 @@
                 closeModal('addSubjectModal');
                 renderApp();
                 
-                // Clear inputs
                 document.getElementById('subjectName').value = '';
                 document.getElementById('subjectTeacher').value = '';
                 document.getElementById('subjectTarget').value = '';
@@ -805,28 +1150,128 @@
                 }
             };
 
-            // Progress 8
-            window.updateProgress8 = function(slot, field, value) {
-                state.progress8[slot][field] = value;
-                saveData();
-                renderApp();
+            // Teacher - Students
+            window.showAddStudent = function() {
+                document.getElementById('addStudentModal').classList.add('show');
             };
 
-            function calculateP8Score() {
-                const grades = { '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2, '1': 1, 'U': 0 };
+            window.addStudent = function() {
+                const name = document.getElementById('studentName').value.trim();
+                const year = document.getElementById('studentYear').value;
+                const email = document.getElementById('studentEmail').value.trim();
+                
+                if (!name) {
+                    alert('Please enter student name');
+                    return;
+                }
+                
+                state.students.push({
+                    id: Date.now(),
+                    name,
+                    year,
+                    email,
+                    progress8: JSON.parse(JSON.stringify(state.progress8))
+                });
+                
+                saveData();
+                closeModal('addStudentModal');
+                renderApp();
+                
+                document.getElementById('studentName').value = '';
+                document.getElementById('studentEmail').value = '';
+            };
+
+            window.deleteStudent = function(id) {
+                if (confirm('Delete this student?')) {
+                    state.students = state.students.filter(s => s.id !== id);
+                    saveData();
+                    renderApp();
+                }
+            };
+
+            window.viewStudentP8 = function(id) {
+                const student = state.students.find(s => s.id === id);
+                if (!student) return;
+                
+                document.getElementById('studentModalName').textContent = student.name + ' - Progress 8';
+                
+                const stats = calculateStudentP8(student.progress8);
+                
+                let html = `
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-value" style="font-size: 28px;">${stats.p8Score}</div>
+                            <div class="stat-label">P8 Score</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" style="font-size: 28px;">${stats.totalPoints}</div>
+                            <div class="stat-label">Total Points</div>
+                        </div>
+                    </div>
+                `;
+                
+                Object.entries(student.progress8).forEach(([key, slot]) => {
+                    const diff = getPointsDiff(slot.target, slot.current);
+                    const diffClass = diff > 0 ? 'points-positive' : diff < 0 ? 'points-negative' : 'points-neutral';
+                    
+                    html += `
+                        <div class="p8-slot">
+                            <div class="p8-header">
+                                <input type="text" value="${slot.subject}" onchange="updateStudentP8(${id}, '${key}', 'subject', this.value)" style="font-weight: 600; border: 1px solid var(--border); padding: 6px; width: 60%;">
+                                ${diff !== 0 ? `<span class="points-badge ${diffClass}">${diff > 0 ? '+' : ''}${diff} pts</span>` : ''}
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <div>
+                                    <label style="font-size: 11px; color: var(--text-secondary);">Target</label>
+                                    <select onchange="updateStudentP8(${id}, '${key}', 'target', this.value)" style="width: 100%; margin-top: 5px; padding: 6px;">
+                                        <option value="">-</option>
+                                        ${[9,8,7,6,5,4,3,2,1].map(g => `<option value="${g}" ${slot.target == g ? 'selected' : ''}>${g}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; color: var(--text-secondary);">Current</label>
+                                    <select onchange="updateStudentP8(${id}, '${key}', 'current', this.value)" style="width: 100%; margin-top: 5px; padding: 6px;">
+                                        <option value="">-</option>
+                                        ${[9,8,7,6,5,4,3,2,1,'U'].map(g => `<option value="${g}" ${slot.current == g ? 'selected' : ''}>${g}</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('studentP8Content').innerHTML = html;
+                document.getElementById('viewStudentModal').classList.add('show');
+            };
+
+            window.updateStudentP8 = function(studentId, slot, field, value) {
+                const student = state.students.find(s => s.id === studentId);
+                if (student) {
+                    student.progress8[slot][field] = value;
+                    saveData();
+                    viewStudentP8(studentId); // Refresh
+                }
+            };
+
+            function calculateStudentP8(progress8) {
                 let totalTarget = 0, totalCurrent = 0, count = 0;
                 
-                Object.values(state.progress8).forEach(slot => {
-                    if (slot.target) {
-                        totalTarget += grades[slot.target] || 0;
+                Object.values(progress8).forEach(slot => {
+                    if (slot.target && gradePoints[slot.target] !== undefined) {
+                        totalTarget += gradePoints[slot.target];
                         count++;
                     }
-                    if (slot.current) {
-                        totalCurrent += grades[slot.current] || 0;
+                    if (slot.current && gradePoints[slot.current] !== undefined) {
+                        totalCurrent += gradePoints[slot.current];
                     }
                 });
                 
-                return count > 0 ? ((totalCurrent / count) - (totalTarget / count)).toFixed(2) : '0.00';
+                const p8Score = count > 0 ? ((totalCurrent / count) - (totalTarget / count)).toFixed(2) : '0.00';
+                
+                return {
+                    p8Score,
+                    totalPoints: totalCurrent
+                };
             }
 
             // Modals
@@ -839,11 +1284,22 @@
                 if (!currentUser) return;
                 
                 document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('accountTypeDisplay').textContent = state.accountType === 'teacher' ? '👨‍🏫 Teacher' : '👨‍🎓 Student';
+                
+                if (state.accountType === 'teacher' && state.schoolName) {
+                    document.getElementById('schoolDisplay').textContent = '🏫 ' + state.schoolName;
+                } else {
+                    document.getElementById('schoolDisplay').textContent = '';
+                }
                 
                 // Dashboard
                 document.getElementById('subjectCount').textContent = state.subjects.length;
                 document.getElementById('topicCount').textContent = state.topics.length;
                 document.getElementById('scheduleCount').textContent = state.schedule.length;
+                
+                if (state.accountType === 'teacher') {
+                    document.getElementById('studentCount').textContent = state.students.length;
+                }
                 
                 const recentSubjects = document.getElementById('recentSubjects');
                 if (state.subjects.length === 0) {
@@ -853,38 +1309,74 @@
                         <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 10px;">
                             <strong>${s.name}</strong>
                             ${s.teacher ? `<div style="font-size: 14px; color: var(--text-secondary); margin-top: 5px;">${s.teacher}</div>` : ''}
-                            ${s.target ? `<span class="grade-box grade-${s.target}" style="margin-top: 5px;">Target: ${s.target}</span>` : ''}
+                            ${s.target ? `<span class="grade-badge grade-${s.target}" style="margin-top: 5px;">Target: ${s.target}</span>` : ''}
                         </div>
                     `).join('');
                 }
                 
                 // Progress 8
-                const p8List = document.getElementById('progress8List');
-                p8List.innerHTML = Object.entries(state.progress8).map(([key, slot]) => `
-                    <div style="padding: 15px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 10px;">
-                        <div style="margin-bottom: 10px;">
-                            <input type="text" value="${slot.subject}" onchange="updateProgress8('${key}', 'subject', this.value)" placeholder="Subject name" style="font-weight: 600; border: 1px solid var(--border); padding: 8px;">
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <div>
-                                <label style="font-size: 12px; color: var(--text-secondary);">Target Grade</label>
-                                <select onchange="updateProgress8('${key}', 'target', this.value)" style="width: 100%; margin-top: 5px;">
-                                    <option value="">-</option>
-                                    ${[9,8,7,6,5,4,3,2,1].map(g => `<option value="${g}" ${slot.target == g ? 'selected' : ''}>${g}</option>`).join('')}
-                                </select>
-                            </div>
-                            <div>
-                                <label style="font-size: 12px; color: var(--text-secondary);">Current Grade</label>
-                                <select onchange="updateProgress8('${key}', 'current', this.value)" style="width: 100%; margin-top: 5px;">
-                                    <option value="">-</option>
-                                    ${[9,8,7,6,5,4,3,2,1,'U'].map(g => `<option value="${g}" ${slot.current == g ? 'selected' : ''}>${g}</option>`).join('')}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+                const stats = calculateP8Stats();
+                document.getElementById('p8Score').textContent = stats.p8Score;
+                document.getElementById('avgTarget').textContent = stats.avgTarget;
+                document.getElementById('avgCurrent').textContent = stats.avgCurrent;
+                document.getElementById('totalPoints').textContent = stats.totalPoints;
                 
-                document.getElementById('p8Score').textContent = calculateP8Score();
+                const p8List = document.getElementById('progress8List');
+                p8List.innerHTML = Object.entries(state.progress8).map(([key, slot]) => {
+                    const diff = getPointsDiff(slot.target, slot.current);
+                    const diffClass = diff > 0 ? 'points-positive' : diff < 0 ? 'points-negative' : 'points-neutral';
+                    
+                    return `
+                        <div class="p8-slot">
+                            <div class="p8-header">
+                                <input type="text" value="${slot.subject}" onchange="updateProgress8('${key}', 'subject', this.value)" placeholder="Subject name" style="font-weight: 600; border: 1px solid var(--border); padding: 8px; width: 70%;">
+                                ${diff !== 0 ? `<span class="points-badge ${diffClass}">${diff > 0 ? '+' : ''}${diff} points</span>` : ''}
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <div>
+                                    <label style="font-size: 12px; color: var(--text-secondary);">Target Grade</label>
+                                    <select onchange="updateProgress8('${key}', 'target', this.value)" style="width: 100%; margin-top: 5px;">
+                                        <option value="">-</option>
+                                        ${[9,8,7,6,5,4,3,2,1].map(g => `<option value="${g}" ${slot.target == g ? 'selected' : ''}>${g} (${g} pts)</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; color: var(--text-secondary);">Current Grade</label>
+                                    <select onchange="updateProgress8('${key}', 'current', this.value)" style="width: 100%; margin-top: 5px;">
+                                        <option value="">-</option>
+                                        ${[9,8,7,6,5,4,3,2,1,'U'].map(g => `<option value="${g}" ${slot.current == g ? 'selected' : ''}>${g} (${gradePoints[g]} pts)</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Teacher - Students
+                if (state.accountType === 'teacher') {
+                    const studentsList = document.getElementById('studentsList');
+                    if (state.students.length === 0) {
+                        studentsList.innerHTML = '<p style="color: var(--text-secondary);">No students added. Click "Add Student" to begin.</p>';
+                    } else {
+                        studentsList.innerHTML = state.students.map(s => {
+                            const studentStats = calculateStudentP8(s.progress8);
+                            return `
+                                <div class="student-row">
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: 4px;">${s.name}</div>
+                                        <div style="font-size: 13px; color: var(--text-secondary);">
+                                            Year ${s.year} • P8: ${studentStats.p8Score} • Points: ${studentStats.totalPoints}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button class="btn-primary" onclick="viewStudentP8(${s.id})" style="padding: 8px 12px; font-size: 13px;">View P8</button>
+                                        <button class="btn-danger" onclick="deleteStudent(${s.id})" style="padding: 8px 12px; font-size: 13px;">Delete</button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                }
                 
                 // Subjects
                 const subjectsList = document.getElementById('subjectsList');
@@ -896,9 +1388,9 @@
                             <div>
                                 <div style="font-weight: 600; margin-bottom: 5px;">${s.name}</div>
                                 ${s.teacher ? `<div style="font-size: 14px; color: var(--text-secondary);">Teacher: ${s.teacher}</div>` : ''}
-                                ${s.target ? `<span class="grade-box grade-${s.target}" style="margin-top: 8px;">Target: ${s.target}</span>` : ''}
+                                ${s.target ? `<span class="grade-badge grade-${s.target}" style="margin-top: 8px;">Target: ${s.target}</span>` : ''}
                             </div>
-                            <button onclick="deleteSubject(${s.id})" style="background: #ef4444; color: white; padding: 8px 12px; border-radius: 6px; font-size: 14px;">Delete</button>
+                            <button class="btn-danger" onclick="deleteSubject(${s.id})" style="padding: 8px 12px; font-size: 14px;">Delete</button>
                         </div>
                     `).join('');
                 }
@@ -925,7 +1417,7 @@
                                             ${t.confidence === 'high' ? '😊 High' : t.confidence === 'medium' ? '😐 Medium' : '😟 Low'} confidence
                                         </div>
                                     </div>
-                                    <button onclick="deleteTopic(${t.id})" style="background: #ef4444; color: white; padding: 6px 10px; border-radius: 6px; font-size: 12px;">Delete</button>
+                                    <button class="btn-danger" onclick="deleteTopic(${t.id})" style="padding: 6px 10px; font-size: 12px;">Delete</button>
                                 </div>
                             `).join('')}
                         </div>
@@ -948,7 +1440,7 @@
                                     ⏱️ ${s.duration} minutes
                                 </div>
                             </div>
-                            <button onclick="deleteSchedule(${s.id})" style="background: #ef4444; color: white; padding: 8px 12px; border-radius: 6px; font-size: 14px;">Delete</button>
+                            <button class="btn-danger" onclick="deleteSchedule(${s.id})" style="padding: 8px 12px; font-size: 14px;">Delete</button>
                         </div>
                     `).join('');
                 }
