@@ -1157,6 +1157,7 @@
             function updateUIForAccountType() {
                 const isTeacher = state.accountType === 'teacher';
                 
+                // Update navigation buttons visibility
                 document.getElementById('teacherNavBtn').classList.toggle('hidden', !isTeacher);
                 document.getElementById('teacherBadge').classList.toggle('hidden', !isTeacher);
                 
@@ -1164,12 +1165,22 @@
                 document.getElementById('topicsNavBtn').classList.toggle('hidden', isTeacher);
                 document.getElementById('scheduleNavBtn').classList.toggle('hidden', isTeacher);
                 
+                // Show correct dashboard based on account type
+                // Hide all tabs first
+                document.getElementById('dashboardTab').classList.add('hidden');
+                document.getElementById('teacherDashboard').classList.add('hidden');
+                document.getElementById('progress8Tab').classList.add('hidden');
+                document.getElementById('subjectsTab').classList.add('hidden');
+                document.getElementById('topicsTab').classList.add('hidden');
+                document.getElementById('scheduleTab').classList.add('hidden');
+                document.getElementById('settingsTab').classList.add('hidden');
+                document.getElementById('teacherTabContent').classList.add('hidden');
+                
+                // Show the appropriate dashboard
                 if (isTeacher) {
-                    document.getElementById('dashboardTab').classList.add('hidden');
                     document.getElementById('teacherDashboard').classList.remove('hidden');
                 } else {
                     document.getElementById('dashboardTab').classList.remove('hidden');
-                    document.getElementById('teacherDashboard').classList.add('hidden');
                 }
             }
 
@@ -1188,6 +1199,13 @@
                     document.getElementById('app').classList.remove('hidden');
                     
                     updateUIForAccountType();
+                    
+                    // Set dashboard nav button as active
+                    document.querySelectorAll('.nav-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    document.querySelector('.nav-btn').classList.add('active');
+                    
                     renderApp();
                 } else {
                     currentUser = null;
