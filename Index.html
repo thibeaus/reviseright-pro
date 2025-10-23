@@ -319,22 +319,22 @@
 
 
     <script>
-        // Multiple attempts to ensure Firebase loads on mobile
+        // ===============================================
+        // FIX: Reworked the initialization logic for stability
+        // This prevents the "stuck on loading screen" issue.
+        // ===============================================
         function initializeApp() {
             // Check if Firebase loaded
-            if (typeof firebase === 'undefined') {
-                console.error('Firebase not loaded yet, retrying...');
-                // Retry after a short delay
-                setTimeout(initializeApp, 100);
+            if (typeof firebase === 'undefined' || typeof firebase.app === 'undefined') {
+                console.warn('Firebase SDK not fully loaded yet. Waiting...');
+                setTimeout(initializeApp, 500); 
                 return;
             }
 
-            console.log('✅ Firebase loaded successfully!');
+            console.log('✅ Firebase SDK confirmed available.');
 
             try {
-                // ============================================
                 // FIREBASE CONFIGURATION (Placeholder keys)
-                // ============================================
                 const firebaseConfig = {
                     apiKey: "AIzaSyAyonlIqfTusq_ST6PKbzSED0s_HGRmA1o",
                     authDomain: "reviseright-pro.firebaseapp.com",
@@ -346,19 +346,25 @@
                 };
 
                 // Initialize Firebase
-                firebase.initializeApp(firebaseConfig);
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                
                 window.auth = firebase.auth();
                 window.db = firebase.firestore();
-                console.log('✅ Firebase initialized!');
+                console.log('✅ Firebase initialized and services are ready!');
 
                 // Initialize Stripe (Placeholder Key)
                 window.stripe = typeof Stripe !== 'undefined' ? Stripe('pk_test_YOUR_KEY_HERE') : null;
 
-                // Start auth listener
+                // Start auth listener to handle routing
                 startApp();
             } catch (error) {
-                console.error('Error initializing Firebase:', error);
-                alert('Error loading app: ' + error.message);
+                console.error('CRITICAL ERROR initializing Firebase:', error);
+                // Ensure the loading screen is hidden even on critical failure
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('authScreen').classList.remove('hidden');
+                alert('Error loading app. Please check console for details: ' + error.message);
             }
         }
 
@@ -374,13 +380,13 @@
             activeTab: 'dashboard',
             educationLevel: 'gcse',
             isPremium: false,
-            isTeacher: false, // NEW: Teacher flag
+            isTeacher: false, // Flag for teacher/school license
             theme: 'default',
             fontSize: 'medium',
             subjects: [],
             topics: [],
             schedule: {},
-            // Updated to track grade strings, which will be converted to points for display
+            // Default Progress 8 data using 9-1 grades
             progress8: {
                 englishLang: { target: '7', current: '6', subject: 'English Language (Dbl)' },
                 maths: { target: '8', current: '7', subject: 'Maths (Dbl)' },
@@ -394,37 +400,29 @@
         };
 
         // ============================================
-        // UTILITY FUNCTIONS
+        // UTILITY FUNCTIONS (Grade Conversion)
         // ============================================
 
         // Converts a 9-1 GCSE grade string to Attainment 8 points
         function gradeToPoint(grade) {
-            // Assumes 9-1 grading system for A8 points (9=9, 1=1)
             const point = parseInt(grade);
             return isNaN(point) ? 0 : point;
         }
 
         function calculateAttainment8Score() {
             let score = 0;
+            // Define the 8 slots (10 point slots total due to double weighting)
             const slots = [
-                // Basket 1: English and Maths (Double-weighted = 4 slots)
                 { key: 'englishLang', weight: 2 }, 
                 { key: 'maths', weight: 2 },
-                
-                // Basket 2: EBacc (3 slots)
                 { key: 'ebacc1', weight: 1 },
                 { key: 'ebacc2', weight: 1 },
                 { key: 'ebacc3', weight: 1 },
-                
-                // Basket 3: Open (3 slots)
                 { key: 'open1', weight: 1 },
                 { key: 'open2', weight: 1 },
                 { key: 'open3', weight: 1 }
             ];
 
-            // In a real app, you would need complex logic to correctly select the best 8 subjects
-            // across the 3 baskets. Here, we calculate a score based on the 8 pre-defined slots.
-            
             slots.forEach(slot => {
                 const currentGrade = state.progress8[slot.key].current;
                 const points = gradeToPoint(currentGrade);
@@ -461,7 +459,7 @@
                 const userCredential = await window.auth.createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
 
-                // Simple check for 'teacher' account creation (e.g., via a special email domain)
+                // Simple demo check for 'teacher' account creation (e.g., via a special email domain)
                 const isTeacher = email.endsWith('@revisedrightacademy.edu');
                 
                 await user.updateProfile({ displayName: name });
@@ -469,7 +467,7 @@
                 await window.db.collection('users').doc(user.uid).set({
                     name: name,
                     email: email,
-                    isPremium: isTeacher, // Teachers get premium in the demo
+                    isPremium: isTeacher, 
                     isTeacher: isTeacher, // Set teacher flag
                     educationLevel: 'gcse',
                     theme: 'default',
@@ -493,9 +491,11 @@
             }
         }
 
-        // Listen for auth state changes
         function setupAuthListener() {
             window.auth.onAuthStateChanged(async (user) => {
+                // FIX: Hide the loading screen immediately once Firebase Auth is checking state
+                document.getElementById('loadingScreen').classList.add('hidden');
+
                 if (user) {
                     currentUser = {
                         uid: user.uid,
@@ -505,13 +505,12 @@
                     
                     await loadUserData();
                     hideAuthScreen();
-                    // FIX: Ensure the main app container is made visible
+                    // Show the main app container
                     document.getElementById('app').classList.remove('hidden'); 
                 } else {
                     currentUser = null;
-                    document.getElementById('loadingScreen').classList.add('hidden');
                     document.getElementById('authScreen').classList.remove('hidden');
-                    // Ensure the app is hidden when logged out
+                    // Hide the app container
                     document.getElementById('app').classList.add('hidden'); 
                 }
             });
@@ -531,7 +530,7 @@
                     const data = doc.data();
                     state.educationLevel = data.educationLevel || 'gcse';
                     state.isPremium = data.isPremium || false;
-                    state.isTeacher = data.isTeacher || false; // Load teacher flag
+                    state.isTeacher = data.isTeacher || false;
                     state.theme = data.theme || 'default';
                     state.fontSize = data.fontSize || 'medium';
                     state.subjects = data.subjects || [];
@@ -552,7 +551,6 @@
             if (!currentUser) return;
             
             try {
-                // Prepare minimal state for saving
                 const dataToSave = {
                     subjects: state.subjects,
                     topics: state.topics,
@@ -585,10 +583,9 @@
         
         function updateSettings(key, value) {
             state[key] = value;
-            applyTheme(); // Re-apply theme/font immediately
+            applyTheme();
             saveToCloud();
             
-            // Highlight active button in modal
             document.querySelectorAll(`.${key}-btn`).forEach(btn => {
                 if (btn.dataset[key] === value) {
                     btn.classList.add('ring-2', 'ring-offset-2', 'ring-indigo-500');
@@ -600,7 +597,7 @@
             });
 
             if (key !== 'fontSize' && key !== 'theme') {
-                render(); // Re-render main content if necessary
+                render();
             }
         }
 
@@ -608,7 +605,6 @@
             const modal = document.getElementById('settingsModal');
             modal.classList.add('show');
             
-            // Set initial highlights in the modal
             updateSettings('theme', state.theme);
             updateSettings('fontSize', state.fontSize);
         }
@@ -637,19 +633,15 @@
 
         function hideAuthScreen() {
             document.getElementById('authScreen').classList.add('hidden');
-            document.getElementById('loadingScreen').classList.add('hidden');
         }
 
         function applyTheme() {
-            // Reset all theme classes
             document.body.className = '';
             
-            // Apply theme class
             if (state.theme && state.theme !== 'default') {
                 document.body.classList.add(`theme-${state.theme}`);
             }
             
-            // Apply font size class
             document.body.classList.add(`font-${state.fontSize || 'medium'}`);
         }
 
@@ -660,7 +652,6 @@
         function renderProgress8Dashboard() {
             const attainment8Score = calculateAttainment8Score();
             
-            // Convert progress8 object to an array for easy iteration in the template
             const slots = Object.keys(state.progress8).map(key => ({
                 ...state.progress8[key],
                 key: key,
@@ -668,9 +659,6 @@
                 isDoubleWeighted: key === 'englishLang' || key === 'maths',
                 basket: key.startsWith('ebacc') ? 'EBacc' : (key.startsWith('open') ? 'Open' : 'Core')
             }));
-
-            // Calculate progress status (example logic)
-            const overallProgress = attainment8Score; // Simplified for demo, actual P8 is A8 - Estimated A8.
 
             return `
                 <div class="glass-effect rounded-2xl shadow-xl p-6 mb-6 animate-fade-in">
@@ -762,7 +750,6 @@
         }
 
         function renderStudentApp() {
-            // Default content
             let content = `
                 <div class="glass-effect rounded-2xl shadow-xl p-8 text-center animate-fade-in">
                     <div class="text-6xl mb-4">🎉</div>
@@ -799,7 +786,6 @@
                 </div>
             `;
             
-            // Render specific tab content
             if (state.activeTab === 'progress8') {
                 content = renderProgress8Dashboard();
             } else if (state.activeTab === 'teacher') {
@@ -817,7 +803,6 @@
         function render() {
             if (!currentUser) return;
             
-            // Dynamic Header Buttons
             const premiumButton = !state.isPremium ? `
                 <button onclick="upgradeToPremium('monthly')" class="px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 rounded-lg font-bold text-sm">
                     ⭐ Upgrade
@@ -830,7 +815,6 @@
                 </button>
             ` : '';
             
-            // Render the main application shell
             document.getElementById('app').innerHTML = `
                 <div class="min-h-screen p-4">
                     <div class="max-w-7xl mx-auto">
