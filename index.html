@@ -31,6 +31,8 @@
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
+            --premium: #f59e0b;
+            --lifetime: #8b5cf6;
         }
         
         body.theme-dark {
@@ -141,6 +143,17 @@
             color: white;
         }
         
+        .btn-premium {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            color: white;
+        }
+        
+        .btn-lifetime {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
+        
         input, select, textarea {
             width: 100%;
             padding: 12px;
@@ -242,20 +255,9 @@
             font-weight: bold;
         }
         
-        .points-positive {
-            background: #10b981;
-            color: white;
-        }
-        
-        .points-neutral {
-            background: #6b7280;
-            color: white;
-        }
-        
-        .points-negative {
-            background: #ef4444;
-            color: white;
-        }
+        .points-positive { background: #10b981; color: white; }
+        .points-neutral { background: #6b7280; color: white; }
+        .points-negative { background: #ef4444; color: white; }
         
         .modal {
             display: none;
@@ -271,15 +273,13 @@
             overflow-y: auto;
         }
         
-        .modal.show {
-            display: flex;
-        }
+        .modal.show { display: flex; }
         
         .modal-content {
             background: var(--bg-secondary);
             border-radius: 12px;
             padding: 25px;
-            max-width: 600px;
+            max-width: 1000px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
@@ -295,6 +295,30 @@
             font-weight: bold;
         }
         
+        .premium-badge {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .lifetime-badge {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
         .student-row {
             background: var(--bg-primary);
             border: 1px solid var(--border);
@@ -306,26 +330,71 @@
             align-items: center;
         }
         
-        .account-type-selector {
-            background: var(--bg-primary);
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
+        .pricing-card {
+            background: var(--bg-secondary);
+            border: 3px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .pricing-card.featured {
+            border-color: var(--accent);
+            box-shadow: 0 10px 40px rgba(79, 70, 229, 0.2);
+        }
+        
+        .pricing-card.best-value {
+            border-color: var(--lifetime);
+            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .best-value-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .savings-label {
+            background: #10b981;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
         }
         
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .stat-card {
-                padding: 15px;
-            }
-            
-            .stat-value {
-                font-size: 28px;
-            }
+            .container { padding: 10px; }
+            .stat-card { padding: 15px; }
+            .stat-value { font-size: 28px; }
+            .pricing-card.best-value { transform: scale(1); }
         }
     </style>
 </head>
@@ -400,6 +469,14 @@
                     <label style="display: block; color: #666; margin-bottom: 5px;">School Name</label>
                     <input type="text" id="schoolName" placeholder="Your school" style="border: 1px solid #ddd;">
                 </div>
+                <div id="studentFields" class="hidden" style="margin-bottom: 15px;">
+                    <label style="display: block; color: #666; margin-bottom: 5px;">Current Study Level</label>
+                    <select id="studyLevel" style="border: 1px solid #ddd;">
+                        <option value="gcse">GCSE (Free)</option>
+                        <option value="alevel">A-Level (Premium)</option>
+                        <option value="university">University (Premium)</option>
+                    </select>
+                </div>
                 <button onclick="handleSignup()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px; border-radius: 10px; font-weight: bold; margin-top: 10px;">Create Account</button>
                 <p style="text-align: center; margin-top: 15px; color: #666; font-size: 14px;">
                     <a onclick="showAccountType()" style="color: #667eea; font-weight: bold; cursor: pointer;">← Back</a>
@@ -422,10 +499,14 @@
         </div>
 
         <div class="container">
-            <!-- Dashboard Tab -->
+            <!-- Student Dashboard -->
             <div id="dashboardTab">
                 <div class="card">
-                    <h2 style="margin-bottom: 10px;">Welcome back, <span id="userName"></span>! <span id="teacherBadge" class="hidden teacher-badge">TEACHER</span></h2>
+                    <h2 style="margin-bottom: 10px;">Welcome back, <span id="userName"></span>! 
+                        <span id="teacherBadge" class="hidden teacher-badge">TEACHER</span>
+                        <span id="premiumBadge" class="hidden premium-badge">⭐ PREMIUM</span>
+                        <span id="lifetimeBadge" class="hidden lifetime-badge">♾️ LIFETIME</span>
+                    </h2>
                     <p style="color: var(--text-secondary);">Here's your study overview</p>
                 </div>
 
@@ -442,15 +523,58 @@
                         <div class="stat-value" id="scheduleCount">0</div>
                         <div class="stat-label">Schedule Items</div>
                     </div>
-                    <div class="stat-card" id="studentCountCard" style="display: none;">
-                        <div class="stat-value" id="studentCount">0</div>
-                        <div class="stat-label">Students</div>
-                    </div>
                 </div>
 
                 <div class="card">
                     <h3 style="margin-bottom: 15px;">📚 Recent Subjects</h3>
                     <div id="recentSubjects"></div>
+                </div>
+
+                <!-- Upgrade prompt -->
+                <div id="upgradePrompt" class="hidden card" style="background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); color: white; text-align: center;">
+                    <h3 style="margin-bottom: 10px;">🌟 Unlock Lifetime Access</h3>
+                    <p style="margin-bottom: 20px; opacity: 0.9;">Get unlimited access to GCSE, A-Level & University tools for life!</p>
+                    <button onclick="switchTab('settings')" style="background: white; color: #8b5cf6; padding: 12px 30px; border-radius: 8px; font-weight: bold;">View Plans</button>
+                </div>
+            </div>
+
+            <!-- Teacher Dashboard -->
+            <div id="teacherDashboard" class="hidden">
+                <div class="card">
+                    <h2 style="margin-bottom: 10px;">👨‍🏫 Teacher Overview - <span id="teacherName"></span></h2>
+                    <p style="color: var(--text-secondary);"><span id="teacherSchoolName"></span></p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div class="stat-card" style="border-color: var(--accent);">
+                        <div class="stat-value" id="teacherStudentCount">0</div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="teacherYear10Count">0</div>
+                        <div class="stat-label">Year 10</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="teacherYear11Count">0</div>
+                        <div class="stat-label">Year 11</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="teacherAvgP8">0.00</div>
+                        <div class="stat-label">Average P8</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 15px;">📊 Class Performance</h3>
+                    <div id="classPerformance"></div>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3>👥 Recent Students</h3>
+                        <button class="btn-primary" onclick="switchTab('teacher')">View All</button>
+                    </div>
+                    <div id="recentStudents"></div>
                 </div>
             </div>
 
@@ -464,7 +588,6 @@
                         </div>
                     </div>
                     
-                    <!-- P8 Summary Dashboard -->
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px;">
                         <div class="stat-card" style="border: 3px solid var(--accent);">
                             <div class="stat-value" id="p8Score">0.00</div>
@@ -484,7 +607,6 @@
                         </div>
                     </div>
 
-                    <!-- Grade to Points Reference -->
                     <div style="background: var(--bg-primary); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
                         <h4 style="margin-bottom: 10px; font-size: 14px; color: var(--text-secondary);">📊 Grade Points Reference:</h4>
                         <div style="display: flex; flex-wrap: wrap; gap: 8px;">
@@ -505,7 +627,7 @@
                 </div>
             </div>
 
-            <!-- Teacher Tab -->
+            <!-- Teacher Students Tab -->
             <div id="teacherTabContent" class="hidden">
                 <div class="card">
                     <div class="card-header">
@@ -557,8 +679,14 @@
                 <div class="card">
                     <h2 style="margin-bottom: 20px;">⚙️ Settings</h2>
                     
-                    <!-- Account Type Switcher -->
-                    <div class="account-type-selector">
+                    <!-- Subscription Section -->
+                    <div id="subscriptionSection" style="background: var(--bg-primary); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                        <h3 style="margin-bottom: 15px;">💎 Subscription</h3>
+                        <div id="currentPlan" style="margin-bottom: 15px;"></div>
+                        <button id="upgradeButton" onclick="showUpgradeModal()" class="btn-premium" style="display: none;">⭐ View Plans</button>
+                    </div>
+                    
+                    <div style="background: var(--bg-primary); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
                         <label style="display: block; margin-bottom: 10px; font-weight: 600;">Account Type</label>
                         <select id="accountTypeSelect" onchange="changeAccountType()" style="width: 100%;">
                             <option value="student">👨‍🎓 Student</option>
@@ -567,6 +695,14 @@
                         <div id="schoolNameField" class="hidden" style="margin-top: 15px;">
                             <label style="display: block; margin-bottom: 5px; font-weight: 600;">School Name</label>
                             <input type="text" id="settingsSchoolName" placeholder="Your school" onchange="updateSchoolName()">
+                        </div>
+                        <div id="studyLevelField" class="hidden" style="margin-top: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Study Level</label>
+                            <select id="settingsStudyLevel" onchange="updateStudyLevel()">
+                                <option value="gcse">GCSE</option>
+                                <option value="alevel">A-Level</option>
+                                <option value="university">University</option>
+                            </select>
                         </div>
                     </div>
                     
@@ -591,19 +727,90 @@
                         </select>
                     </div>
 
-                    <div style="background: var(--bg-primary); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                        <p style="font-weight: 600; margin-bottom: 5px;">Current Account: <span id="accountTypeDisplay"></span></p>
-                        <p style="color: var(--text-secondary); font-size: 14px;" id="schoolDisplay"></p>
-                    </div>
-
                     <button class="btn-secondary" onclick="logout()" style="width: 100%; margin-top: 20px;">Sign Out</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modals (Add Subject, Topic, Schedule, Student, View Student) -->
-    <!-- Add Subject Modal -->
+    <!-- Upgrade/Pricing Modal -->
+    <div id="upgradeModal" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h2>⭐ Choose Your Plan</h2>
+                <button onclick="closeModal('upgradeModal')" style="background: transparent; color: var(--text-secondary); padding: 8px;">✕</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                <!-- GCSE Free -->
+                <div class="pricing-card">
+                    <h3 style="margin-bottom: 10px;">GCSE</h3>
+                    <div style="font-size: 36px; font-weight: bold; margin: 20px 0;">FREE</div>
+                    <div style="text-align: left; margin: 20px 0;">
+                        <div style="padding: 8px 0;">✅ Progress 8 Tracker</div>
+                        <div style="padding: 8px 0;">✅ Subject Management</div>
+                        <div style="padding: 8px 0;">✅ Study Schedule</div>
+                        <div style="padding: 8px 0;">✅ All Themes</div>
+                    </div>
+                    <button class="btn-secondary" disabled style="width: 100%; opacity: 0.6;">Current Plan</button>
+                </div>
+
+                <!-- A-Level Monthly -->
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">POPULAR</div>
+                    <h3 style="margin-bottom: 10px;">A-Level</h3>
+                    <div style="font-size: 36px; font-weight: bold; margin: 20px 0;">£4.99<span style="font-size: 16px;">/mo</span></div>
+                    <div style="text-align: left; margin: 20px 0;">
+                        <div style="padding: 8px 0;">✅ Everything in GCSE</div>
+                        <div style="padding: 8px 0;">⭐ A-Level Subjects</div>
+                        <div style="padding: 8px 0;">⭐ Advanced Analytics</div>
+                        <div style="padding: 8px 0;">⭐ Exam Predictions</div>
+                    </div>
+                    <button class="btn-premium" onclick="upgradePlan('alevel', false)" style="width: 100%;">Upgrade to A-Level</button>
+                </div>
+
+                <!-- University Monthly -->
+                <div class="pricing-card featured">
+                    <h3 style="margin-bottom: 10px;">University</h3>
+                    <div style="font-size: 36px; font-weight: bold; margin: 20px 0;">£7.99<span style="font-size: 16px;">/mo</span></div>
+                    <div style="text-align: left; margin: 20px 0;">
+                        <div style="padding: 8px 0;">✅ Everything in A-Level</div>
+                        <div style="padding: 8px 0;">⭐ University Modules</div>
+                        <div style="padding: 8px 0;">⭐ Research Tools</div>
+                        <div style="padding: 8px 0;">⭐ Citation Manager</div>
+                    </div>
+                    <button class="btn-premium" onclick="upgradePlan('university', false)" style="width: 100%;">Upgrade to University</button>
+                </div>
+
+                <!-- ALL ACCESS LIFETIME -->
+                <div class="pricing-card best-value">
+                    <div class="best-value-badge">⭐ BEST VALUE</div>
+                    <h3 style="margin-bottom: 10px; color: var(--lifetime);">♾️ All Access Lifetime</h3>
+                    <div style="font-size: 36px; font-weight: bold; margin: 20px 0; background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        £49.99<span style="font-size: 16px;">once</span>
+                    </div>
+                    <div class="savings-label">💰 Save £145+ per year!</div>
+                    <div style="text-align: left; margin: 20px 0;">
+                        <div style="padding: 8px 0; font-weight: 600;">✅ EVERYTHING INCLUDED:</div>
+                        <div style="padding: 8px 0;">🎓 GCSE Tools</div>
+                        <div style="padding: 8px 0;">🎓 A-Level Tools</div>
+                        <div style="padding: 8px 0;">🎓 University Tools</div>
+                        <div style="padding: 8px 0;">♾️ Lifetime Access</div>
+                        <div style="padding: 8px 0;">⚡ All Future Updates</div>
+                        <div style="padding: 8px 0;">🌟 Priority Support</div>
+                    </div>
+                    <button class="btn-lifetime" onclick="upgradePlan('lifetime', true)" style="width: 100%;">🚀 Get Lifetime Access</button>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 10px;">✅ One-time payment • Use throughout your entire studies</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px; padding: 20px; background: var(--bg-primary); border-radius: 10px;">
+                <p style="font-size: 14px; color: var(--text-secondary);">💳 Secure payment • Monthly plans cancel anytime • 7-day money-back guarantee</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Other Modals (addSubject, addTopic, etc. - keeping them short for space) -->
     <div id="addSubjectModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-bottom: 20px;">Add Subject</h3>
@@ -619,12 +826,7 @@
                 <label>Target Grade</label>
                 <select id="subjectTarget">
                     <option value="">Select grade...</option>
-                    <option value="9">9</option>
-                    <option value="8">8</option>
-                    <option value="7">7</option>
-                    <option value="6">6</option>
-                    <option value="5">5</option>
-                    <option value="4">4</option>
+                    <option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option>
                 </select>
             </div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -634,7 +836,6 @@
         </div>
     </div>
 
-    <!-- Add Topic Modal -->
     <div id="addTopicModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-bottom: 20px;">Add Topic</h3>
@@ -661,7 +862,6 @@
         </div>
     </div>
 
-    <!-- Add Schedule Modal -->
     <div id="addScheduleModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-bottom: 20px;">Add Study Session</h3>
@@ -688,7 +888,6 @@
         </div>
     </div>
 
-    <!-- Add Student Modal -->
     <div id="addStudentModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-bottom: 20px;">Add Student</h3>
@@ -714,7 +913,6 @@
         </div>
     </div>
 
-    <!-- View Student P8 Modal -->
     <div id="viewStudentModal" class="modal">
         <div class="modal-content">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -751,6 +949,10 @@
             let state = {
                 activeTab: 'dashboard',
                 accountType: 'student',
+                studyLevel: 'gcse',
+                subscriptionType: 'free', // 'free', 'monthly', 'lifetime'
+                isPremium: false,
+                isLifetime: false,
                 schoolName: '',
                 subjects: [],
                 topics: [],
@@ -784,8 +986,10 @@
                 
                 if (type === 'teacher') {
                     document.getElementById('teacherFields').classList.remove('hidden');
+                    document.getElementById('studentFields').classList.add('hidden');
                 } else {
                     document.getElementById('teacherFields').classList.add('hidden');
+                    document.getElementById('studentFields').classList.remove('hidden');
                 }
             };
 
@@ -795,7 +999,6 @@
                 document.getElementById('signupForm').classList.add('hidden');
             };
 
-            // Auth functions
             window.handleLogin = async function() {
                 const email = document.getElementById('loginEmail').value.trim();
                 const password = document.getElementById('loginPassword').value;
@@ -817,6 +1020,7 @@
                 const email = document.getElementById('signupEmail').value.trim();
                 const password = document.getElementById('signupPassword').value;
                 const schoolName = document.getElementById('schoolName').value.trim();
+                const studyLevel = document.getElementById('studyLevel').value;
                 
                 if (!name || !email || !password) {
                     showMessage('Please fill in all fields', 'error');
@@ -837,11 +1041,14 @@
                     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                     await userCredential.user.updateProfile({ displayName: name });
                     
-                    // FIXED: Use selectedAccountType variable properly
                     await db.collection('users').doc(userCredential.user.uid).set({
                         name: name,
                         email: email,
-                        accountType: selectedAccountType, // This is the key fix
+                        accountType: selectedAccountType,
+                        studyLevel: selectedAccountType === 'student' ? studyLevel : 'gcse',
+                        subscriptionType: 'free',
+                        isPremium: false,
+                        isLifetime: false,
                         schoolName: schoolName || '',
                         subjects: [],
                         topics: [],
@@ -882,15 +1089,45 @@
                 setTimeout(() => box.innerHTML = '', 3000);
             }
 
-            // NEW: Account type switcher in settings
+            window.showUpgradeModal = function() {
+                document.getElementById('upgradeModal').classList.add('show');
+            };
+
+            window.upgradePlan = function(plan, isLifetime) {
+                const prices = {
+                    alevel: '£4.99/month',
+                    university: '£7.99/month',
+                    lifetime: '£49.99 one-time'
+                };
+                
+                alert(`Upgrade to ${isLifetime ? 'Lifetime Access' : plan.toUpperCase()}!\n\nPrice: ${prices[plan]}\n\nIn production, this would redirect to Stripe payment.\n\nFor demo: Activating premium!`);
+                
+                if (isLifetime) {
+                    state.subscriptionType = 'lifetime';
+                    state.isPremium = true;
+                    state.isLifetime = true;
+                    state.studyLevel = 'university'; // Full access
+                } else {
+                    state.subscriptionType = 'monthly';
+                    state.isPremium = true;
+                    state.studyLevel = plan;
+                }
+                
+                saveData();
+                closeModal('upgradeModal');
+                renderApp();
+            };
+
             window.changeAccountType = async function() {
                 const newType = document.getElementById('accountTypeSelect').value;
                 state.accountType = newType;
                 
                 if (newType === 'teacher') {
                     document.getElementById('schoolNameField').classList.remove('hidden');
+                    document.getElementById('studyLevelField').classList.add('hidden');
                 } else {
                     document.getElementById('schoolNameField').classList.add('hidden');
+                    document.getElementById('studyLevelField').classList.remove('hidden');
                 }
                 
                 await saveData();
@@ -904,21 +1141,38 @@
                 renderApp();
             };
 
+            window.updateStudyLevel = async function() {
+                const newLevel = document.getElementById('settingsStudyLevel').value;
+                if ((newLevel === 'alevel' || newLevel === 'university') && !state.isPremium) {
+                    alert('This study level requires Premium. Please upgrade!');
+                    document.getElementById('settingsStudyLevel').value = state.studyLevel;
+                    showUpgradeModal();
+                    return;
+                }
+                state.studyLevel = newLevel;
+                await saveData();
+                renderApp();
+            };
+
             function updateUIForAccountType() {
                 const isTeacher = state.accountType === 'teacher';
                 
-                // Show/hide teacher-specific UI
                 document.getElementById('teacherNavBtn').classList.toggle('hidden', !isTeacher);
                 document.getElementById('teacherBadge').classList.toggle('hidden', !isTeacher);
-                document.getElementById('studentCountCard').style.display = isTeacher ? 'block' : 'none';
                 
-                // Show/hide student-specific UI
                 document.getElementById('subjectsNavBtn').classList.toggle('hidden', isTeacher);
                 document.getElementById('topicsNavBtn').classList.toggle('hidden', isTeacher);
                 document.getElementById('scheduleNavBtn').classList.toggle('hidden', isTeacher);
+                
+                if (isTeacher) {
+                    document.getElementById('dashboardTab').classList.add('hidden');
+                    document.getElementById('teacherDashboard').classList.remove('hidden');
+                } else {
+                    document.getElementById('dashboardTab').classList.remove('hidden');
+                    document.getElementById('teacherDashboard').classList.add('hidden');
+                }
             }
 
-            // Auth state
             auth.onAuthStateChanged(async function(user) {
                 if (user) {
                     currentUser = {
@@ -949,6 +1203,10 @@
                     if (doc.exists) {
                         const data = doc.data();
                         state.accountType = data.accountType || 'student';
+                        state.studyLevel = data.studyLevel || 'gcse';
+                        state.subscriptionType = data.subscriptionType || 'free';
+                        state.isPremium = data.isPremium || false;
+                        state.isLifetime = data.isLifetime || false;
                         state.schoolName = data.schoolName || '';
                         state.subjects = data.subjects || [];
                         state.topics = data.topics || [];
@@ -971,6 +1229,10 @@
                 try {
                     await db.collection('users').doc(currentUser.uid).update({
                         accountType: state.accountType,
+                        studyLevel: state.studyLevel,
+                        subscriptionType: state.subscriptionType,
+                        isPremium: state.isPremium,
+                        isLifetime: state.isLifetime,
                         schoolName: state.schoolName,
                         subjects: state.subjects,
                         topics: state.topics,
@@ -1012,19 +1274,26 @@
                 saveData();
             };
 
-            // Navigation
             window.switchTab = function(tab) {
                 state.activeTab = tab;
                 
-                const tabs = ['dashboard', 'progress8', 'subjects', 'topics', 'schedule', 'settings', 'teacher'];
+                const tabs = ['dashboardTab', 'teacherDashboard', 'progress8Tab', 'subjectsTab', 'topicsTab', 'scheduleTab', 'settingsTab', 'teacherTabContent'];
                 tabs.forEach(t => {
-                    const elName = t === 'teacher' ? 'teacherTabContent' : t + 'Tab';
-                    const el = document.getElementById(elName);
+                    const el = document.getElementById(t);
                     if (el) el.classList.add('hidden');
                 });
                 
-                const activeElName = tab === 'teacher' ? 'teacherTabContent' : tab + 'Tab';
-                document.getElementById(activeElName).classList.remove('hidden');
+                if (tab === 'dashboard') {
+                    if (state.accountType === 'teacher') {
+                        document.getElementById('teacherDashboard').classList.remove('hidden');
+                    } else {
+                        document.getElementById('dashboardTab').classList.remove('hidden');
+                    }
+                } else if (tab === 'teacher') {
+                    document.getElementById('teacherTabContent').classList.remove('hidden');
+                } else {
+                    document.getElementById(tab + 'Tab').classList.remove('hidden');
+                }
                 
                 document.querySelectorAll('.nav-btn').forEach(btn => {
                     btn.classList.remove('active');
@@ -1034,7 +1303,6 @@
                 renderApp();
             };
 
-            // Progress 8 calculations
             function calculateP8Stats() {
                 let totalTarget = 0, totalCurrent = 0, count = 0, currentCount = 0;
                 
@@ -1053,12 +1321,7 @@
                 const avgCurrent = currentCount > 0 ? (totalCurrent / currentCount).toFixed(1) : '0.0';
                 const p8Score = count > 0 ? ((totalCurrent / count) - (totalTarget / count)).toFixed(2) : '0.00';
                 
-                return {
-                    p8Score,
-                    avgTarget,
-                    avgCurrent,
-                    totalPoints: totalCurrent
-                };
+                return { p8Score, avgTarget, avgCurrent, totalPoints: totalCurrent };
             }
 
             function getPointsDiff(target, current) {
@@ -1066,14 +1329,12 @@
                 return gradePoints[current] - gradePoints[target];
             }
 
-            // Progress 8
             window.updateProgress8 = function(slot, field, value) {
                 state.progress8[slot][field] = value;
                 saveData();
                 renderApp();
             };
 
-            // Subjects
             window.showAddSubject = function() {
                 document.getElementById('addSubjectModal').classList.add('show');
             };
@@ -1112,7 +1373,6 @@
                 }
             };
 
-            // Topics
             window.showAddTopic = function() {
                 const select = document.getElementById('topicSubject');
                 select.innerHTML = '<option value="">Select subject...</option>';
@@ -1154,7 +1414,6 @@
                 }
             };
 
-            // Schedule
             window.showAddSchedule = function() {
                 const select = document.getElementById('scheduleSubject');
                 select.innerHTML = '<option value="">Select subject...</option>';
@@ -1202,7 +1461,6 @@
                 }
             };
 
-            // Teacher - Students
             window.showAddStudent = function() {
                 document.getElementById('addStudentModal').classList.add('show');
             };
@@ -1320,48 +1578,56 @@
                 
                 const p8Score = count > 0 ? ((totalCurrent / count) - (totalTarget / count)).toFixed(2) : '0.00';
                 
-                return {
-                    p8Score,
-                    totalPoints: totalCurrent
-                };
+                return { p8Score, totalPoints: totalCurrent };
             }
 
-            // Modals
             window.closeModal = function(id) {
                 document.getElementById(id).classList.remove('show');
             };
 
-            // Render
             function renderApp() {
                 if (!currentUser) return;
                 
                 document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('premiumBadge').classList.toggle('hidden', !state.isPremium || state.isLifetime);
+                document.getElementById('lifetimeBadge').classList.toggle('hidden', !state.isLifetime);
                 
-                // Update settings display
                 document.getElementById('accountTypeSelect').value = state.accountType;
-                document.getElementById('accountTypeDisplay').textContent = state.accountType === 'teacher' ? '👨‍🏫 Teacher' : '👨‍🎓 Student';
                 
                 if (state.accountType === 'teacher') {
                     document.getElementById('schoolNameField').classList.remove('hidden');
+                    document.getElementById('studyLevelField').classList.add('hidden');
                     document.getElementById('settingsSchoolName').value = state.schoolName || '';
-                    if (state.schoolName) {
-                        document.getElementById('schoolDisplay').textContent = '🏫 ' + state.schoolName;
-                    } else {
-                        document.getElementById('schoolDisplay').textContent = '';
-                    }
                 } else {
                     document.getElementById('schoolNameField').classList.add('hidden');
-                    document.getElementById('schoolDisplay').textContent = '';
+                    document.getElementById('studyLevelField').classList.remove('hidden');
+                    document.getElementById('settingsStudyLevel').value = state.studyLevel;
                 }
                 
-                // Dashboard
+                const plans = {
+                    gcse: 'GCSE Free',
+                    alevel: 'A-Level Premium - £4.99/mo',
+                    university: 'University Premium - £7.99/mo'
+                };
+                
+                if (state.isLifetime) {
+                    document.getElementById('currentPlan').innerHTML = `
+                        <p style="font-weight: 600;">Current Plan: <span style="color: var(--lifetime);">♾️ All Access Lifetime</span></p>
+                        <p style="color: var(--success); font-size: 14px; margin-top: 5px;">✓ Lifetime Access Active</p>
+                    `;
+                } else {
+                    document.getElementById('currentPlan').innerHTML = `
+                        <p style="font-weight: 600;">Current Plan: <span style="color: var(--accent);">${plans[state.studyLevel]}</span></p>
+                        ${state.isPremium ? '<p style="color: var(--success); font-size: 14px; margin-top: 5px;">✓ Premium Active</p>' : ''}
+                    `;
+                }
+                
+                document.getElementById('upgradeButton').style.display = state.isLifetime ? 'none' : 'block';
+                document.getElementById('upgradePrompt').classList.toggle('hidden', state.isLifetime || state.studyLevel === 'gcse');
+                
                 document.getElementById('subjectCount').textContent = state.subjects.length;
                 document.getElementById('topicCount').textContent = state.topics.length;
                 document.getElementById('scheduleCount').textContent = state.schedule.length;
-                
-                if (state.accountType === 'teacher') {
-                    document.getElementById('studentCount').textContent = state.students.length;
-                }
                 
                 const recentSubjects = document.getElementById('recentSubjects');
                 if (state.subjects.length === 0) {
@@ -1376,7 +1642,72 @@
                     `).join('');
                 }
                 
-                // Progress 8
+                if (state.accountType === 'teacher') {
+                    document.getElementById('teacherName').textContent = currentUser.name;
+                    document.getElementById('teacherSchoolName').textContent = state.schoolName ? '🏫 ' + state.schoolName : '';
+                    
+                    const year10 = state.students.filter(s => s.year === '10').length;
+                    const year11 = state.students.filter(s => s.year === '11').length;
+                    
+                    document.getElementById('teacherStudentCount').textContent = state.students.length;
+                    document.getElementById('teacherYear10Count').textContent = year10;
+                    document.getElementById('teacherYear11Count').textContent = year11;
+                    
+                    let totalP8 = 0;
+                    state.students.forEach(s => {
+                        const stats = calculateStudentP8(s.progress8);
+                        totalP8 += parseFloat(stats.p8Score);
+                    });
+                    document.getElementById('teacherAvgP8').textContent = state.students.length > 0 ? (totalP8 / state.students.length).toFixed(2) : '0.00';
+                    
+                    const classPerf = document.getElementById('classPerformance');
+                    if (state.students.length === 0) {
+                        classPerf.innerHTML = '<p style="color: var(--text-secondary);">No students added yet.</p>';
+                    } else {
+                        const above = state.students.filter(s => parseFloat(calculateStudentP8(s.progress8).p8Score) > 0).length;
+                        const onTrack = state.students.filter(s => {
+                            const p8 = parseFloat(calculateStudentP8(s.progress8).p8Score);
+                            return p8 >= -0.5 && p8 <= 0.5;
+                        }).length;
+                        const below = state.students.filter(s => parseFloat(calculateStudentP8(s.progress8).p8Score) < -0.5).length;
+                        
+                        classPerf.innerHTML = `
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                                <div style="text-align: center; padding: 15px; background: #d1fae5; border-radius: 8px;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #059669;">${above}</div>
+                                    <div style="font-size: 14px; color: #047857;">Above Target</div>
+                                </div>
+                                <div style="text-align: center; padding: 15px; background: #fef3c7; border-radius: 8px;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #d97706;">${onTrack}</div>
+                                    <div style="font-size: 14px; color: #b45309;">On Track</div>
+                                </div>
+                                <div style="text-align: center; padding: 15px; background: #fee2e2; border-radius: 8px;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #dc2626;">${below}</div>
+                                    <div style="font-size: 14px; color: #991b1b;">Below Target</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    const recentStudents = document.getElementById('recentStudents');
+                    if (state.students.length === 0) {
+                        recentStudents.innerHTML = '<p style="color: var(--text-secondary);">No students yet.</p>';
+                    } else {
+                        recentStudents.innerHTML = state.students.slice(0, 3).map(s => {
+                            const stats = calculateStudentP8(s.progress8);
+                            return `
+                                <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-weight: 600;">${s.name}</div>
+                                        <div style="font-size: 13px; color: var(--text-secondary);">Year ${s.year} • P8: ${stats.p8Score}</div>
+                                    </div>
+                                    <button class="btn-primary" onclick="viewStudentP8(${s.id})" style="padding: 6px 12px; font-size: 12px;">View</button>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                }
+                
                 const stats = calculateP8Stats();
                 document.getElementById('p8Score').textContent = stats.p8Score;
                 document.getElementById('avgTarget').textContent = stats.avgTarget;
@@ -1414,7 +1745,6 @@
                     `;
                 }).join('');
                 
-                // Teacher - Students
                 if (state.accountType === 'teacher') {
                     const studentsList = document.getElementById('studentsList');
                     if (state.students.length === 0) {
@@ -1440,7 +1770,6 @@
                     }
                 }
                 
-                // Subjects
                 const subjectsList = document.getElementById('subjectsList');
                 if (state.subjects.length === 0) {
                     subjectsList.innerHTML = '<p style="color: var(--text-secondary);">No subjects yet. Click "Add Subject" to get started!</p>';
@@ -1457,7 +1786,6 @@
                     `).join('');
                 }
                 
-                // Topics
                 const topicsList = document.getElementById('topicsList');
                 if (state.topics.length === 0) {
                     topicsList.innerHTML = '<p style="color: var(--text-secondary);">No topics yet. Click "Add Topic" to start tracking!</p>';
@@ -1486,7 +1814,6 @@
                     `).join('');
                 }
                 
-                // Schedule
                 const scheduleList = document.getElementById('scheduleList');
                 if (state.schedule.length === 0) {
                     scheduleList.innerHTML = '<p style="color: var(--text-secondary);">No scheduled sessions. Click "Add Session" to plan your study time!</p>';
