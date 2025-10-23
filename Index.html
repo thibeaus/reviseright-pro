@@ -2,626 +2,361 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#4f46e5">
-    <title>ReviseRight Pro - Production</title>
+    <title>ReviseRight Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Firebase SDK - Using bundle for better mobile compatibility -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
-    <!-- Stripe -->
-    <script src="https://js.stripe.com/v3/"></script>
-    
     <style>
-        /* Mobile Optimizations */
         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-        }
-        
-        html {
-            -webkit-text-size-adjust: 100%;
-            touch-action: manipulation;
         }
         
         body {
-            overscroll-behavior-y: contain;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* Improve button touch targets for mobile */
-        button, a, input[type="submit"] {
-            min-height: 44px; /* Apple's recommended touch target */
-            min-width: 44px;
-        }
-
-        /* Better input focus for mobile */
-        input:focus, textarea:focus, select:focus {
-            font-size: 16px !important; /* Prevents zoom on iOS */
-        }
-
-        /* Smooth scrolling on mobile */
-        .modal-content {
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Theme Variables */
-        :root {
-            --bg-primary: #f7f9fb;
-            --bg-secondary: #ffffff;
-            --bg-gradient-start: #eef2ff;
-            --bg-gradient-end: #fae8ff;
-            --text-primary: #111827;
-            --text-secondary: #6b7280;
-            --accent-primary: #4f46e5;
-            --accent-secondary: #7c3aed;
-            --border-color: #e5e7eb;
-            --card-bg: rgba(255, 255, 255, 0.95);
-        }
-
-        body.theme-dark {
-            --bg-primary: #1f2937;
-            --bg-secondary: #111827;
-            --bg-gradient-start: #1f2937;
-            --bg-gradient-end: #312e81;
-            --text-primary: #f9fafb;
-            --text-secondary: #d1d5db;
-            --accent-primary: #818cf8;
-            --accent-secondary: #a78bfa;
-            --border-color: #374151;
-            --card-bg: rgba(31, 41, 55, 0.95);
-        }
-
-        body.theme-dyslexia {
-            --bg-primary: #fef3c7;
-            --bg-secondary: #fffbeb;
-            --bg-gradient-start: #fef3c7;
-            --bg-gradient-end: #fde68a;
-            --text-primary: #000000;
-            --text-secondary: #1f2937;
-            --accent-primary: #059669;
-            --accent-secondary: #10b981;
-            --border-color: #fbbf24;
-            --card-bg: rgba(254, 249, 195, 0.95);
-            font-family: 'Comic Sans MS', 'Arial', sans-serif;
-            letter-spacing: 0.05em;
-            line-height: 1.8;
-        }
-
-        body.theme-blue {
-            --bg-primary: #dbeafe;
-            --bg-secondary: #eff6ff;
-            --bg-gradient-start: #dbeafe;
-            --bg-gradient-end: #bfdbfe;
-            --text-primary: #1e3a8a;
-            --text-secondary: #1e40af;
-            --accent-primary: #2563eb;
-            --accent-secondary: #3b82f6;
-            --border-color: #93c5fd;
-            --card-bg: rgba(239, 246, 255, 0.95);
-        }
-
-        body.theme-pink {
-            --bg-primary: #fce7f3;
-            --bg-secondary: #fef3f9;
-            --bg-gradient-start: #fce7f3;
-            --bg-gradient-end: #fbcfe8;
-            --text-primary: #831843;
-            --text-secondary: #9f1239;
-            --accent-primary: #db2777;
-            --accent-secondary: #ec4899;
-            --border-color: #f9a8d4;
-            --card-bg: rgba(254, 243, 249, 0.95);
-        }
-
-        body.font-small { font-size: 14px; }
-        body.font-medium { font-size: 16px; }
-        body.font-large { font-size: 18px; }
-        body.font-xlarge { font-size: 20px; }
-
-        body {
-            background: linear-gradient(to bottom right, var(--bg-gradient-start), var(--bg-gradient-end));
-            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            min-height: -webkit-fill-available; /* iOS Safari */
-        }
-
-        .glass-effect {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
-        
-        .gradient-text {
-            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-        }
-        .modal.show {
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
-        .modal-content {
-            background: var(--bg-secondary);
-            margin: auto;
-            padding: 0;
-            border-radius: 1rem;
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-
-        /* Mobile-specific improvements */
-        @media (max-width: 768px) {
-            .modal-content {
-                width: 95%;
-                max-height: 85vh;
-            }
-            
-            /* Larger touch targets on mobile */
-            button {
-                padding: 12px 16px;
-            }
-            
-            /* Better spacing on small screens */
-            .space-y-4 > * + * {
-                margin-top: 1rem;
-            }
+        
+        .hidden { display: none !important; }
+        
+        h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 10px;
         }
-
-        /* Prevent iOS zoom on input focus */
-        @supports (-webkit-touch-callout: none) {
-            input, select, textarea {
-                font-size: 16px !important;
-            }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .form-group { margin-bottom: 20px; }
+        
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        button:active { transform: scale(0.98); }
+        
+        .toggle {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .toggle a {
+            color: #667eea;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+        
+        .success {
+            background: #efe;
+            color: #3c3;
+            border: 1px solid #cfc;
+        }
+        
+        .info {
+            background: #eef;
+            color: #33c;
+            border: 1px solid #ccf;
+        }
+        
+        .dashboard {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .dashboard h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .user-info {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
         }
     </style>
 </head>
-<body class="font-medium">
+<body>
     <!-- Loading Screen -->
-    <div id="loadingScreen" class="fixed inset-0 bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center z-50">
-        <div class="text-center">
-            <div class="text-6xl mb-4 animate-bounce">📚</div>
-            <h2 class="text-3xl font-bold text-white mb-2">ReviseRight Pro</h2>
-            <p class="text-indigo-200">Connecting to Firebase...</p>
-        </div>
+    <div id="loadingScreen" class="container">
+        <h1>📚 ReviseRight Pro</h1>
+        <div class="message info">Loading Firebase...</div>
     </div>
 
-    <!-- Auth Screen -->
-    <div id="authScreen" class="hidden fixed inset-0 bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center z-40">
-        <div class="glass-effect rounded-3xl shadow-2xl p-8 max-w-md w-full mx-4" style="background: rgba(255,255,255,0.95)">
-            <div class="text-center mb-8">
-                <div class="text-6xl mb-4">📚</div>
-                <h1 class="text-3xl font-bold gradient-text mb-2">ReviseRight Pro</h1>
-                <p class="text-gray-600">Your complete study companion</p>
-            </div>
+    <!-- Auth Container -->
+    <div id="authContainer" class="container hidden">
+        <h1>📚 ReviseRight Pro</h1>
+        <p class="subtitle">Your complete study companion</p>
 
-            <!-- Login Form -->
-            <div id="loginForm">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Sign In</h2>
-                <form onsubmit="handleLogin(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="loginEmail" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="your@email.com">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input type="password" id="loginPassword" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="••••••••">
-                    </div>
-                    <button type="submit" class="w-full px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-bold hover:shadow-lg transition-all">
-                        Sign In
-                    </button>
-                </form>
-                <p class="text-center text-sm text-gray-600 mt-4">
-                    Don't have an account? 
-                    <button onclick="showSignup()" class="text-indigo-600 font-semibold hover:underline">Sign Up</button>
-                </p>
-            </div>
+        <div id="messageBox"></div>
 
-            <!-- Signup Form -->
-            <div id="signupForm" class="hidden">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Create Account</h2>
-                <form onsubmit="handleSignup(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                        <input type="text" id="signupName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Your name">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="signupEmail" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="your@email.com">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input type="password" id="signupPassword" required minlength="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="At least 6 characters">
-                    </div>
-                    <button type="submit" class="w-full px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-bold hover:shadow-lg transition-all">
-                        Create Account
-                    </button>
-                </form>
-                <p class="text-center text-sm text-gray-600 mt-4">
-                    Already have an account? 
-                    <button onclick="showLogin()" class="text-indigo-600 font-semibold hover:underline">Sign In</button>
-                </p>
+        <!-- Login Form -->
+        <div id="loginForm">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="••••••••">
+            </div>
+            <button onclick="handleLogin()">Sign In</button>
+            <div class="toggle">
+                Don't have an account? <a onclick="showSignup()">Sign Up</a>
+            </div>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signupForm" class="hidden">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="signupName" placeholder="Your name">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="signupEmail" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="signupPassword" placeholder="At least 6 characters">
+            </div>
+            <button onclick="handleSignup()">Create Account</button>
+            <div class="toggle">
+                Already have an account? <a onclick="showLogin()">Sign In</a>
             </div>
         </div>
     </div>
 
-    <div id="app"></div>
+    <!-- App Container -->
+    <div id="appContainer" class="container hidden">
+        <div class="dashboard">
+            <h2>🎉 Welcome!</h2>
+            <div class="user-info">
+                <p><strong id="userName"></strong></p>
+                <p id="userEmail" style="color: #666; font-size: 14px;"></p>
+            </div>
+            <div class="message success">
+                ✅ Firebase connected!<br>
+                Authentication working!<br>
+                Database active!
+            </div>
+            <button onclick="logout()">Sign Out</button>
+        </div>
+    </div>
 
     <script>
-        // Multiple attempts to ensure Firebase loads on mobile
-        function initializeApp() {
-            // Check if Firebase loaded
+        // Wait for Firebase to load
+        setTimeout(function() {
             if (typeof firebase === 'undefined') {
-                console.error('Firebase not loaded yet, retrying...');
-                // Retry after a short delay
-                setTimeout(initializeApp, 100);
+                document.getElementById('loadingScreen').innerHTML = `
+                    <h1>❌ Error</h1>
+                    <div class="message error">
+                        Firebase failed to load.<br>
+                        Please refresh the page.
+                    </div>
+                `;
                 return;
             }
 
-            console.log('✅ Firebase loaded successfully!');
+            // Firebase config
+            const firebaseConfig = {
+                apiKey: "AIzaSyAyonlIqfTusq_ST6PKbzSED0s_HGRmA1o",
+                authDomain: "reviseright-pro.firebaseapp.com",
+                projectId: "reviseright-pro",
+                storageBucket: "reviseright-pro.firebasestorage.app",
+                messagingSenderId: "709040682753",
+                appId: "1:709040682753:web:645212006b33e06610cd00",
+                measurementId: "G-T6BNH4JP6Z"
+            };
 
-            try {
-                // ============================================
-                // FIREBASE CONFIGURATION
-                // ============================================
-                const firebaseConfig = {
-                    apiKey: "AIzaSyAyonlIqfTusq_ST6PKbzSED0s_HGRmA1o",
-                    authDomain: "reviseright-pro.firebaseapp.com",
-                    projectId: "reviseright-pro",
-                    storageBucket: "reviseright-pro.firebasestorage.app",
-                    messagingSenderId: "709040682753",
-                    appId: "1:709040682753:web:645212006b33e06610cd00",
-                    measurementId: "G-T6BNH4JP6Z"
-                };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
 
-                // Initialize Firebase
-                firebase.initializeApp(firebaseConfig);
-                window.auth = firebase.auth();
-                window.db = firebase.firestore();
-                console.log('✅ Firebase initialized!');
+            console.log('✅ Firebase initialized!');
 
-                // Initialize Stripe
-                window.stripe = typeof Stripe !== 'undefined' ? Stripe('pk_test_YOUR_KEY_HERE') : null;
+            // Hide loading, show auth
+            document.getElementById('loadingScreen').classList.add('hidden');
+            document.getElementById('authContainer').classList.remove('hidden');
 
-                // Start auth listener
-                startApp();
-            } catch (error) {
-                console.error('Error initializing Firebase:', error);
-                alert('Error loading app: ' + error.message);
-            }
-        }
-
-        function startApp() {
-            const auth = window.auth;
-            const db = window.db;
-
-        // ============================================
-        // APPLICATION STATE
-        // ============================================
-        let currentUser = null;
-        let state = {
-            activeTab: 'dashboard',
-            educationLevel: 'gcse',
-            isPremium: false,
-            theme: 'default',
-            fontSize: 'medium',
-            subjects: [],
-            topics: [],
-            schedule: {},
-            progress8: {
-                english: { target: '', current: '', subject: 'English Language' },
-                maths: { target: '', current: '', subject: 'Maths' },
-                ebacc1: { target: '', current: '', subject: 'EBacc Slot 1' },
-                ebacc2: { target: '', current: '', subject: 'EBacc Slot 2' },
-                ebacc3: { target: '', current: '', subject: 'EBacc Slot 3' },
-                open1: { target: '', current: '', subject: 'Open Slot 1' },
-                open2: { target: '', current: '', subject: 'Open Slot 2' },
-                open3: { target: '', current: '', subject: 'Open Slot 3' }
-            }
-        };
-
-        // ============================================
-        // AUTHENTICATION FUNCTIONS
-        // ============================================
-        
-        async function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            try {
-                await window.auth.signInWithEmailAndPassword(email, password);
-            } catch (error) {
-                alert('❌ Login failed: ' + error.message);
-            }
-        }
-
-        async function handleSignup(event) {
-            event.preventDefault();
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            
-            try {
-                const userCredential = await window.auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
+            // Login function
+            window.handleLogin = async function() {
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value;
                 
-                await user.updateProfile({ displayName: name });
-                
-                await window.db.collection('users').doc(user.uid).set({
-                    name: name,
-                    email: email,
-                    isPremium: false,
-                    educationLevel: 'gcse',
-                    theme: 'default',
-                    fontSize: 'medium',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                alert('✅ Account created! Welcome, ' + name + '!');
-            } catch (error) {
-                alert('❌ Signup failed: ' + error.message);
-            }
-        }
-
-        async function logout() {
-            if (confirm('Are you sure you want to sign out?')) {
-                try {
-                    await window.auth.signOut();
-                } catch (error) {
-                    alert('Error signing out: ' + error.message);
+                if (!email || !password) {
+                    showMessage('Please fill in all fields', 'error');
+                    return;
                 }
-            }
-        }
 
-        // Listen for auth state changes
-        function setupAuthListener() {
-            window.auth.onAuthStateChanged(async (user) => {
-                if (user) {
-                    currentUser = {
-                        uid: user.uid,
-                        email: user.email,
-                        name: user.displayName || 'Student'
-                    };
+                showMessage('Signing in...', 'info');
+                
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                    showMessage('✅ Signed in!', 'success');
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showMessage('❌ ' + error.message, 'error');
+                }
+            };
+
+            // Signup function
+            window.handleSignup = async function() {
+                const name = document.getElementById('signupName').value.trim();
+                const email = document.getElementById('signupEmail').value.trim();
+                const password = document.getElementById('signupPassword').value;
+                
+                if (!name || !email || !password) {
+                    showMessage('Please fill in all fields', 'error');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showMessage('Password must be at least 6 characters', 'error');
+                    return;
+                }
+
+                showMessage('Creating account...', 'info');
+                
+                try {
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    await userCredential.user.updateProfile({ displayName: name });
                     
-                    await loadUserData();
-                    hideAuthScreen();
+                    await db.collection('users').doc(userCredential.user.uid).set({
+                        name: name,
+                        email: email,
+                        isPremium: false,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    showMessage('🎉 Account created!', 'success');
+                } catch (error) {
+                    console.error('Signup error:', error);
+                    showMessage('❌ ' + error.message, 'error');
+                }
+            };
+
+            // Logout function
+            window.logout = async function() {
+                try {
+                    await auth.signOut();
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            };
+
+            // Show/hide forms
+            window.showLogin = function() {
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('signupForm').classList.add('hidden');
+                document.getElementById('messageBox').innerHTML = '';
+            };
+
+            window.showSignup = function() {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('signupForm').classList.remove('hidden');
+                document.getElementById('messageBox').innerHTML = '';
+            };
+
+            // Show message
+            function showMessage(message, type) {
+                const messageBox = document.getElementById('messageBox');
+                messageBox.innerHTML = `<div class="message ${type}">${message}</div>`;
+            }
+
+            // Auth state listener
+            auth.onAuthStateChanged(function(user) {
+                if (user) {
+                    document.getElementById('authContainer').classList.add('hidden');
+                    document.getElementById('appContainer').classList.remove('hidden');
+                    document.getElementById('userName').textContent = user.displayName || 'User';
+                    document.getElementById('userEmail').textContent = user.email;
                 } else {
-                    currentUser = null;
-                    document.getElementById('loadingScreen').classList.add('hidden');
-                    document.getElementById('authScreen').classList.remove('hidden');
+                    document.getElementById('authContainer').classList.remove('hidden');
+                    document.getElementById('appContainer').classList.add('hidden');
                 }
             });
-        }
 
-        // ============================================
-        // DATA MANAGEMENT
-        // ============================================
-        
-        async function loadUserData() {
-            if (!currentUser) return;
-            
-            try {
-                const doc = await window.db.collection('users').doc(currentUser.uid).get();
-                
-                if (doc.exists) {
-                    const data = doc.data();
-                    state.educationLevel = data.educationLevel || 'gcse';
-                    state.isPremium = data.isPremium || false;
-                    state.theme = data.theme || 'default';
-                    state.fontSize = data.fontSize || 'medium';
-                    state.subjects = data.subjects || [];
-                    state.topics = data.topics || [];
-                    state.schedule = data.schedule || {};
-                    state.progress8 = data.progress8 || state.progress8;
-                }
-                
-                applyTheme();
-                render();
-            } catch (error) {
-                console.error('Error loading data:', error);
-                render();
-            }
-        }
-
-        async function saveToCloud() {
-            if (!currentUser) return;
-            
-            try {
-                await window.db.collection('users').doc(currentUser.uid).update({
-                    subjects: state.subjects,
-                    topics: state.topics,
-                    schedule: state.schedule,
-                    educationLevel: state.educationLevel,
-                    theme: state.theme,
-                    fontSize: state.fontSize,
-                    progress8: state.progress8,
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                showSyncIndicator();
-            } catch (error) {
-                console.error('Error saving:', error);
-            }
-        }
-
-        function showSyncIndicator() {
-            const indicator = document.createElement('div');
-            indicator.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-            indicator.innerHTML = '☁️ Synced!';
-            document.body.appendChild(indicator);
-            setTimeout(() => indicator.remove(), 2000);
-        }
-
-        // Auto-save every 30 seconds
-        setInterval(() => {
-            if (currentUser) saveToCloud();
-        }, 30000);
-
-        // ============================================
-        // PAYMENT FUNCTIONS
-        // ============================================
-        
-        async function upgradeToPremium(plan) {
-            alert('💳 Payment integration coming soon!\n\nFor demo: Upgrading to Premium ' + plan);
-            
-            try {
-                await window.db.collection('users').doc(currentUser.uid).update({
-                    isPremium: true,
-                    plan: plan,
-                    upgradeDate: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                state.isPremium = true;
-                render();
-                alert('🎉 Demo upgrade successful! Premium features unlocked.');
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        }
-
-        // ============================================
-        // UI HELPER FUNCTIONS
-        // ============================================
-        
-        function showLogin() {
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('signupForm').classList.add('hidden');
-        }
-
-        function showSignup() {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('signupForm').classList.remove('hidden');
-        }
-
-        function hideAuthScreen() {
-            document.getElementById('authScreen').classList.add('hidden');
-            document.getElementById('loadingScreen').classList.add('hidden');
-        }
-
-        function applyTheme() {
-            document.body.classList.remove('theme-default', 'theme-dark', 'theme-dyslexia', 'theme-blue', 'theme-pink');
-            if (state.theme && state.theme !== 'default') {
-                document.body.classList.add(`theme-${state.theme}`);
-            }
-            
-            document.body.classList.remove('font-small', 'font-medium', 'font-large', 'font-xlarge');
-            document.body.classList.add(`font-${state.fontSize || 'medium'}`);
-        }
-
-        function render() {
-            if (!currentUser) return;
-            
-            document.getElementById('app').innerHTML = `
-                <div class="min-h-screen p-4">
-                    <div class="max-w-7xl mx-auto">
-                        <div class="glass-effect rounded-2xl shadow-xl p-6 mb-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h1 class="text-3xl font-bold gradient-text">ReviseRight Pro</h1>
-                                    <p style="color: var(--text-secondary)">${currentUser.name} • ${state.isPremium ? '⭐ Premium' : 'Free'}</p>
-                                </div>
-                                <div class="space-x-2">
-                                    ${!state.isPremium ? `
-                                        <button onclick="upgradeToPremium('monthly')" class="px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 rounded-lg font-bold">
-                                            ⭐ Upgrade
-                                        </button>
-                                    ` : ''}
-                                    <button onclick="logout()" class="px-4 py-2 bg-gray-200 rounded-lg font-semibold">
-                                        Sign Out
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="glass-effect rounded-2xl shadow-xl p-8 text-center">
-                            <div class="text-6xl mb-4">🎉</div>
-                            <h2 class="text-2xl font-bold mb-4" style="color: var(--text-primary)">
-                                Firebase Connected Successfully!
-                            </h2>
-                            <p class="mb-6" style="color: var(--text-secondary)">
-                                Your ReviseRight Pro is now running on Firebase. <br>
-                                Real authentication and cloud database are active!
-                            </p>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                                <div class="p-4 bg-green-50 rounded-xl">
-                                    <div class="text-3xl mb-2">✅</div>
-                                    <div class="font-bold text-green-900">Authentication</div>
-                                    <div class="text-sm text-green-700">Firebase Auth Active</div>
-                                </div>
-                                <div class="p-4 bg-blue-50 rounded-xl">
-                                    <div class="text-3xl mb-2">☁️</div>
-                                    <div class="font-bold text-blue-900">Cloud Database</div>
-                                    <div class="text-sm text-blue-700">Firestore Connected</div>
-                                </div>
-                                <div class="p-4 bg-purple-50 rounded-xl">
-                                    <div class="text-3xl mb-2">💳</div>
-                                    <div class="font-bold text-purple-900">Payments</div>
-                                    <div class="text-sm text-purple-700">Ready for Stripe</div>
-                                </div>
-                            </div>
-
-                            <div class="mt-8 p-6 bg-yellow-50 rounded-xl border-2 border-yellow-200">
-                                <h3 class="font-bold text-yellow-900 mb-2">📝 Next Steps:</h3>
-                                <ol class="text-left text-sm text-yellow-800 space-y-2">
-                                    <li>1. ✅ Firebase is connected</li>
-                                    <li>2. ✅ Authentication working</li>
-                                    <li>3. ✅ Database saving data</li>
-                                    <li>4. ⏳ Copy your full app features to this file</li>
-                                    <li>5. ⏳ Set up Stripe payments (optional)</li>
-                                    <li>6. ⏳ Deploy to Firebase Hosting</li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Set up auth listener
-        setupAuthListener();
-        
-        console.log('🔥 App ready!');
-        } // End startApp function
-
-        // Start initialization when page loads
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeApp);
-        } else {
-            initializeApp();
-        }
+        }, 1000);
     </script>
 </body>
 </html>
