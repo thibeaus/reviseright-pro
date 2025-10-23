@@ -306,6 +306,14 @@
             align-items: center;
         }
         
+        .account-type-selector {
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -406,10 +414,10 @@
         <div class="nav">
             <button class="nav-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
             <button class="nav-btn" onclick="switchTab('progress8')">🎯 Progress 8</button>
-            <button class="nav-btn" id="teacherTab" onclick="switchTab('teacher')" class="hidden">👨‍🏫 Students</button>
-            <button class="nav-btn" id="studentTab" onclick="switchTab('subjects')">📚 Subjects</button>
-            <button class="nav-btn" id="topicsTab" onclick="switchTab('topics')">📝 Topics</button>
-            <button class="nav-btn" id="scheduleTab" onclick="switchTab('schedule')">📅 Schedule</button>
+            <button class="nav-btn" id="teacherNavBtn" onclick="switchTab('teacher')" class="hidden">👨‍🏫 Students</button>
+            <button class="nav-btn" id="subjectsNavBtn" onclick="switchTab('subjects')">📚 Subjects</button>
+            <button class="nav-btn" id="topicsNavBtn" onclick="switchTab('topics')">📝 Topics</button>
+            <button class="nav-btn" id="scheduleNavBtn" onclick="switchTab('schedule')">📅 Schedule</button>
             <button class="nav-btn" onclick="switchTab('settings')">⚙️ Settings</button>
         </div>
 
@@ -498,7 +506,7 @@
             </div>
 
             <!-- Teacher Tab -->
-            <div id="teacherTab" class="hidden">
+            <div id="teacherTabContent" class="hidden">
                 <div class="card">
                     <div class="card-header">
                         <div>
@@ -549,6 +557,19 @@
                 <div class="card">
                     <h2 style="margin-bottom: 20px;">⚙️ Settings</h2>
                     
+                    <!-- Account Type Switcher -->
+                    <div class="account-type-selector">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Account Type</label>
+                        <select id="accountTypeSelect" onchange="changeAccountType()" style="width: 100%;">
+                            <option value="student">👨‍🎓 Student</option>
+                            <option value="teacher">👨‍🏫 Teacher</option>
+                        </select>
+                        <div id="schoolNameField" class="hidden" style="margin-top: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">School Name</label>
+                            <input type="text" id="settingsSchoolName" placeholder="Your school" onchange="updateSchoolName()">
+                        </div>
+                    </div>
+                    
                     <div style="margin-bottom: 25px;">
                         <label style="display: block; margin-bottom: 10px; font-weight: 600;">Theme</label>
                         <select id="themeSelect" onchange="changeTheme()" style="width: 100%;">
@@ -571,7 +592,7 @@
                     </div>
 
                     <div style="background: var(--bg-primary); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                        <p style="font-weight: 600; margin-bottom: 5px;">Account Type: <span id="accountTypeDisplay"></span></p>
+                        <p style="font-weight: 600; margin-bottom: 5px;">Current Account: <span id="accountTypeDisplay"></span></p>
                         <p style="color: var(--text-secondary); font-size: 14px;" id="schoolDisplay"></p>
                     </div>
 
@@ -581,6 +602,7 @@
         </div>
     </div>
 
+    <!-- Modals (Add Subject, Topic, Schedule, Student, View Student) -->
     <!-- Add Subject Modal -->
     <div id="addSubjectModal" class="modal">
         <div class="modal-content">
@@ -703,7 +725,6 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         setTimeout(function() {
             if (typeof firebase === 'undefined') {
@@ -749,7 +770,6 @@
                 fontSize: '16px'
             };
 
-            // Grade points mapping (official Progress 8)
             const gradePoints = {
                 '9': 9, '8': 8, '7': 7, '6': 6, '5': 5,
                 '4': 4, '3': 3, '2': 2, '1': 1, 'U': 0
@@ -817,10 +837,11 @@
                     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                     await userCredential.user.updateProfile({ displayName: name });
                     
+                    // FIXED: Use selectedAccountType variable properly
                     await db.collection('users').doc(userCredential.user.uid).set({
                         name: name,
                         email: email,
-                        accountType: selectedAccountType,
+                        accountType: selectedAccountType, // This is the key fix
                         schoolName: schoolName || '',
                         subjects: [],
                         topics: [],
@@ -832,7 +853,7 @@
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                     
-                    showMessage('Account created!', 'success');
+                    showMessage('Account created successfully!', 'success');
                 } catch (error) {
                     showMessage('Signup failed: ' + error.message, 'error');
                 }
@@ -861,6 +882,42 @@
                 setTimeout(() => box.innerHTML = '', 3000);
             }
 
+            // NEW: Account type switcher in settings
+            window.changeAccountType = async function() {
+                const newType = document.getElementById('accountTypeSelect').value;
+                state.accountType = newType;
+                
+                if (newType === 'teacher') {
+                    document.getElementById('schoolNameField').classList.remove('hidden');
+                } else {
+                    document.getElementById('schoolNameField').classList.add('hidden');
+                }
+                
+                await saveData();
+                updateUIForAccountType();
+                renderApp();
+            };
+
+            window.updateSchoolName = async function() {
+                state.schoolName = document.getElementById('settingsSchoolName').value.trim();
+                await saveData();
+                renderApp();
+            };
+
+            function updateUIForAccountType() {
+                const isTeacher = state.accountType === 'teacher';
+                
+                // Show/hide teacher-specific UI
+                document.getElementById('teacherNavBtn').classList.toggle('hidden', !isTeacher);
+                document.getElementById('teacherBadge').classList.toggle('hidden', !isTeacher);
+                document.getElementById('studentCountCard').style.display = isTeacher ? 'block' : 'none';
+                
+                // Show/hide student-specific UI
+                document.getElementById('subjectsNavBtn').classList.toggle('hidden', isTeacher);
+                document.getElementById('topicsNavBtn').classList.toggle('hidden', isTeacher);
+                document.getElementById('scheduleNavBtn').classList.toggle('hidden', isTeacher);
+            }
+
             // Auth state
             auth.onAuthStateChanged(async function(user) {
                 if (user) {
@@ -876,16 +933,7 @@
                     document.getElementById('authScreen').classList.add('hidden');
                     document.getElementById('app').classList.remove('hidden');
                     
-                    // Show/hide teacher features
-                    if (state.accountType === 'teacher') {
-                        document.getElementById('teacherTab').classList.remove('hidden');
-                        document.getElementById('teacherBadge').classList.remove('hidden');
-                        document.getElementById('studentCountCard').style.display = 'block';
-                        document.getElementById('studentTab').classList.add('hidden');
-                        document.getElementById('topicsTab').classList.add('hidden');
-                        document.getElementById('scheduleTab').classList.add('hidden');
-                    }
-                    
+                    updateUIForAccountType();
                     renderApp();
                 } else {
                     currentUser = null;
@@ -922,6 +970,8 @@
                 if (!currentUser) return;
                 try {
                     await db.collection('users').doc(currentUser.uid).update({
+                        accountType: state.accountType,
+                        schoolName: state.schoolName,
                         subjects: state.subjects,
                         topics: state.topics,
                         schedule: state.schedule,
@@ -968,11 +1018,13 @@
                 
                 const tabs = ['dashboard', 'progress8', 'subjects', 'topics', 'schedule', 'settings', 'teacher'];
                 tabs.forEach(t => {
-                    const el = document.getElementById(t + 'Tab');
+                    const elName = t === 'teacher' ? 'teacherTabContent' : t + 'Tab';
+                    const el = document.getElementById(elName);
                     if (el) el.classList.add('hidden');
                 });
                 
-                document.getElementById(tab + 'Tab').classList.remove('hidden');
+                const activeElName = tab === 'teacher' ? 'teacherTabContent' : tab + 'Tab';
+                document.getElementById(activeElName).classList.remove('hidden');
                 
                 document.querySelectorAll('.nav-btn').forEach(btn => {
                     btn.classList.remove('active');
@@ -1249,7 +1301,7 @@
                 if (student) {
                     student.progress8[slot][field] = value;
                     saveData();
-                    viewStudentP8(studentId); // Refresh
+                    viewStudentP8(studentId);
                 }
             };
 
@@ -1284,11 +1336,21 @@
                 if (!currentUser) return;
                 
                 document.getElementById('userName').textContent = currentUser.name;
+                
+                // Update settings display
+                document.getElementById('accountTypeSelect').value = state.accountType;
                 document.getElementById('accountTypeDisplay').textContent = state.accountType === 'teacher' ? '👨‍🏫 Teacher' : '👨‍🎓 Student';
                 
-                if (state.accountType === 'teacher' && state.schoolName) {
-                    document.getElementById('schoolDisplay').textContent = '🏫 ' + state.schoolName;
+                if (state.accountType === 'teacher') {
+                    document.getElementById('schoolNameField').classList.remove('hidden');
+                    document.getElementById('settingsSchoolName').value = state.schoolName || '';
+                    if (state.schoolName) {
+                        document.getElementById('schoolDisplay').textContent = '🏫 ' + state.schoolName;
+                    } else {
+                        document.getElementById('schoolDisplay').textContent = '';
+                    }
                 } else {
+                    document.getElementById('schoolNameField').classList.add('hidden');
                     document.getElementById('schoolDisplay').textContent = '';
                 }
                 
