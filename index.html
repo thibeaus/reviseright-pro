@@ -681,24 +681,26 @@
                     
                     <!-- Subscription Section -->
                     <div id="subscriptionSection" style="background: var(--bg-primary); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
-                        <h3 style="margin-bottom: 15px;">💎 Subscription</h3>
+                        <h3 style="margin-bottom: 15px;">💎 Your Plan</h3>
                         <div id="currentPlan" style="margin-bottom: 15px;"></div>
-                        <button id="upgradeButton" onclick="showUpgradeModal()" class="btn-premium" style="display: none;">⭐ View Plans</button>
+                        <div id="planDetails" style="margin-bottom: 15px;"></div>
+                        <button id="upgradeButton" onclick="showUpgradeModal()" class="btn-premium" style="display: none;">⭐ Upgrade Plan</button>
                     </div>
                     
+                    <!-- Account Info (Read-only) -->
                     <div style="background: var(--bg-primary); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Account Type</label>
-                        <select id="accountTypeSelect" onchange="changeAccountType()" style="width: 100%;">
-                            <option value="student">👨‍🎓 Student</option>
-                            <option value="teacher">👨‍🏫 Teacher</option>
-                        </select>
-                        <div id="schoolNameField" class="hidden" style="margin-top: 15px;">
-                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">School Name</label>
-                            <input type="text" id="settingsSchoolName" placeholder="Your school" onchange="updateSchoolName()">
+                        <h3 style="margin-bottom: 15px; font-weight: 600;">📋 Account Information</h3>
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: block; color: var(--text-secondary); font-size: 14px; margin-bottom: 5px;">Account Type</label>
+                            <div id="accountTypeDisplay" style="padding: 10px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; font-weight: 600;"></div>
                         </div>
-                        <div id="studyLevelField" class="hidden" style="margin-top: 15px;">
-                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Study Level</label>
-                            <select id="settingsStudyLevel" onchange="updateStudyLevel()">
+                        <div id="schoolNameField" class="hidden" style="margin-bottom: 12px;">
+                            <label style="display: block; color: var(--text-secondary); font-size: 14px; margin-bottom: 5px;">School Name</label>
+                            <input type="text" id="settingsSchoolName" placeholder="Your school" onchange="updateSchoolName()" style="padding: 10px;">
+                        </div>
+                        <div id="studyLevelField" class="hidden" style="margin-bottom: 12px;">
+                            <label style="display: block; color: var(--text-secondary); font-size: 14px; margin-bottom: 5px;">Study Level</label>
+                            <select id="settingsStudyLevel" onchange="updateStudyLevel()" style="padding: 10px;">
                                 <option value="gcse">GCSE</option>
                                 <option value="alevel">A-Level</option>
                                 <option value="university">University</option>
@@ -1118,23 +1120,6 @@
                 renderApp();
             };
 
-            window.changeAccountType = async function() {
-                const newType = document.getElementById('accountTypeSelect').value;
-                state.accountType = newType;
-                
-                if (newType === 'teacher') {
-                    document.getElementById('schoolNameField').classList.remove('hidden');
-                    document.getElementById('studyLevelField').classList.add('hidden');
-                } else {
-                    document.getElementById('schoolNameField').classList.add('hidden');
-                    document.getElementById('studyLevelField').classList.remove('hidden');
-                }
-                
-                await saveData();
-                updateUIForAccountType();
-                renderApp();
-            };
-
             window.updateSchoolName = async function() {
                 state.schoolName = document.getElementById('settingsSchoolName').value.trim();
                 await saveData();
@@ -1143,7 +1128,7 @@
 
             window.updateStudyLevel = async function() {
                 const newLevel = document.getElementById('settingsStudyLevel').value;
-                if ((newLevel === 'alevel' || newLevel === 'university') && !state.isPremium) {
+                if ((newLevel === 'alevel' || newLevel === 'university') && !state.isPremium && !state.isLifetime) {
                     alert('This study level requires Premium. Please upgrade!');
                     document.getElementById('settingsStudyLevel').value = state.studyLevel;
                     showUpgradeModal();
@@ -1610,7 +1595,10 @@
                 document.getElementById('premiumBadge').classList.toggle('hidden', !state.isPremium || state.isLifetime);
                 document.getElementById('lifetimeBadge').classList.toggle('hidden', !state.isLifetime);
                 
-                document.getElementById('accountTypeSelect').value = state.accountType;
+                // Display account type as read-only
+                const accountTypeIcon = state.accountType === 'teacher' ? '👨‍🏫' : '👨‍🎓';
+                const accountTypeText = state.accountType === 'teacher' ? 'Teacher' : 'Student';
+                document.getElementById('accountTypeDisplay').innerHTML = `${accountTypeIcon} ${accountTypeText}`;
                 
                 if (state.accountType === 'teacher') {
                     document.getElementById('schoolNameField').classList.remove('hidden');
@@ -1628,20 +1616,75 @@
                     university: 'University Premium - £7.99/mo'
                 };
                 
+                // Show detailed plan information
                 if (state.isLifetime) {
                     document.getElementById('currentPlan').innerHTML = `
-                        <p style="font-weight: 600;">Current Plan: <span style="color: var(--lifetime);">♾️ All Access Lifetime</span></p>
-                        <p style="color: var(--success); font-size: 14px; margin-top: 5px;">✓ Lifetime Access Active</p>
+                        <div style="padding: 15px; background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); border-radius: 8px; color: white; margin-bottom: 10px;">
+                            <div style="font-size: 20px; font-weight: bold; margin-bottom: 5px;">♾️ All Access Lifetime</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Unlimited access to all features forever</div>
+                        </div>
+                    `;
+                    document.getElementById('planDetails').innerHTML = `
+                        <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 15px;">
+                            <h4 style="margin-bottom: 10px; font-weight: 600;">✨ Your Benefits:</h4>
+                            <div style="font-size: 14px;">
+                                <div style="padding: 6px 0;">✅ Full GCSE Tools</div>
+                                <div style="padding: 6px 0;">✅ Full A-Level Tools</div>
+                                <div style="padding: 6px 0;">✅ Full University Tools</div>
+                                <div style="padding: 6px 0;">✅ All Future Updates</div>
+                                <div style="padding: 6px 0;">✅ Priority Support</div>
+                                <div style="padding: 6px 0; color: var(--success); font-weight: 600;">♾️ Never Expires</div>
+                            </div>
+                        </div>
+                    `;
+                } else if (state.isPremium) {
+                    const planName = plans[state.studyLevel];
+                    const planFeatures = state.studyLevel === 'university' 
+                        ? ['All GCSE Tools', 'All A-Level Tools', 'University Modules', 'Research Tools', 'Citation Manager']
+                        : state.studyLevel === 'alevel'
+                        ? ['All GCSE Tools', 'A-Level Subjects', 'Advanced Analytics', 'Exam Predictions']
+                        : ['Progress 8 Tracker', 'Subject Management', 'Study Schedule'];
+                    
+                    document.getElementById('currentPlan').innerHTML = `
+                        <div style="padding: 15px; background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); border-radius: 8px; color: white; margin-bottom: 10px;">
+                            <div style="font-size: 20px; font-weight: bold; margin-bottom: 5px;">⭐ ${planName}</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Monthly subscription • Cancel anytime</div>
+                        </div>
+                    `;
+                    document.getElementById('planDetails').innerHTML = `
+                        <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 15px;">
+                            <h4 style="margin-bottom: 10px; font-weight: 600;">✨ Your Benefits:</h4>
+                            <div style="font-size: 14px;">
+                                ${planFeatures.map(f => `<div style="padding: 6px 0;">✅ ${f}</div>`).join('')}
+                            </div>
+                        </div>
                     `;
                 } else {
                     document.getElementById('currentPlan').innerHTML = `
-                        <p style="font-weight: 600;">Current Plan: <span style="color: var(--accent);">${plans[state.studyLevel]}</span></p>
-                        ${state.isPremium ? '<p style="color: var(--success); font-size: 14px; margin-top: 5px;">✓ Premium Active</p>' : ''}
+                        <div style="padding: 15px; background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 8px; margin-bottom: 10px;">
+                            <div style="font-size: 20px; font-weight: bold; margin-bottom: 5px; color: var(--accent);">GCSE Free</div>
+                            <div style="font-size: 14px; color: var(--text-secondary);">Free forever • All GCSE tools included</div>
+                        </div>
+                    `;
+                    document.getElementById('planDetails').innerHTML = `
+                        <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 15px;">
+                            <h4 style="margin-bottom: 10px; font-weight: 600;">✨ Your Benefits:</h4>
+                            <div style="font-size: 14px;">
+                                <div style="padding: 6px 0;">✅ Progress 8 Tracker</div>
+                                <div style="padding: 6px 0;">✅ Subject Management</div>
+                                <div style="padding: 6px 0;">✅ Study Schedule</div>
+                                <div style="padding: 6px 0;">✅ All Themes</div>
+                            </div>
+                            <div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); border-radius: 8px; color: white; text-align: center;">
+                                <div style="font-weight: 600; margin-bottom: 5px;">🚀 Ready for more?</div>
+                                <div style="font-size: 13px; opacity: 0.9;">Upgrade to access A-Level & University tools</div>
+                            </div>
+                        </div>
                     `;
                 }
                 
                 document.getElementById('upgradeButton').style.display = state.isLifetime ? 'none' : 'block';
-                document.getElementById('upgradePrompt').classList.toggle('hidden', state.isLifetime || state.studyLevel === 'gcse');
+                document.getElementById('upgradePrompt').classList.toggle('hidden', state.isLifetime || (state.studyLevel === 'gcse' && !state.isPremium));
                 
                 document.getElementById('subjectCount').textContent = state.subjects.length;
                 document.getElementById('topicCount').textContent = state.topics.length;
