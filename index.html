@@ -1562,33 +1562,42 @@
             };
 
             window.switchTab = function(tab) {
-                state.activeTab = tab;
-                
-                const tabs = ['dashboard', 'progress8', 'subjects', 'topics', 'flashcards', 'pomodoro', 'exams', 'schedule', 'settings', 'teacher'];
-tabs.forEach(t => {
-    const el = document.getElementById(t + 'Tab');
-    if (el) el.classList.add('hidden');
-});
-                
-                if (tab === 'dashboard') {
-                    if (state.accountType === 'teacher') {
-                        document.getElementById('teacherDashboard').classList.remove('hidden');
-                    } else {
-                        document.getElementById('dashboardTab').classList.remove('hidden');
-                    }
-                } else if (tab === 'teacher') {
-                    document.getElementById('teacherTabContent').classList.remove('hidden');
-                } else {
-                    document.getElementById(tab + 'Tab').classList.remove('hidden');
-                }
-                
-                document.querySelectorAll('.nav-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                event.target.classList.add('active');
-                
-                renderApp();
-            };
+    state.activeTab = tab;
+    
+    // Hide all tabs
+    document.getElementById('dashboardTab').classList.add('hidden');
+    document.getElementById('teacherDashboard').classList.add('hidden');
+    document.getElementById('progress8Tab').classList.add('hidden');
+    document.getElementById('subjectsTab').classList.add('hidden');
+    document.getElementById('topicsTab').classList.add('hidden');
+    document.getElementById('flashcardsTab').classList.add('hidden');
+    document.getElementById('pomodoroTab').classList.add('hidden');
+    document.getElementById('examsTab').classList.add('hidden');
+    document.getElementById('scheduleTab').classList.add('hidden');
+    document.getElementById('settingsTab').classList.add('hidden');
+    document.getElementById('teacherTabContent').classList.add('hidden');
+    
+    // Show the selected tab
+    if (tab === 'dashboard') {
+        if (state.accountType === 'teacher') {
+            document.getElementById('teacherDashboard').classList.remove('hidden');
+        } else {
+            document.getElementById('dashboardTab').classList.remove('hidden');
+        }
+    } else if (tab === 'teacher') {
+        document.getElementById('teacherTabContent').classList.remove('hidden');
+    } else {
+        document.getElementById(tab + 'Tab').classList.remove('hidden');
+    }
+    
+    // Update active nav button
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    renderApp();
+};
 
             function calculateP8Stats() {
                 let totalTarget = 0, totalCurrent = 0, count = 0, currentCount = 0;
