@@ -1,5 +1,4 @@
-<!DOC
-                  ${code.examBoard ? `<span style="background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">${code.examBoard}</span>` : ''}TYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1259,6 +1258,8 @@ For subjects with tiered exams (Maths, Science, etc.)
 <button onclick="closeModal('viewStudentModal')" style="background: transparent; color: var(--text-secondary); padding: 8px;">✕</button>
 </div>
 <div id="studentP8Content"></div>
+</div>
+</div>
 
 <div id="viewStudentTiersModal" class="modal">
 <div class="modal-content">
@@ -1282,9 +1283,6 @@ View which tier each student is taking for this subject. Students can set their 
 </div>
 
 <button class="btn-secondary" onclick="closeModal('viewStudentTiersModal')" style="width: 100%; margin-top: 20px;">Close</button>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -1332,6 +1330,8 @@ View which tier each student is taking for this subject. Students can set their 
 <div style="display: flex; gap: 10px; margin-top: 20px;">
 <button class="btn-primary" onclick="addExam()" style="flex: 1;">Add</button>
 <button class="btn-secondary" onclick="closeModal('addExamModal')" style="flex: 1;">Cancel</button>
+</div>
+</div>
 </div>
 
 <div id="createClassCodeModal" class="modal">
@@ -1429,9 +1429,6 @@ Get this code from your teacher. It's usually written on the board or in your Go
 </div>
 </div>
 
-</div>
-</div>
-
 <script>
 setTimeout(function() {
 if (typeof firebase === 'undefined') {
@@ -1478,14 +1475,14 @@ coins: 0,
 lastStudyDate: null
 },
 progress8: {
-english: { target: '', current: '', subject: 'English Language' },
-maths: { target: '', current: '', subject: 'Maths' },
-ebacc1: { target: '', current: '', subject: 'Science' },
-ebacc2: { target: '', current: '', subject: 'History/Geography' },
-ebacc3: { target: '', current: '', subject: 'Language' },
-open1: { target: '', current: '', subject: 'Open Slot 1' },
-open2: { target: '', current: '', subject: 'Open Slot 2' },
-open3: { target: '', current: '', subject: 'Open Slot 3' }
+english: { target: '', current: '', subject: 'English Language', tier: '' },
+maths: { target: '', current: '', subject: 'Maths', tier: '' },
+ebacc1: { target: '', current: '', subject: 'Science', tier: '' },
+ebacc2: { target: '', current: '', subject: 'History/Geography', tier: '' },
+ebacc3: { target: '', current: '', subject: 'Language', tier: '' },
+open1: { target: '', current: '', subject: 'Open Slot 1', tier: '' },
+open2: { target: '', current: '', subject: 'Open Slot 2', tier: '' },
+open3: { target: '', current: '', subject: 'Open Slot 3', tier: '' }
 },
 classCode: '',
 classCodes: [],
@@ -2120,7 +2117,7 @@ const diffClass = diff > 0 ? 'points-positive' : diff < 0 ? 'points-negative' : 
 html += `
 <div class="p8-slot">
 <div class="p8-header">
-<input type="text" value="${slot.subject}" onchange="updateStudentP8(${id}, '${key}', 'subject', this.value)" style="font-weight: 600; border: 1px solid var(--border); padding: 6px; width: 60%;">
+<input type="text" value="${slot.subject}" onchange="updateStudentP8(${id}, '${key}', 'subject', this.value)" placeholder="Subject name" style="font-weight: 600; border: 1px solid var(--border); padding: 6px; width: 60%;">
 ${diff !== 0 ? `<span class="points-badge ${diffClass}">${diff > 0 ? '+' : ''}${diff} pts</span>` : ''}
 </div>
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -2128,14 +2125,14 @@ ${diff !== 0 ? `<span class="points-badge ${diffClass}">${diff > 0 ? '+' : ''}${
 <label style="font-size: 11px; color: var(--text-secondary);">Target</label>
 <select onchange="updateStudentP8(${id}, '${key}', 'target', this.value)" style="width: 100%; margin-top: 5px; padding: 6px;">
 <option value="">-</option>
-${[9,8,7,6,5,4,3,2,1].map(g => `<option value="${g}" ${slot.target == g ? 'selected' : ''}>${g}</option>`).join('')}
+${[9,8,7,6,5,4,3,2,1].map(g => `<option value="${g}" ${slot.target == g ? 'selected' : ''}>${g} (${g} pts)</option>`).join('')}
 </select>
 </div>
 <div>
 <label style="font-size: 11px; color: var(--text-secondary);">Current</label>
 <select onchange="updateStudentP8(${id}, '${key}', 'current', this.value)" style="width: 100%; margin-top: 5px; padding: 6px;">
 <option value="">-</option>
-${[9,8,7,6,5,4,3,2,1,'U'].map(g => `<option value="${g}" ${slot.current == g ? 'selected' : ''}>${g}</option>`).join('')}
+${[9,8,7,6,5,4,3,2,1,'U'].map(g => `<option value="${g}" ${slot.current == g ? 'selected' : ''}>${g} (${gradePoints[g]} pts)</option>`).join('')}
 </select>
 </div>
 </div>
@@ -2241,8 +2238,7 @@ subject,
 front,
 back,
 mastered: false,
-year: state.currentYear
-,
+year: state.currentYear,
     difficulty: 0});
 
 saveData();
@@ -2362,26 +2358,6 @@ window.markMastered = function() {
   saveData();
 }
 
-// Pomodoro Timer
-let timerInterval = null;
-let timeLeft = 25 * 60;
-let isRunning = false;
-
-window.startTimer = function() {
-isRunning = true;
-document.getElementById('startBtn').style.display = 'none';
-document.getElementById('pauseBtn').style.display = 'inline-block';
-document.getElementById('studyPet').classList.add('studying');
-
-timerInterval = setInterval(() => {
-timeLeft--;
-updateTimerDisplay();
-if (timeLeft <= 0) {
-completeSession();
-}
-}, 1000);
-};
-
 window.markWrong = function() {
   const card = studyCards[currentCardIndex];
   const originalCard = state.flashcards.find(f => f.id === card.id);
@@ -2403,6 +2379,26 @@ window.markWrong = function() {
   saveData();
   nextCard();
 }
+
+// Pomodoro Timer
+let timerInterval = null;
+let timeLeft = 25 * 60;
+let isRunning = false;
+
+window.startTimer = function() {
+isRunning = true;
+document.getElementById('startBtn').style.display = 'none';
+document.getElementById('pauseBtn').style.display = 'inline-block';
+document.getElementById('studyPet').classList.add('studying');
+
+timerInterval = setInterval(() => {
+timeLeft--;
+updateTimerDisplay();
+if (timeLeft <= 0) {
+completeSession();
+}
+}, 1000);
+};
 
 window.pauseTimer = function() {
 isRunning = false;
@@ -2539,15 +2535,14 @@ return `${hours} hour${hours > 1 ? 's' : ''}`;
 function getExamUrgency(examDate, examTime) {
 const now = new Date();
 const exam = new Date(examDate + ' ' + examTime);
-const diff = exam - now;const days = diff / (1000 * 60 * 60 * 24);
+const diff = exam - now;
+const days = diff / (1000 * 60 * 60 * 24);
 
 if (days < 0) return '';
 if (days <= 3) return 'urgent';
 if (days <= 7) return 'soon';
 return '';
 }
-
-// Main render function
 
 // PHASE 2: ACHIEVEMENTS SYSTEM
 const achievementDefinitions = [
@@ -2707,8 +2702,6 @@ function checkNotifications() {
   }
 }
 
-
-
 // CLASS CODE & LINKING SYSTEM
 function generateClassCode(subject, year, className = '') {
   const teacherName = currentUser.name.split(' ').pop().toUpperCase();
@@ -2716,7 +2709,6 @@ function generateClassCode(subject, year, className = '') {
   const classCode = className ? '-' + className.toUpperCase().replace(/\s+/g, '') : '';
   const random = Math.random().toString(36).substring(2, 6).toUpperCase();
   return `${teacherName}-${subjectCode}${classCode}-Y${year}-${random}`;
-}-${subjectCode}-Y${year}-${random}`;
 }
 
 window.createClassCode = async function() {
@@ -2883,7 +2875,6 @@ window.linkToTeacher = async function() {
   
   document.getElementById('teacherCode').value = '';
 }
-
 
 window.viewStudentTiers = async function(classCode, className, subject) {
   document.getElementById('tiersClassName').textContent = `${subject}${className ? ' - ' + className : ''}`;
@@ -3053,50 +3044,7 @@ window.unlinkTeacher = async function(teacherId, subject) {
   }
 }
 
-// FILTER DATA FOR TEACHER VIEW
-function filterStudentDataForTeacher(studentData, teacherLink) {
-  if (!teacherLink || !teacherLink.canViewSubjects) return null;
-  
-  const allowedSubjects = teacherLink.canViewSubjects;
-  
-  return {
-    name: studentData.name,
-    email: studentData.email,
-    studyLevel: studentData.studyLevel,
-    
-    // Filter subjects
-    subjects: (studentData.subjects || []).filter(s => 
-      allowedSubjects.includes(s.name)
-    ),
-    
-    // Filter Progress 8 - only show slots with allowed subjects
-    progress8: Object.fromEntries(
-      Object.entries(studentData.progress8 || {}).filter(([key, slot]) =>
-        allowedSubjects.includes(slot.subject)
-      )
-    ),
-    
-    // Filter flashcards
-    flashcards: (studentData.flashcards || []).filter(f =>
-      allowedSubjects.includes(f.subject)
-    ),
-    
-    // Filter exams
-    exams: (studentData.exams || []).filter(e =>
-      allowedSubjects.includes(e.subject)
-    ),
-    
-    // Filter topics
-    topics: (studentData.topics || []).filter(t =>
-      allowedSubjects.includes(t.subject)
-    ),
-    
-    // Study stats (always visible)
-    pomodoro: studentData.pomodoro
-  };
-}
-
-
+// Main render function
 function renderApp() {
 if (!currentUser) return;
 
@@ -3197,6 +3145,7 @@ recentSubjects.innerHTML = state.subjects.slice(0, 3).map(s => `
 <strong>${s.name}</strong>
 ${s.teacher ? `<div style="font-size: 14px; color: var(--text-secondary); margin-top: 5px;">${s.teacher}</div>` : ''}
 ${s.target ? `<span class="grade-badge grade-${s.target}" style="margin-top: 5px;">Target: ${s.target}</span>` : ''}
+${s.tier ? `<div style="font-size: 13px; color: var(--text-secondary); margin-top: 5px;">📝 Tier: ${s.tier}</div>` : ''}
 </div>
 `).join('');
 }
@@ -3266,7 +3215,7 @@ return `
 <div class="p8-slot">
 <div class="p8-header">
 <input type="text" value="${slot.subject}" onchange="updateProgress8('${key}', 'subject', this.value)" placeholder="Subject name" style="font-weight: 600; border: 1px solid var(--border); padding: 8px; width: 70%;">
-${diff !== 0 ? `<span class="points-badge ${diffClass}">${diff > 0 ? '+' : ''}${diff} points</span>` : ''}
+${diff !== 0 ? `<span class="points-badge ${diffClass}">${diff > 0 ? '+' : ''}${diff} pts</span>` : ''}
 </div>
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
 <div>
@@ -3283,6 +3232,14 @@ ${[9,8,7,6,5,4,3,2,1].map(g => `<option value="${g}" ${slot.target == g ? 'selec
 ${[9,8,7,6,5,4,3,2,1,'U'].map(g => `<option value="${g}" ${slot.current == g ? 'selected' : ''}>${g} (${gradePoints[g]} pts)</option>`).join('')}
 </select>
 </div>
+</div>
+<div style="margin-top: 10px;">
+<label style="font-size: 12px; color: var(--text-secondary);">Exam Tier</label>
+<select onchange="updateProgress8('${key}', 'tier', this.value)" style="width: 100%; margin-top: 5px; padding: 6px;">
+<option value="">Not specified</option>
+<option value="Higher" ${slot.tier === 'Higher' ? 'selected' : ''}>Higher (4-9)</option>
+<option value="Foundation" ${slot.tier === 'Foundation' ? 'selected' : ''}>Foundation (1-5)</option>
+</select>
 </div>
 </div>
 `;
@@ -3322,8 +3279,8 @@ subjectsList.innerHTML = state.subjects.map(s => `
 <div>
 <div style="font-weight: 600; margin-bottom: 5px;">${s.name}</div>
 ${s.teacher ? `<div style="font-size: 14px; color: var(--text-secondary);">Teacher: ${s.teacher}</div>` : ''}
-
-        ${s.tier ? `<div style="font-size: 13px; color: var(--text-secondary); margin-top: 5px;">📝 Tier: ${s.tier}</div>` : ''}${s.target ? `<span class="grade-badge grade-${s.target}" style="margin-top: 8px;">Target: ${s.target}</span>` : ''}
+${s.tier ? `<div style="font-size: 13px; color: var(--text-secondary); margin-top: 5px;">📝 Tier: ${s.tier}</div>` : ''}
+${s.target ? `<span class="grade-badge grade-${s.target}" style="margin-top: 8px;">Target: ${s.target}</span>` : ''}
 </div>
 <button class="btn-danger" onclick="deleteSubject(${s.id})" style="padding: 8px 12px; font-size: 14px;">Delete</button>
 </div>
@@ -3395,10 +3352,10 @@ ${cards.map(f => `
 <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
 <div>
 <div style="font-weight: 500;">${f.front}</div>
-              <div style="font-size: 12px; margin-top: 5px;">
-                ${f.mastered ? '<span style="color: var(--success);">✓ Mastered</span>' : ''}
-                ${(f.difficulty || 0) > 0 ? `<span style="color: var(--warning); margin-left: 10px;">⚠ Difficulty: ${f.difficulty}</span>` : ''}
-${f.mastered ? '<span style="color: var(--success); font-size: 12px;">✓ Mastered</span>' : ''}
+<div style="font-size: 12px; margin-top: 5px;">
+${f.mastered ? '<span style="color: var(--success);">✓ Mastered</span>' : ''}
+${(f.difficulty || 0) > 0 ? `<span style="color: var(--warning); margin-left: 10px;">⚠ Difficulty: ${f.difficulty}</span>` : ''}
+</div>
 </div>
 <button class="btn-danger" onclick="deleteFlashcard(${f.id})" style="padding: 6px 10px; font-size: 12px;">Delete</button>
 </div>
@@ -3415,83 +3372,80 @@ document.getElementById('totalCoins').textContent = state.pomodoro.coins || 0;
 upgradePet();
 }
 
-
+// Check achievements and notifications
+checkAchievements();
+renderAchievements();
   
-  // PHASE 2: Check achievements and notifications
-  checkAchievements();
-  renderAchievements();
+// RENDER CLASS CODES (Teachers)
+if (state.accountType === 'teacher') {
+const classCodesList = document.getElementById('classCodesList');
+if (classCodesList && state.classCodes) {
+if (state.classCodes.length === 0) {
+classCodesList.innerHTML = '<p style="color: var(--text-secondary);">No class codes yet. Click "Create New Code" to get started!</p>';
+} else {
+classCodesList.innerHTML = state.classCodes.map(code => `
+<div style="background: var(--bg-primary); border: 2px solid var(--accent); border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+<div>
+<h4 style="margin: 0 0 8px 0; font-size: 18px;">${code.subject}${code.className ? " - " + code.className : ""} - Year ${code.year}</h4>
+${code.examBoard ? `<div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">📋 ${code.examBoard}</div>` : ''}
+<div style="display: flex; align-items: center; gap: 10px;">
+<code style="background: var(--accent); color: white; padding: 8px 16px; border-radius: 6px; font-size: 16px; font-weight: bold; letter-spacing: 1px;">${code.code}</code>
+<span style="color: var(--text-secondary); font-size: 14px;">👥 ${code.studentsCount || 0} students</span>
+</div>
+</div>
+<div>
+${code.active ? '<span style="background: var(--success); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">ACTIVE</span>' : '<span style="background: var(--text-secondary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">INACTIVE</span>'}
+</div>
+</div>
+<div style="display: flex; gap: 10px;">
+<button class="btn-primary" onclick="copyClassCode('${code.code}')" style="flex: 1; padding: 10px; font-size: 13px;">📋 Copy Code</button>
+<button class="btn-secondary" onclick="viewStudentTiers('${code.code}', '${code.className || ''}', '${code.subject}')" style="flex: 1; padding: 10px; font-size: 13px;">📊 View Tiers</button>
+${code.active ? `<button class="btn-secondary" onclick="deactivateClassCode('${code.code}')" style="flex: 1; padding: 10px; font-size: 13px;">🔒 Deactivate</button>` : ''}
+</div>
+<p style="margin-top: 15px; font-size: 13px; color: var(--text-secondary);">
+💡 <strong>Share this code</strong> with your ${code.subject} students. They'll enter it during signup or from their dashboard to link to you.
+</p>
+</div>
+`).join('');
+}
+}
+}
   
+// RENDER LINKED TEACHERS (Students)
+if (state.accountType === 'student') {
+const linkedTeachersList = document.getElementById('linkedTeachersList');
+if (linkedTeachersList && state.linkedTeachers) {
+if (state.linkedTeachers.length === 0) {
+linkedTeachersList.innerHTML = `
+<div style="text-align: center; padding: 40px 20px; background: var(--bg-primary); border-radius: 12px;">
+<div style="font-size: 48px; margin-bottom: 15px;">👨‍🏫</div>
+<h4 style="margin-bottom: 10px; color: var(--text-primary);">No Teachers Linked Yet</h4>
+<p style="color: var(--text-secondary); margin-bottom: 20px;">Get a class code from your teacher to link your account and let them track your progress!</p>
+<button class="btn-primary" onclick="showLinkTeacher()">+ Link Your First Teacher</button>
+</div>
+`;
+} else {
+linkedTeachersList.innerHTML = state.linkedTeachers.map(teacher => `
+<div style="background: var(--bg-primary); border-left: 4px solid var(--accent); border-radius: 8px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+<div>
+<h4 style="margin: 0 0 5px 0; font-size: 16px;">${teacher.teacherName}</h4>
+<p style="margin: 0; font-size: 14px; color: var(--text-secondary);">
+📚 ${teacher.subject}${teacher.className ? " (" + teacher.className + ")" : ""} • Year ${teacher.year}
+</p>
+${teacher.examBoard ? `<p style="margin: 5px 0 0 0; font-size: 12px; color: var(--text-secondary);">📋 Exam Board: ${teacher.examBoard}</p>` : ''}
+<p style="margin: 5px 0 0 0; font-size: 12px; color: var(--text-secondary);">
+Can view: ${teacher.canViewSubjects.join(', ')}
+</p>
+</div>
+<button class="btn-danger" onclick="unlinkTeacher('${teacher.teacherId}', '${teacher.subject}')" style="padding: 8px 12px; font-size: 13px;">Unlink</button>
+</div>
+`).join('');
+}
+}
+}
   
-  
-  // RENDER CLASS CODES (Teachers)
-  if (state.accountType === 'teacher') {
-    const classCodesList = document.getElementById('classCodesList');
-    if (classCodesList && state.classCodes) {
-      if (state.classCodes.length === 0) {
-        classCodesList.innerHTML = '<p style="color: var(--text-secondary);">No class codes yet. Click "Create New Code" to get started!</p>';
-      } else {
-        classCodesList.innerHTML = state.classCodes.map(code => `
-          <div style="background: var(--bg-primary); border: 2px solid var(--accent); border-radius: 12px; padding: 20px; margin-bottom: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-              <div>
-                <h4 style="margin: 0 0 8px 0; font-size: 18px;">${code.subject}${code.className ? " - " + code.className : ""} - Year ${code.year}</h4>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <code style="background: var(--accent); color: white; padding: 8px 16px; border-radius: 6px; font-size: 16px; font-weight: bold; letter-spacing: 1px;">${code.code}</code>
-                  <span style="color: var(--text-secondary); font-size: 14px;">👥 ${code.studentsCount || 0} students</span>
-                </div>
-              </div>
-              <div>
-                ${code.active ? '<span style="background: var(--success); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">ACTIVE</span>' : '<span style="background: var(--text-secondary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">INACTIVE</span>'}
-              </div>
-            </div>
-            <div style="display: flex; gap: 10px;">
-              <button class="btn-primary" onclick="copyClassCode('${code.code}')" style="flex: 1; padding: 10px; font-size: 13px;">📋 Copy Code</button>
-              ${code.active ? `<button class="btn-secondary" onclick="deactivateClassCode('${code.code}')" style="flex: 1; padding: 10px; font-size: 13px;">🔒 Deactivate</button>` : ''}
-            </div>
-            <p style="margin-top: 15px; font-size: 13px; color: var(--text-secondary);">
-              💡 <strong>Share this code</strong> with your ${code.subject} students. They'll enter it during signup or from their dashboard to link to you.
-            </p>
-          </div>
-        `).join('');
-      }
-    }
-  }
-  
-  // RENDER LINKED TEACHERS (Students)
-  if (state.accountType === 'student') {
-    const linkedTeachersList = document.getElementById('linkedTeachersList');
-    if (linkedTeachersList && state.linkedTeachers) {
-      if (state.linkedTeachers.length === 0) {
-        linkedTeachersList.innerHTML = `
-          <div style="text-align: center; padding: 40px 20px; background: var(--bg-primary); border-radius: 12px;">
-            <div style="font-size: 48px; margin-bottom: 15px;">👨‍🏫</div>
-            <h4 style="margin-bottom: 10px; color: var(--text-primary);">No Teachers Linked Yet</h4>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">Get a class code from your teacher to link your account and let them track your progress!</p>
-            <button class="btn-primary" onclick="showLinkTeacher()">+ Link Your First Teacher</button>
-          </div>
-        `;
-      } else {
-        linkedTeachersList.innerHTML = state.linkedTeachers.map(teacher => `
-          <div style="background: var(--bg-primary); border-left: 4px solid var(--accent); border-radius: 8px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <h4 style="margin: 0 0 5px 0; font-size: 16px;">${teacher.teacherName}</h4>
-              <p style="margin: 0; font-size: 14px; color: var(--text-secondary);">
-                📚 ${teacher.subject}${teacher.className ? " (" + teacher.className + ")" : ""} • Year ${teacher.year}
-              ${teacher.examBoard ? `<p style="margin: 5px 0 0 0; font-size: 12px; color: var(--text-secondary);">
-                📋 Exam Board: ${teacher.examBoard}
-              </p>` : ''}</p>
-              <p style="margin: 5px 0 0 0; font-size: 12px; color: var(--text-secondary);">
-                Can view: ${teacher.canViewSubjects.join(', ')}
-              </p>
-            </div>
-            <button class="btn-danger" onclick="unlinkTeacher('${teacher.teacherId}', '${teacher.subject}')" style="padding: 8px 12px; font-size: 13px;">Unlink</button>
-          </div>
-        `).join('');
-      }
-    }
-  }
-  
-  // Exams
+// Exams
 const examsList = document.getElementById('examsList');
 const yearExams = (state.exams || []).filter(e => e.year === state.currentYear);
 if (yearExams.length === 0) {
@@ -3520,13 +3474,3 @@ return `
 </script>
 </body>
 </html>
-        <div style="margin-bottom: 10px;">
-          <label style="font-size: 12px; color: var(--text-secondary);">Exam Tier</label>
-          <select onchange="updateProgress8('${key}', 'tier', this.value)" style="width: 100%; margin-top: 5px; padding: 6px;">
-            <option value="">Not specified</option>
-            <option value="Higher" ${slot.tier === 'Higher' ? 'selected' : ''}>Higher (4-9)</option>
-            <option value="Foundation" ${slot.tier === 'Foundation' ? 'selected' : ''}>Foundation (1-5)</option>
-          </select>
-        </div>
-        
-              <button class="btn-secondary" onclick="viewStudentTiers('${code.code}', '${code.className || ''}', '${code.subject}')" style="flex: 1; padding: 10px; font-size: 13px;">📊 View Tiers</button>
