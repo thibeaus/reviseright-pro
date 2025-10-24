@@ -467,6 +467,90 @@ margin-top: 10px;
 .stat-value { font-size: 28px; }
 .pricing-card.best-value { transform: scale(1); }
 }
+
+/* PHASE 2: ACHIEVEMENTS & NOTIFICATIONS */
+.notification-banner {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: slideIn 0.3s ease-out;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+.notification-banner.warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+}
+.notification-banner.success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.achievement-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  border: 3px solid var(--accent);
+  border-radius: 12px;
+  margin: 10px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.achievement-badge:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+}
+.achievement-badge.locked {
+  opacity: 0.4;
+  border-color: var(--border);
+  cursor: not-allowed;
+}
+.achievement-badge.locked:hover {
+  transform: none;
+  box-shadow: none;
+}
+.achievement-icon {
+  font-size: 32px;
+}
+.achievement-info h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.achievement-info p {
+  margin: 5px 0 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.achievement-progress {
+  width: 100%;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.achievement-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+.unlock-animation {
+  animation: unlock 0.6s ease-out;
+}
+@keyframes unlock {
+  0% { transform: scale(0.8) rotate(-10deg); opacity: 0; }
+  50% { transform: scale(1.1) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
 </style>
 </head>
 <body>
@@ -565,10 +649,15 @@ Have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bo
 <button class="nav-btn" onclick="switchTab('pomodoro')">⏱ Timer</button>
 <button class="nav-btn" onclick="switchTab('exams')">📅 Exams</button>
 <button class="nav-btn" id="scheduleTab" onclick="switchTab('schedule')">📆 Schedule</button>
-<button class="nav-btn" onclick="switchTab('settings')">⚙ Settings</button>
+    <button class="nav-btn" onclick="switchTab('achievements')">🏆 Achievements</button>
+    <button class="nav-btn" onclick="switchTab('settings')">⚙ Settings</button>
 </div>
 
 <div class="container">
+    <!-- Notifications Banner -->
+    <div id="notificationsBanner"></div>
+
+    
 <!-- NEW: Year Selector (Shows for students only) -->
 <div id="yearSelector" class="hidden">
 <div class="year-tabs" id="yearTabs"></div>
@@ -846,6 +935,34 @@ Have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bo
 </div>
 <div id="examsList"></div>
 </div>
+</div>
+
+
+<!-- Achievements Tab (PHASE 2) -->
+<div id="achievementsTab" class="hidden">
+  <div class="card">
+    <div class="card-header">
+      <h2>🏆 Your Achievements</h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
+      <div class="stat-card">
+        <div class="stat-value" id="totalAchievements">0</div>
+        <div class="stat-label">Achievements Unlocked</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="achievementXP">0</div>
+        <div class="stat-label">Total XP</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="achievementStreak">0</div>
+        <div class="stat-label">Current Streak</div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom: 15px;">🎯 All Achievements</h3>
+    <div id="achievementsList"></div>
+  </div>
 </div>
 
 <!-- Settings Tab -->
@@ -1205,7 +1322,11 @@ open3: { target: '', current: '', subject: 'Open Slot 3' }
 },
 theme: 'default',
 fontSize: '16px'
-};
+,
+achievements: [],
+unlockedAchievements: [],
+achievementXP: 0,
+notifications: []};
 
 const gradePoints = {
 '9': 9, '8': 8, '7': 7, '6': 6, '5': 5,
@@ -1402,6 +1523,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('activ
 document.querySelector('.nav-btn').classList.add('active');
 
 renderApp();
+        checkNotifications();
 } else {
 currentUser = null;
 document.getElementById('loadingScreen').classList.add('hidden');
@@ -1431,6 +1553,8 @@ state.progress8 = data.progress8 || state.progress8;
 state.pomodoro = data.pomodoro || state.pomodoro;
 state.theme = data.theme || 'default';
 state.fontSize = data.fontSize || '16px';
+        state.unlockedAchievements = data.unlockedAchievements || [];
+        state.achievementXP = data.achievementXP || 0;
 
 applyTheme();
 applyFontSize();
@@ -1460,6 +1584,8 @@ progress8: state.progress8,
 pomodoro: state.pomodoro,
 theme: state.theme,
 fontSize: state.fontSize,
+        unlockedAchievements: state.unlockedAchievements || [],
+        achievementXP: state.achievementXP || 0,
 lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
 });
 } catch (error) {
@@ -1508,6 +1634,7 @@ document.getElementById('pomodoroTab').classList.add('hidden');
 document.getElementById('examsTab').classList.add('hidden');
 document.getElementById('scheduleTab').classList.add('hidden');
 document.getElementById('settingsTab').classList.add('hidden');
+    document.getElementById('achievementsTab').classList.add('hidden');
 document.getElementById('teacherTabContent').classList.add('hidden');
 
 // Show the selected tab
@@ -2134,6 +2261,166 @@ return '';
 }
 
 // Main render function
+
+// PHASE 2: ACHIEVEMENTS SYSTEM
+const achievementDefinitions = [
+  { id: 'first_subject', icon: '📚', title: 'Getting Started', description: 'Add your first subject', xp: 10, condition: () => state.subjects.length >= 1 },
+  { id: 'five_subjects', icon: '📖', title: 'Busy Schedule', description: 'Add 5 subjects', xp: 25, condition: () => state.subjects.length >= 5 },
+  { id: 'first_flashcard', icon: '🎴', title: 'Memory Master', description: 'Create your first flashcard', xp: 10, condition: () => (state.flashcards || []).length >= 1 },
+  { id: 'ten_flashcards', icon: '🎯', title: 'Flashcard Pro', description: 'Create 10 flashcards', xp: 30, condition: () => (state.flashcards || []).length >= 10 },
+  { id: 'first_exam', icon: '📅', title: 'Exam Ready', description: 'Schedule your first exam', xp: 15, condition: () => (state.exams || []).length >= 1 },
+  { id: 'pomodoro_5', icon: '⏱', title: 'Focus Warrior', description: 'Complete 5 Pomodoro sessions', xp: 20, condition: () => state.pomodoro && state.pomodoro.sessionsToday >= 5 },
+  { id: 'streak_7', icon: '🔥', title: 'Week Streak', description: 'Study 7 days in a row', xp: 50, condition: () => state.pomodoro && state.pomodoro.streak >= 7 },
+  { id: 'progress8_set', icon: '🎯', title: 'Target Setter', description: 'Set all Progress 8 targets', xp: 25, condition: () => {
+    const slots = Object.values(state.progress8);
+    return slots.filter(s => s.target).length >= 8;
+  }},
+  { id: 'grade_9', icon: '⭐', title: 'Top Grade', description: 'Achieve a grade 9 in any subject', xp: 100, condition: () => {
+    const slots = Object.values(state.progress8);
+    return slots.some(s => s.current === '9');
+  }},
+  { id: 'master_10_cards', icon: '🏆', title: 'Flashcard Master', description: 'Master 10 flashcards', xp: 40, condition: () => (state.flashcards || []).filter(f => f.mastered).length >= 10 },
+];
+
+function checkAchievements() {
+  if (!state.unlockedAchievements) state.unlockedAchievements = [];
+  
+  let newUnlocks = [];
+  
+  achievementDefinitions.forEach(achievement => {
+    // Check if already unlocked
+    if (state.unlockedAchievements.includes(achievement.id)) return;
+    
+    // Check if condition is met
+    if (achievement.condition()) {
+      state.unlockedAchievements.push(achievement.id);
+      state.achievementXP = (state.achievementXP || 0) + achievement.xp;
+      newUnlocks.push(achievement);
+    }
+  });
+  
+  // Show notifications for new achievements
+  if (newUnlocks.length > 0) {
+    newUnlocks.forEach(achievement => {
+      showNotification(
+        `🎉 Achievement Unlocked: ${achievement.title}!`,
+        `You earned ${achievement.xp} XP`,
+        'success',
+        5000
+      );
+    });
+    saveData();
+  }
+}
+
+function renderAchievements() {
+  if (!state.unlockedAchievements) state.unlockedAchievements = [];
+  
+  const achievementsList = document.getElementById('achievementsList');
+  if (!achievementsList) return;
+  
+  document.getElementById('totalAchievements').textContent = state.unlockedAchievements.length;
+  document.getElementById('achievementXP').textContent = state.achievementXP || 0;
+  document.getElementById('achievementStreak').textContent = (state.pomodoro && state.pomodoro.streak) || 0;
+  
+  achievementsList.innerHTML = achievementDefinitions.map(achievement => {
+    const isUnlocked = state.unlockedAchievements.includes(achievement.id);
+    const lockedClass = isUnlocked ? '' : 'locked';
+    const iconDisplay = isUnlocked ? achievement.icon : '🔒';
+    
+    return `
+      <div class="achievement-badge ${lockedClass}">
+        <div class="achievement-icon">${iconDisplay}</div>
+        <div class="achievement-info" style="flex: 1;">
+          <h4>${achievement.title}</h4>
+          <p>${achievement.description}</p>
+          <p style="font-weight: 600; color: var(--accent); margin-top: 5px;">${achievement.xp} XP</p>
+        </div>
+        ${isUnlocked ? '<div style="font-size: 24px;">✓</div>' : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+// PHASE 2: NOTIFICATIONS SYSTEM
+function showNotification(message, subtitle = '', type = 'info', duration = 4000) {
+  const banner = document.getElementById('notificationsBanner');
+  if (!banner) return;
+  
+  const notification = document.createElement('div');
+  notification.className = `notification-banner ${type}`;
+  notification.innerHTML = `
+    <div>
+      <div style="font-weight: 600; margin-bottom: 3px;">${message}</div>
+      ${subtitle ? `<div style="font-size: 13px; opacity: 0.9;">${subtitle}</div>` : ''}
+    </div>
+    <button onclick="this.parentElement.remove()" style="background: transparent; color: white; padding: 5px 10px; font-size: 20px; opacity: 0.8;">×</button>
+  `;
+  
+  banner.appendChild(notification);
+  
+  // Auto-remove after duration
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.style.opacity = '0';
+      setTimeout(() => notification.remove(), 300);
+    }
+  }, duration);
+}
+
+function checkNotifications() {
+  if (!state.exams) return;
+  
+  const now = new Date();
+  const yearExams = state.exams.filter(e => e.year === state.currentYear);
+  
+  yearExams.forEach(exam => {
+    const examDate = new Date(exam.date + ' ' + exam.time);
+    const daysUntil = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
+    
+    // Notify 7 days before
+    if (daysUntil === 7) {
+      showNotification(
+        `📅 Exam in 1 week!`,
+        `${exam.subject} - ${exam.name} on ${new Date(exam.date).toLocaleDateString()}`,
+        'warning',
+        6000
+      );
+    }
+    
+    // Notify 1 day before
+    if (daysUntil === 1) {
+      showNotification(
+        `🚨 Exam Tomorrow!`,
+        `${exam.subject} - ${exam.name} at ${exam.time}`,
+        'warning',
+        8000
+      );
+    }
+    
+    // Notify on exam day
+    if (daysUntil === 0) {
+      showNotification(
+        `📝 Exam TODAY!`,
+        `${exam.subject} - ${exam.name} at ${exam.time}`,
+        'warning',
+        10000
+      );
+    }
+  });
+  
+  // Welcome notification for new users
+  if (state.subjects.length === 0 && state.topics.length === 0) {
+    showNotification(
+      `👋 Welcome to ReviseRight Pro!`,
+      `Start by adding your first subject`,
+      'info',
+      6000
+    );
+  }
+}
+
+
 function renderApp() {
 if (!currentUser) return;
 
@@ -2448,7 +2735,13 @@ document.getElementById('totalCoins').textContent = state.pomodoro.coins || 0;
 upgradePet();
 }
 
-// Exams
+
+  
+  // PHASE 2: Check achievements and notifications
+  checkAchievements();
+  renderAchievements();
+  
+  // Exams
 const examsList = document.getElementById('examsList');
 const yearExams = (state.exams || []).filter(e => e.year === state.currentYear);
 if (yearExams.length === 0) {
