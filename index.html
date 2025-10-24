@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+<!DOC
+                  ${code.examBoard ? `<span style="background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">${code.examBoard}</span>` : ''}TYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -628,6 +629,13 @@ Have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bo
 <option value="university">University (Premium)</option>
 </select>
 </div>
+
+<div style="margin-bottom: 15px;">
+<label style="display: block; color: #666; margin-bottom: 5px;">Teacher's Class Code (Optional)</label>
+<input type="text" id="signupClassCode" placeholder="e.g., SMITH-MATH-Y11-X4K2" style="border: 1px solid #ddd; text-transform: uppercase;">
+<p style="font-size: 12px; color: #999; margin-top: 5px;">Have a code from your teacher? Enter it here to link your account.</p>
+</div>
+
 <button onclick="handleSignup()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px; border-radius: 10px; font-weight: bold; margin-top: 10px;">Create Account</button>
 <p style="text-align: center; margin-top: 15px; color: #666; font-size: 14px;">
 <a onclick="showAccountType()" style="color: #667eea; font-weight: bold; cursor: pointer;">← Back</a>
@@ -693,6 +701,15 @@ Have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bo
 </div>
 </div>
 
+
+<div class="card">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+<h3>👨‍🏫 Your Linked Teachers</h3>
+<button class="btn-primary" onclick="showLinkTeacher()">+ Link Teacher</button>
+</div>
+<div id="linkedTeachersList"></div>
+</div>
+
 <div class="card">
 <h3 style="margin-bottom: 15px;">📚 Recent Subjects</h3>
 <div id="recentSubjects"></div>
@@ -735,6 +752,18 @@ Have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bo
 <div class="card">
 <h3 style="margin-bottom: 15px;">📊 Class Performance</h3>
 <div id="classPerformance"></div>
+</div>
+
+
+<div class="card">
+<div class="card-header">
+<h2>📋 Your Class Codes</h2>
+<button class="btn-primary" onclick="showCreateClassCode()">+ Create New Code</button>
+</div>
+
+<p style="color: var(--text-secondary); margin-bottom: 20px;">Share these codes with students so they can link to you and you can view their progress.</p>
+
+<div id="classCodesList"></div>
 </div>
 
 <div class="card">
@@ -1126,6 +1155,19 @@ Have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bo
 <option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option>
 </select>
 </div>
+
+<div style="margin-bottom: 15px;">
+<label>Exam Tier (Optional)</label>
+<select id="subjectTier">
+<option value="">Not specified</option>
+<option value="Higher">Higher Tier (Grades 4-9)</option>
+<option value="Foundation">Foundation Tier (Grades 1-5)</option>
+</select>
+<p style="font-size: 12px; color: #999; margin-top: 5px;">
+For subjects with tiered exams (Maths, Science, etc.)
+</p>
+</div>
+
 <div style="display: flex; gap: 10px; margin-top: 20px;">
 <button class="btn-primary" onclick="addSubject()" style="flex: 1;">Add</button>
 <button class="btn-secondary" onclick="closeModal('addSubjectModal')" style="flex: 1;">Cancel</button>
@@ -1217,6 +1259,32 @@ Have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bo
 <button onclick="closeModal('viewStudentModal')" style="background: transparent; color: var(--text-secondary); padding: 8px;">✕</button>
 </div>
 <div id="studentP8Content"></div>
+
+<div id="viewStudentTiersModal" class="modal">
+<div class="modal-content">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h3>📊 Student Exam Tiers - <span id="tiersClassName"></span></h3>
+<button onclick="closeModal('viewStudentTiersModal')" style="background: transparent; color: var(--text-secondary); padding: 8px;">✕</button>
+</div>
+
+<p style="color: var(--text-secondary); margin-bottom: 20px;">
+View which tier each student is taking for this subject. Students can set their own tiers in their Progress 8 tracker.
+</p>
+
+<div id="studentTiersList"></div>
+
+<div style="margin-top: 20px; padding: 15px; background: var(--bg-primary); border-radius: 8px;">
+<h4 style="margin-bottom: 10px; font-size: 14px;">📋 Tier Information:</h4>
+<div style="font-size: 13px; color: var(--text-secondary);">
+<strong>Higher Tier:</strong> Grades 4-9 available<br>
+<strong>Foundation Tier:</strong> Grades 1-5 available (max grade 5)
+</div>
+</div>
+
+<button class="btn-secondary" onclick="closeModal('viewStudentTiersModal')" style="width: 100%; margin-top: 20px;">Close</button>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -1265,6 +1333,102 @@ Have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bo
 <button class="btn-primary" onclick="addExam()" style="flex: 1;">Add</button>
 <button class="btn-secondary" onclick="closeModal('addExamModal')" style="flex: 1;">Cancel</button>
 </div>
+
+<div id="createClassCodeModal" class="modal">
+<div class="modal-content">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h3>Create Class Code</h3>
+<button onclick="closeModal('createClassCodeModal')" style="background: transparent; color: var(--text-secondary); padding: 8px;">✕</button>
+</div>
+
+<div style="margin-bottom: 15px;">
+<label>Subject</label>
+<input type="text" id="codeSubject" placeholder="e.g., Maths, English, Science">
+</div>
+
+<div style="margin-bottom: 15px;">
+<label>Class/Set Name (Optional)</label>
+<input type="text" id="codeClassName" placeholder="e.g., Set 1, Set 3, Top Set, Class A">
+<p style="font-size: 12px; color: #999; margin-top: 5px;">
+Helps you organize multiple classes for the same subject/year
+</p>
+</div>
+
+
+<div style="margin-bottom: 15px;">
+<label>Year Group</label>
+<select id="codeYear">
+<option value="7">Year 7</option>
+<option value="8">Year 8</option>
+<option value="9">Year 9</option>
+<option value="10">Year 10</option>
+<option value="11">Year 11</option>
+<option value="12">Year 12 (AS)</option>
+<option value="13">Year 13 (A2)</option>
+</select>
+</div>
+
+<div style="margin-bottom: 15px;">
+<label>Exam Board (Optional)</label>
+<select id="codeExamBoard">
+<option value="">Not specified</option>
+<option value="AQA">AQA</option>
+<option value="Edexcel">Edexcel</option>
+<option value="OCR">OCR</option>
+<option value="WJEC">WJEC</option>
+<option value="CCEA">CCEA</option>
+<option value="Eduqas">Eduqas</option>
+<option value="Cambridge">Cambridge International</option>
+<option value="Pearson">Pearson</option>
+</select>
+</div>
+
+
+<p style="background: var(--bg-primary); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; color: var(--text-secondary);">
+<strong>ℹ️ How it works:</strong><br>
+Students will enter this code during signup or from their dashboard to link to you. You'll be able to see their progress in the subject you specify.
+</p>
+
+<div style="display: flex; gap: 10px;">
+<button class="btn-primary" onclick="createClassCode()" style="flex: 1;">Generate Code</button>
+<button class="btn-secondary" onclick="closeModal('createClassCodeModal')" style="flex: 1;">Cancel</button>
+</div>
+</div>
+</div>
+
+
+<div id="linkTeacherModal" class="modal">
+<div class="modal-content">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h3>Link to a Teacher</h3>
+<button onclick="closeModal('linkTeacherModal')" style="background: transparent; color: var(--text-secondary); padding: 8px;">✕</button>
+</div>
+
+<div style="margin-bottom: 15px;">
+<label>Teacher's Class Code</label>
+<input type="text" id="teacherCode" placeholder="e.g., SMITH-MATH-Y11-X4K2" style="text-transform: uppercase;">
+<p style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">
+Get this code from your teacher. It's usually written on the board or in your Google Classroom.
+</p>
+</div>
+
+<div style="background: var(--bg-primary); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;">
+<strong>📚 What happens when you link?</strong>
+<ul style="margin: 10px 0 0 20px; color: var(--text-secondary);">
+<li style="margin-bottom: 5px;">Your teacher can see your progress in their subject</li>
+<li style="margin-bottom: 5px;">They can view your flashcards and study time</li>
+<li style="margin-bottom: 5px;">You can unlink at any time</li>
+<li>You can link to multiple teachers for different subjects</li>
+</ul>
+</div>
+
+<div style="display: flex; gap: 10px;">
+<button class="btn-primary" onclick="linkToTeacher()" style="flex: 1;">Link to Teacher</button>
+<button class="btn-secondary" onclick="closeModal('linkTeacherModal')" style="flex: 1;">Cancel</button>
+</div>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -1324,7 +1488,10 @@ open2: { target: '', current: '', subject: 'Open Slot 2' },
 open3: { target: '', current: '', subject: 'Open Slot 3' }
 },
 theme: 'default',
-fontSize: '16px'
+  classCode: '',
+  classCodes: [],
+  linkedTeachers: [],
+  fontSize: '16px'
 ,
 achievements: [],
 unlockedAchievements: [],
@@ -1419,7 +1586,53 @@ theme: 'default',
 fontSize: '16px',
 createdAt: firebase.firestore.FieldValue.serverTimestamp()
 });
-showMessage('Account created successfully!', 'success');
+
+    
+    // Handle class code if provided during signup
+    const signupCode = document.getElementById('signupClassCode');
+    if (signupCode && signupCode.value.trim()) {
+      const code = signupCode.value.trim().toUpperCase();
+      try {
+        const codeDoc = await db.collection('classCodes').doc(code).get();
+        if (codeDoc.exists && codeDoc.data().active) {
+          const codeData = codeDoc.data();
+          
+          // Add teacher link to new user
+          await db.collection('users').doc(userCredential.user.uid).update({
+            linkedTeachers: [{
+              teacherId: codeData.teacherId,
+              teacherName: codeData.teacherName,
+              subject: codeData.subject,
+              classCode: code,
+              year: codeData.year,
+              canViewSubjects: [codeData.subject],
+              linkedAt: new Date().toISOString()
+            }]
+          });
+          
+          // Update code student count
+          await db.collection('classCodes').doc(code).update({
+            studentsCount: firebase.firestore.FieldValue.increment(1)
+          });
+          
+          // Add to teacher's linked students
+          const teacherDoc = await db.collection('users').doc(codeData.teacherId).get();
+          if (teacherDoc.exists) {
+            const linkedStudents = teacherDoc.data().linkedStudents || [];
+            if (!linkedStudents.includes(userCredential.user.uid)) {
+              linkedStudents.push(userCredential.user.uid);
+              await db.collection('users').doc(codeData.teacherId).update({
+                linkedStudents: linkedStudents
+              });
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error processing class code:', error);
+      }
+    }
+
+    showMessage('Account created successfully!', 'success');
 } catch (error) {
 showMessage('Signup failed: ' + error.message, 'error');
 }
@@ -1559,11 +1772,19 @@ state.flashcards = data.flashcards || [];
 state.exams = data.exams || [];
 state.students = data.students || [];
 state.progress8 = data.progress8 || state.progress8;
+        // Initialize tier property for existing slots
+        if (state.progress8) {
+          Object.keys(state.progress8).forEach(key => {
+            if (!state.progress8[key].tier) state.progress8[key].tier = '';
+          });
+        }
 state.pomodoro = data.pomodoro || state.pomodoro;
 state.theme = data.theme || 'default';
 state.fontSize = data.fontSize || '16px';
         state.unlockedAchievements = data.unlockedAchievements || [];
         state.achievementXP = data.achievementXP || 0;
+        state.classCodes = data.classCodes || [];
+        state.linkedTeachers = data.linkedTeachers || [];
 
 applyTheme();
 applyFontSize();
@@ -1595,6 +1816,8 @@ theme: state.theme,
 fontSize: state.fontSize,
         unlockedAchievements: state.unlockedAchievements || [],
         achievementXP: state.achievementXP || 0,
+        classCodes: state.classCodes || [],
+        linkedTeachers: state.linkedTeachers || [],
 lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
 });
 } catch (error) {
@@ -1712,6 +1935,7 @@ window.addSubject = function() {
 const name = document.getElementById('subjectName').value.trim();
 const teacher = document.getElementById('subjectTeacher').value.trim();
 const target = document.getElementById('subjectTarget').value;
+  const tier = document.getElementById('subjectTier').value;
 
 if (!name) {
 alert('Please enter subject name');
@@ -1722,7 +1946,8 @@ state.subjects.push({
 id: Date.now(),
 name,
 teacher,
-target
+target,
+    tier
 });
 
 saveData();
@@ -1732,6 +1957,7 @@ renderApp();
 document.getElementById('subjectName').value = '';
 document.getElementById('subjectTeacher').value = '';
 document.getElementById('subjectTarget').value = '';
+  document.getElementById('subjectTier').value = '';
 };
 
 window.deleteSubject = function(id) {
@@ -2482,6 +2708,395 @@ function checkNotifications() {
 }
 
 
+
+// CLASS CODE & LINKING SYSTEM
+function generateClassCode(subject, year, className = '') {
+  const teacherName = currentUser.name.split(' ').pop().toUpperCase();
+  const subjectCode = subject.substring(0, 4).toUpperCase();
+  const classCode = className ? '-' + className.toUpperCase().replace(/\s+/g, '') : '';
+  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `${teacherName}-${subjectCode}${classCode}-Y${year}-${random}`;
+}-${subjectCode}-Y${year}-${random}`;
+}
+
+window.createClassCode = async function() {
+  const subject = document.getElementById('codeSubject').value;
+  const year = document.getElementById('codeYear').value;
+  const className = document.getElementById('codeClassName').value.trim();
+  const examBoard = document.getElementById('codeExamBoard').value;
+  
+  if (!subject || !year) {
+    alert('Please select subject and year');
+    return;
+  }
+  
+  const code = generateClassCode(subject, year, className);
+  
+  // Check if code already exists
+  const codeDoc = await db.collection('classCodes').doc(code).get();
+  if (codeDoc.exists) {
+    // Try again with different random
+    createClassCode();
+    return;
+  }
+  
+  // Save to Firebase
+  await db.collection('classCodes').doc(code).set({
+    teacherId: currentUser.uid,
+    teacherName: currentUser.name,
+    subject: subject,
+    year: year,
+    className: className,
+    examBoard: examBoard,
+    active: true,
+    studentsCount: 0,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  
+  // Add to teacher's class codes
+  if (!state.classCodes) state.classCodes = [];
+  state.classCodes.push({
+    code: code,
+    subject: subject,
+    year: year,
+    className: className,
+    examBoard: examBoard,
+    active: true,
+    studentsCount: 0,
+    createdAt: new Date()
+  });
+  
+  await saveData();
+  closeModal('createClassCodeModal');
+  renderApp();
+  
+  alert(`Class code created: ${code}\n\nShare this with your students!`);
+}
+
+window.showCreateClassCode = function() {
+  document.getElementById('createClassCodeModal').classList.add('show');
+}
+
+window.copyClassCode = function(code) {
+  navigator.clipboard.writeText(code).then(() => {
+    alert('Code copied to clipboard: ' + code);
+  }).catch(() => {
+    prompt('Copy this code:', code);
+  });
+}
+
+window.deactivateClassCode = async function(code) {
+  if (!confirm('Deactivate this class code? Students will no longer be able to use it to link to you.')) {
+    return;
+  }
+  
+  // Update in Firebase
+  await db.collection('classCodes').doc(code).update({
+    active: false
+  });
+  
+  // Update local state
+  const codeObj = state.classCodes.find(c => c.code === code);
+  if (codeObj) codeObj.active = false;
+  
+  await saveData();
+  renderApp();
+}
+
+// STUDENT LINKING FUNCTIONS
+window.showLinkTeacher = function() {
+  document.getElementById('linkTeacherModal').classList.add('show');
+}
+
+window.linkToTeacher = async function() {
+  const code = document.getElementById('teacherCode').value.trim().toUpperCase();
+  
+  if (!code) {
+    alert('Please enter a class code');
+    return;
+  }
+  
+  // Check if code exists and is active
+  const codeDoc = await db.collection('classCodes').doc(code).get();
+  
+  if (!codeDoc.exists) {
+    alert('Invalid class code. Please check with your teacher.');
+    return;
+  }
+  
+  const codeData = codeDoc.data();
+  
+  if (!codeData.active) {
+    alert('This class code is no longer active. Please get a new code from your teacher.');
+    return;
+  }
+  
+  // Check if already linked
+  if (!state.linkedTeachers) state.linkedTeachers = [];
+  if (state.linkedTeachers.some(t => t.teacherId === codeData.teacherId && t.subject === codeData.subject)) {
+    alert('You are already linked to this teacher for this subject.');
+    return;
+  }
+  
+  // Add teacher link
+  state.linkedTeachers.push({
+    teacherId: codeData.teacherId,
+    teacherName: codeData.teacherName,
+    subject: codeData.subject,
+    classCode: code,
+    className: codeData.className || '',
+    examBoard: codeData.examBoard || '',
+    year: codeData.year,
+    canViewSubjects: [codeData.subject],
+    linkedAt: new Date().toISOString()
+  });
+  
+  // Update student count for this code
+  await db.collection('classCodes').doc(code).update({
+    studentsCount: firebase.firestore.FieldValue.increment(1)
+  });
+  
+  // Add student to teacher's linked students list
+  const teacherDoc = await db.collection('users').doc(codeData.teacherId).get();
+  if (teacherDoc.exists) {
+    const teacherData = teacherDoc.data();
+    const linkedStudents = teacherData.linkedStudents || [];
+    
+    if (!linkedStudents.includes(currentUser.uid)) {
+      linkedStudents.push(currentUser.uid);
+      await db.collection('users').doc(codeData.teacherId).update({
+        linkedStudents: linkedStudents
+      });
+    }
+  }
+  
+  await saveData();
+  closeModal('linkTeacherModal');
+  renderApp();
+  
+  showNotification(
+    `✅ Linked to ${codeData.teacherName}!`,
+    `${codeData.subject} - ${codeData.teacherName} can now view your progress`,
+    'success',
+    5000
+  );
+  
+  document.getElementById('teacherCode').value = '';
+}
+
+
+window.viewStudentTiers = async function(classCode, className, subject) {
+  document.getElementById('tiersClassName').textContent = `${subject}${className ? ' - ' + className : ''}`;
+  
+  // Get all students linked to this class code
+  const codeDoc = await db.collection('classCodes').doc(classCode).get();
+  if (!codeDoc.exists) {
+    alert('Class code not found');
+    return;
+  }
+  
+  const codeData = codeDoc.data();
+  const teacherId = codeData.teacherId;
+  
+  // Get teacher's linked students
+  const teacherDoc = await db.collection('users').doc(teacherId).get();
+  if (!teacherDoc.exists) return;
+  
+  const linkedStudentIds = teacherDoc.data().linkedStudents || [];
+  
+  // Fetch all student data
+  const studentTiers = [];
+  
+  for (const studentId of linkedStudentIds) {
+    try {
+      const studentDoc = await db.collection('users').doc(studentId).get();
+      if (studentDoc.exists) {
+        const studentData = studentDoc.data();
+        
+        // Check if this student used THIS class code
+        const hasThisCode = (studentData.linkedTeachers || []).some(t => t.classCode === classCode);
+        if (!hasThisCode) continue;
+        
+        // Find tier info from Progress 8
+        let tier = 'Not specified';
+        if (studentData.progress8) {
+          const p8Entries = Object.values(studentData.progress8);
+          const subjectEntry = p8Entries.find(entry => 
+            entry.subject && entry.subject.toLowerCase().includes(subject.toLowerCase())
+          );
+          if (subjectEntry && subjectEntry.tier) {
+            tier = subjectEntry.tier;
+          }
+        }
+        
+        // Find target and current grades
+        let target = '-', current = '-';
+        if (studentData.progress8) {
+          const p8Entries = Object.values(studentData.progress8);
+          const subjectEntry = p8Entries.find(entry => 
+            entry.subject && entry.subject.toLowerCase().includes(subject.toLowerCase())
+          );
+          if (subjectEntry) {
+            target = subjectEntry.target || '-';
+            current = subjectEntry.current || '-';
+          }
+        }
+        
+        studentTiers.push({
+          name: studentData.name,
+          tier: tier,
+          target: target,
+          current: current
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching student:', error);
+    }
+  }
+  
+  // Sort by name
+  studentTiers.sort((a, b) => a.name.localeCompare(b.name));
+  
+  // Render
+  const tiersList = document.getElementById('studentTiersList');
+  if (studentTiers.length === 0) {
+    tiersList.innerHTML = '<p style="color: var(--text-secondary);">No students found for this class.</p>';
+  } else {
+    // Count tiers
+    const higherCount = studentTiers.filter(s => s.tier === 'Higher').length;
+    const foundationCount = studentTiers.filter(s => s.tier === 'Foundation').length;
+    const notSpecifiedCount = studentTiers.filter(s => s.tier === 'Not specified').length;
+    
+    tiersList.innerHTML = `
+      <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+        <div style="background: var(--bg-primary); padding: 12px 20px; border-radius: 8px; flex: 1; min-width: 120px;">
+          <div style="font-size: 24px; font-weight: bold; color: var(--accent);">${higherCount}</div>
+          <div style="font-size: 13px; color: var(--text-secondary);">Higher Tier</div>
+        </div>
+        <div style="background: var(--bg-primary); padding: 12px 20px; border-radius: 8px; flex: 1; min-width: 120px;">
+          <div style="font-size: 24px; font-weight: bold; color: var(--success);">${foundationCount}</div>
+          <div style="font-size: 13px; color: var(--text-secondary);">Foundation Tier</div>
+        </div>
+        <div style="background: var(--bg-primary); padding: 12px 20px; border-radius: 8px; flex: 1; min-width: 120px;">
+          <div style="font-size: 24px; font-weight: bold; color: var(--text-secondary);">${notSpecifiedCount}</div>
+          <div style="font-size: 13px; color: var(--text-secondary);">Not Specified</div>
+        </div>
+      </div>
+      
+      <div style="max-height: 400px; overflow-y: auto;">
+        ${studentTiers.map(student => {
+          const tierColor = student.tier === 'Higher' ? 'var(--accent)' : 
+                           student.tier === 'Foundation' ? 'var(--success)' : 
+                           'var(--text-secondary)';
+          return `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border);">
+              <div>
+                <strong>${student.name}</strong>
+              </div>
+              <div style="display: flex; gap: 15px; align-items: center;">
+                <span style="font-size: 12px; color: var(--text-secondary);">Target: <strong>${student.target}</strong></span>
+                <span style="font-size: 12px; color: var(--text-secondary);">Current: <strong>${student.current}</strong></span>
+                <span style="background: ${tierColor}; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; min-width: 90px; text-align: center;">
+                  ${student.tier}
+                </span>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+  
+  document.getElementById('viewStudentTiersModal').classList.add('show');
+}
+
+window.unlinkTeacher = async function(teacherId, subject) {
+  if (!confirm(`Unlink from this teacher? They will no longer see your ${subject} data.`)) {
+    return;
+  }
+  
+  // Find and remove the link
+  const linkIndex = state.linkedTeachers.findIndex(t => 
+    t.teacherId === teacherId && t.subject === subject
+  );
+  
+  if (linkIndex > -1) {
+    const link = state.linkedTeachers[linkIndex];
+    state.linkedTeachers.splice(linkIndex, 1);
+    
+    // Update code student count
+    await db.collection('classCodes').doc(link.classCode).update({
+      studentsCount: firebase.firestore.FieldValue.increment(-1)
+    });
+    
+    // Remove from teacher's linked students if no other links exist
+    const stillLinkedToTeacher = state.linkedTeachers.some(t => t.teacherId === teacherId);
+    if (!stillLinkedToTeacher) {
+      const teacherDoc = await db.collection('users').doc(teacherId).get();
+      if (teacherDoc.exists) {
+        const teacherData = teacherDoc.data();
+        const linkedStudents = (teacherData.linkedStudents || []).filter(id => id !== currentUser.uid);
+        await db.collection('users').doc(teacherId).update({
+          linkedStudents: linkedStudents
+        });
+      }
+    }
+    
+    await saveData();
+    renderApp();
+    
+    showNotification(
+      'Unlinked from teacher',
+      'Your data is no longer shared with this teacher',
+      'info'
+    );
+  }
+}
+
+// FILTER DATA FOR TEACHER VIEW
+function filterStudentDataForTeacher(studentData, teacherLink) {
+  if (!teacherLink || !teacherLink.canViewSubjects) return null;
+  
+  const allowedSubjects = teacherLink.canViewSubjects;
+  
+  return {
+    name: studentData.name,
+    email: studentData.email,
+    studyLevel: studentData.studyLevel,
+    
+    // Filter subjects
+    subjects: (studentData.subjects || []).filter(s => 
+      allowedSubjects.includes(s.name)
+    ),
+    
+    // Filter Progress 8 - only show slots with allowed subjects
+    progress8: Object.fromEntries(
+      Object.entries(studentData.progress8 || {}).filter(([key, slot]) =>
+        allowedSubjects.includes(slot.subject)
+      )
+    ),
+    
+    // Filter flashcards
+    flashcards: (studentData.flashcards || []).filter(f =>
+      allowedSubjects.includes(f.subject)
+    ),
+    
+    // Filter exams
+    exams: (studentData.exams || []).filter(e =>
+      allowedSubjects.includes(e.subject)
+    ),
+    
+    // Filter topics
+    topics: (studentData.topics || []).filter(t =>
+      allowedSubjects.includes(t.subject)
+    ),
+    
+    // Study stats (always visible)
+    pomodoro: studentData.pomodoro
+  };
+}
+
+
 function renderApp() {
 if (!currentUser) return;
 
@@ -2707,7 +3322,8 @@ subjectsList.innerHTML = state.subjects.map(s => `
 <div>
 <div style="font-weight: 600; margin-bottom: 5px;">${s.name}</div>
 ${s.teacher ? `<div style="font-size: 14px; color: var(--text-secondary);">Teacher: ${s.teacher}</div>` : ''}
-${s.target ? `<span class="grade-badge grade-${s.target}" style="margin-top: 8px;">Target: ${s.target}</span>` : ''}
+
+        ${s.tier ? `<div style="font-size: 13px; color: var(--text-secondary); margin-top: 5px;">📝 Tier: ${s.tier}</div>` : ''}${s.target ? `<span class="grade-badge grade-${s.target}" style="margin-top: 8px;">Target: ${s.target}</span>` : ''}
 </div>
 <button class="btn-danger" onclick="deleteSubject(${s.id})" style="padding: 8px 12px; font-size: 14px;">Delete</button>
 </div>
@@ -2805,6 +3421,76 @@ upgradePet();
   checkAchievements();
   renderAchievements();
   
+  
+  
+  // RENDER CLASS CODES (Teachers)
+  if (state.accountType === 'teacher') {
+    const classCodesList = document.getElementById('classCodesList');
+    if (classCodesList && state.classCodes) {
+      if (state.classCodes.length === 0) {
+        classCodesList.innerHTML = '<p style="color: var(--text-secondary);">No class codes yet. Click "Create New Code" to get started!</p>';
+      } else {
+        classCodesList.innerHTML = state.classCodes.map(code => `
+          <div style="background: var(--bg-primary); border: 2px solid var(--accent); border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+              <div>
+                <h4 style="margin: 0 0 8px 0; font-size: 18px;">${code.subject}${code.className ? " - " + code.className : ""} - Year ${code.year}</h4>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <code style="background: var(--accent); color: white; padding: 8px 16px; border-radius: 6px; font-size: 16px; font-weight: bold; letter-spacing: 1px;">${code.code}</code>
+                  <span style="color: var(--text-secondary); font-size: 14px;">👥 ${code.studentsCount || 0} students</span>
+                </div>
+              </div>
+              <div>
+                ${code.active ? '<span style="background: var(--success); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">ACTIVE</span>' : '<span style="background: var(--text-secondary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">INACTIVE</span>'}
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn-primary" onclick="copyClassCode('${code.code}')" style="flex: 1; padding: 10px; font-size: 13px;">📋 Copy Code</button>
+              ${code.active ? `<button class="btn-secondary" onclick="deactivateClassCode('${code.code}')" style="flex: 1; padding: 10px; font-size: 13px;">🔒 Deactivate</button>` : ''}
+            </div>
+            <p style="margin-top: 15px; font-size: 13px; color: var(--text-secondary);">
+              💡 <strong>Share this code</strong> with your ${code.subject} students. They'll enter it during signup or from their dashboard to link to you.
+            </p>
+          </div>
+        `).join('');
+      }
+    }
+  }
+  
+  // RENDER LINKED TEACHERS (Students)
+  if (state.accountType === 'student') {
+    const linkedTeachersList = document.getElementById('linkedTeachersList');
+    if (linkedTeachersList && state.linkedTeachers) {
+      if (state.linkedTeachers.length === 0) {
+        linkedTeachersList.innerHTML = `
+          <div style="text-align: center; padding: 40px 20px; background: var(--bg-primary); border-radius: 12px;">
+            <div style="font-size: 48px; margin-bottom: 15px;">👨‍🏫</div>
+            <h4 style="margin-bottom: 10px; color: var(--text-primary);">No Teachers Linked Yet</h4>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Get a class code from your teacher to link your account and let them track your progress!</p>
+            <button class="btn-primary" onclick="showLinkTeacher()">+ Link Your First Teacher</button>
+          </div>
+        `;
+      } else {
+        linkedTeachersList.innerHTML = state.linkedTeachers.map(teacher => `
+          <div style="background: var(--bg-primary); border-left: 4px solid var(--accent); border-radius: 8px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h4 style="margin: 0 0 5px 0; font-size: 16px;">${teacher.teacherName}</h4>
+              <p style="margin: 0; font-size: 14px; color: var(--text-secondary);">
+                📚 ${teacher.subject}${teacher.className ? " (" + teacher.className + ")" : ""} • Year ${teacher.year}
+              ${teacher.examBoard ? `<p style="margin: 5px 0 0 0; font-size: 12px; color: var(--text-secondary);">
+                📋 Exam Board: ${teacher.examBoard}
+              </p>` : ''}</p>
+              <p style="margin: 5px 0 0 0; font-size: 12px; color: var(--text-secondary);">
+                Can view: ${teacher.canViewSubjects.join(', ')}
+              </p>
+            </div>
+            <button class="btn-danger" onclick="unlinkTeacher('${teacher.teacherId}', '${teacher.subject}')" style="padding: 8px 12px; font-size: 13px;">Unlink</button>
+          </div>
+        `).join('');
+      }
+    }
+  }
+  
   // Exams
 const examsList = document.getElementById('examsList');
 const yearExams = (state.exams || []).filter(e => e.year === state.currentYear);
@@ -2834,3 +3520,13 @@ return `
 </script>
 </body>
 </html>
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 12px; color: var(--text-secondary);">Exam Tier</label>
+          <select onchange="updateProgress8('${key}', 'tier', this.value)" style="width: 100%; margin-top: 5px; padding: 6px;">
+            <option value="">Not specified</option>
+            <option value="Higher" ${slot.tier === 'Higher' ? 'selected' : ''}>Higher (4-9)</option>
+            <option value="Foundation" ${slot.tier === 'Foundation' ? 'selected' : ''}>Foundation (1-5)</option>
+          </select>
+        </div>
+        
+              <button class="btn-secondary" onclick="viewStudentTiers('${code.code}', '${code.className || ''}', '${code.subject}')" style="flex: 1; padding: 10px; font-size: 13px;">📊 View Tiers</button>
