@@ -188,7 +188,129 @@
             background: var(--accent);
             color: white;
         }
-        
+
+        /* NEW: Year tabs */
+.year-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding: 10px;
+    background: var(--bg-primary);
+    border-radius: 8px;
+}
+        .year-tab {
+    padding: 8px 16px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+        .year-tab.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+/* NEW: Flashcard styles */
+.flashcard {
+    width: 100%;
+    max-width: 500px;
+    height: 300px;
+    perspective: 1000px;
+    margin: 20px auto;
+}
+        .flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.flashcard.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+        .flashcard-front, .flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    font-size: 20px;
+    text-align: center;
+    background: var(--bg-secondary);
+}
+        .flashcard-back {
+    transform: rotateY(180deg);
+    background: var(--accent-light);
+    color: white;
+}
+
+/* NEW: Pomodoro timer styles */
+.timer-display {
+    font-size: 72px;
+    font-weight: bold;
+    text-align: center;
+    margin: 30px 0;
+    font-family: 'Courier New', monospace;
+    color: var(--accent);
+}
+        .pet-container {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.pet {
+    font-size: 100px;
+    display: inline-block;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.pet.studying {
+    animation: study-wiggle 1s infinite;
+}
+        @keyframes study-wiggle {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+/* NEW: Exam countdown styles */
+.exam-card {
+    padding: 15px;
+    background: var(--bg-primary);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+        .exam-card.urgent {
+    border-left-color: var(--danger);
+    background: #fee;
+}
+
+.exam-card.soon {
+    border-left-color: var(--warning);
+    background: #fffaeb;
+}
+
+.countdown {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--accent);
+}
         .grade-badge {
             display: inline-block;
             padding: 6px 14px;
@@ -489,16 +611,23 @@
     <div id="app" class="hidden">
         <!-- Navigation -->
         <div class="nav">
-            <button class="nav-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
-            <button class="nav-btn" onclick="switchTab('progress8')">🎯 Progress 8</button>
-            <button class="nav-btn" id="teacherNavBtn" onclick="switchTab('teacher')" class="hidden">👨‍🏫 Students</button>
-            <button class="nav-btn" id="subjectsNavBtn" onclick="switchTab('subjects')">📚 Subjects</button>
-            <button class="nav-btn" id="topicsNavBtn" onclick="switchTab('topics')">📝 Topics</button>
-            <button class="nav-btn" id="scheduleNavBtn" onclick="switchTab('schedule')">📅 Schedule</button>
-            <button class="nav-btn" onclick="switchTab('settings')">⚙️ Settings</button>
+    <button class="nav-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+    <button class="nav-btn" onclick="switchTab('progress8')" id="progress8Nav">🎯 Progress 8</button>
+    <button class="nav-btn" id="teacherTab" onclick="switchTab('teacher')" class="hidden">👨‍🏫 Students</button>
+    <button class="nav-btn" id="studentTab" onclick="switchTab('subjects')">📚 Subjects</button>
+    <button class="nav-btn" id="topicsTab" onclick="switchTab('topics')">📝 Topics</button>
+    <button class="nav-btn" onclick="switchTab('flashcards')">🎴 Flashcards</button>
+    <button class="nav-btn" onclick="switchTab('pomodoro')">⏱️ Timer</button>
+    <button class="nav-btn" onclick="switchTab('exams')">📅 Exams</button>
+    <button class="nav-btn" id="scheduleTab" onclick="switchTab('schedule')">📆 Schedule</button>
+    <button class="nav-btn" onclick="switchTab('settings')">⚙️ Settings</button>
         </div>
 
         <div class="container">
+            <!-- NEW: Year Selector (Shows for students only) -->
+<div id="yearSelector" class="hidden">
+    <div class="year-tabs" id="yearTabs"></div>
+</div>
             <!-- Student Dashboard -->
             <div id="dashboardTab">
                 <div class="card">
@@ -520,10 +649,13 @@
                         <div class="stat-label">Topics</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="scheduleCount">0</div>
-                        <div class="stat-label">Schedule Items</div>
-                    </div>
-                </div>
+    <div class="stat-value" id="flashcardCount">0</div>
+    <div class="stat-label">Flashcards</div>
+</div>
+                    <div class="stat-card">
+    <div class="stat-value" id="examCount">0</div>
+    <div class="stat-label">Upcoming Exams</div>
+</div>
 
                 <div class="card">
                     <h3 style="margin-bottom: 15px;">📚 Recent Subjects</h3>
@@ -673,6 +805,99 @@
                     <div id="scheduleList"></div>
                 </div>
             </div>
+
+                                <!-- NEW: Flashcards Tab -->
+<div id="flashcardsTab" class="hidden">
+    <div class="card">
+        <div class="card-header">
+            <h2>🎴 Flashcards</h2>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-secondary" onclick="showStudyMode()" id="studyModeBtn" style="display: none;">📖 Study Mode</button>
+                <button class="btn-primary" onclick="showAddFlashcard()">+ Add Flashcard</button>
+            </div>
+        </div>
+
+        <!-- Study Mode -->
+        <div id="studyMode" class="hidden">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3>Study Mode</h3>
+                <p style="color: var(--text-secondary);">Card <span id="currentCardNum">1</span> of <span id="totalCards">0</span></p>
+            </div>
+            <div class="flashcard" id="flashcard" onclick="flipCard()">
+                <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                        <div id="cardFront">Click to reveal</div>
+                    </div>
+                    <div class="flashcard-back">
+                        <div id="cardBack">Answer</div>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                <button class="btn-secondary" onclick="prevCard()">← Previous</button>
+                <button class="btn-success" onclick="markMastered()">✓ Mastered</button>
+                <button class="btn-primary" onclick="nextCard()">Next →</button>
+                <button class="btn-secondary" onclick="exitStudyMode()">Exit Study</button>
+            </div>
+        </div>
+        
+        <!-- Flashcard List -->
+        <div id="flashcardList"></div>
+    </div>
+</div>
+
+                <!-- NEW: Pomodoro Timer Tab -->
+<div id="pomodoroTab" class="hidden">
+    <div class="card">
+        <div class="card-header">
+            <h2>⏱️ Pomodoro Study Timer</h2>
+        </div>
+        
+        <div style="text-align: center;">
+            <div class="timer-display" id="timerDisplay">25:00</div>
+            
+            <div class="pet-container">
+                <div class="pet" id="studyPet">🌱</div>
+                <p style="margin-top: 10px; font-weight: 600;" id="petStatus">Water me by studying!</p>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center; margin: 20px 0;">
+                <button class="btn-primary" id="startBtn" onclick="startTimer()">▶️ Start</button>
+                <button class="btn-secondary" id="pauseBtn" onclick="pauseTimer()" style="display: none;">⏸️ Pause</button>
+                <button class="btn-secondary" onclick="resetTimer()">🔄 Reset</button>
+            </div>
+
+            <div style="background: var(--bg-primary); padding: 20px; border-radius: 12px; margin-top: 20px;">
+                <h3 style="margin-bottom: 15px;">📊 Your Progress</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <div>
+                        <div style="font-size: 32px; font-weight: bold; color: var(--accent);" id="sessionsToday">0</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">Sessions Today</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 32px; font-weight: bold; color: var(--success);" id="studyStreak">0</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">Day Streak</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 32px; font-weight: bold; color: var(--warning);" id="totalCoins">0</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">Study Coins</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+                <!-- NEW: Exams Tab -->
+<div id="examsTab" class="hidden">
+    <div class="card">
+        <div class="card-header">
+            <h2>📅 Exam Countdown</h2>
+            <button class="btn-primary" onclick="showAddExam()">+ Add Exam</button>
+        </div>
+        <div id="examsList"></div>
+    </div>
+</div>
 
             <!-- Settings Tab -->
             <div id="settingsTab" class="hidden">
@@ -925,6 +1150,56 @@
         </div>
     </div>
 
+        <!-- NEW: Add Flashcard Modal -->
+<div id="addFlashcardModal" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-bottom: 20px;">Add Flashcard</h3>
+        <div style="margin-bottom: 15px;">
+            <label>Subject</label>
+            <select id="flashcardSubject"></select>
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label>Front (Question)</label>
+            <textarea id="flashcardFront" rows="3" placeholder="What is...?"></textarea>
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label>Back (Answer)</label>
+            <textarea id="flashcardBack" rows="3" placeholder="The answer is..."></textarea>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn-primary" onclick="addFlashcard()" style="flex: 1;">Add</button>
+            <button class="btn-secondary" onclick="closeModal('addFlashcardModal')" style="flex: 1;">Cancel</button>
+        </div>
+    </div>
+</div>
+
+        <!-- NEW: Add Exam Modal -->
+<div id="addExamModal" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-bottom: 20px;">Add Exam</h3>
+        <div style="margin-bottom: 15px;">
+            <label>Subject</label>
+            <select id="examSubject"></select>
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label>Exam Name</label>
+            <input type="text" id="examName" placeholder="e.g., Paper 1">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label>Date</label>
+            <input type="date" id="examDate">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label>Time</label>
+            <input type="time" id="examTime">
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn-primary" onclick="addExam()" style="flex: 1;">Add</button>
+            <button class="btn-secondary" onclick="closeModal('addExamModal')" style="flex: 1;">Cancel</button>
+        </div>
+    </div>
+</div>
+
     <script>
         setTimeout(function() {
             if (typeof firebase === 'undefined') {
@@ -959,7 +1234,16 @@
                 subjects: [],
                 topics: [],
                 schedule: [],
+                flashcards: [],
+                exams: [],
+                currentYear: 'year10',
                 students: [],
+                pomodoro: {
+    sessionsToday: 0,
+    streak: 0,
+    coins: 0,
+    lastStudyDate: null
+},
                 progress8: {
                     english: { target: '', current: '', subject: 'English Language' },
                     maths: { target: '', current: '', subject: 'Maths' },
@@ -1687,8 +1971,9 @@
                 document.getElementById('upgradePrompt').classList.toggle('hidden', state.isLifetime || (state.studyLevel === 'gcse' && !state.isPremium));
                 
                 document.getElementById('subjectCount').textContent = state.subjects.length;
-                document.getElementById('topicCount').textContent = state.topics.length;
-                document.getElementById('scheduleCount').textContent = state.schedule.length;
+document.getElementById('topicCount').textContent = state.topics.length;
+document.getElementById('flashcardCount').textContent = (state.flashcards || []).filter(f => f.year === state.currentYear).length;
+document.getElementById('examCount').textContent = (state.exams || []).filter(e => e.year === state.currentYear && new Date(e.date) >= new Date()).length;
                 
                 const recentSubjects = document.getElementById('recentSubjects');
                 if (state.subjects.length === 0) {
@@ -1748,7 +2033,80 @@
                                 </div>
                             </div>
                         `;
-                    }
+                        // NEW: Render year tabs
+renderYearTabs();
+
+// NEW: Hide Progress 8 for A-Level and University
+if (state.studyLevel === 'alevel' || state.studyLevel === 'university') {
+    document.getElementById('progress8Nav').classList.add('hidden');
+} else {
+    document.getElementById('progress8Nav').classList.remove('hidden');
+}
+
+// NEW: Render Flashcards
+const flashcardList = document.getElementById('flashcardList');
+const yearFlashcards = (state.flashcards || []).filter(f => f.year === state.currentYear);
+if (yearFlashcards.length === 0) {
+    flashcardList.innerHTML = '<p style="color: var(--text-secondary);">No flashcards yet. Click "Add Flashcard" to start!</p>';
+    document.getElementById('studyModeBtn').style.display = 'none';
+} else {
+    document.getElementById('studyModeBtn').style.display = 'block';
+    const grouped = {};
+    yearFlashcards.forEach(f => {
+        if (!grouped[f.subject]) grouped[f.subject] = [];
+        grouped[f.subject].push(f);
+    });
+    
+    flashcardList.innerHTML = Object.entries(grouped).map(([subject, cards]) => `
+        <div style="margin-bottom: 20px;">
+            <h4 style="margin-bottom: 10px; color: var(--accent);">${subject}</h4>
+            ${cards.map(f => `
+                <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 500;">${f.front}</div>
+                        ${f.mastered ? '<span style="color: var(--success); font-size: 12px;">✓ Mastered</span>' : ''}
+                    </div>
+                    <button class="btn-danger" onclick="deleteFlashcard(${f.id})" style="padding: 6px 10px; font-size: 12px;">Delete</button>
+                </div>
+            `).join('')}
+        </div>
+    `).join('');
+}
+                        // NEW: Render Pomodoro Stats
+if (state.pomodoro) {
+    document.getElementById('sessionsToday').textContent = state.pomodoro.sessionsToday || 0;
+    document.getElementById('studyStreak').textContent = state.pomodoro.streak || 0;
+    document.getElementById('totalCoins').textContent = state.pomodoro.coins || 0;
+    upgradePet();
+}
+
+// NEW: Render Exams
+const examsList = document.getElementById('examsList');
+const yearExams = (state.exams || []).filter(e => e.year === state.currentYear);
+if (yearExams.length === 0) {
+    examsList.innerHTML = '<p style="color: var(--text-secondary);">No exams scheduled. Click "Add Exam" to track your countdown!</p>';
+} else {
+    examsList.innerHTML = yearExams.map(e => {
+        const countdown = getExamCountdown(e.date, e.time);
+        const urgency = getExamUrgency(e.date, e.time);
+        
+        return `
+            <div class="exam-card ${urgency}">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 5px;">${e.subject} - ${e.name}</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">
+                            📅 ${new Date(e.date).toLocaleDateString()} at ${e.time}
+                        </div>
+                        <div class="countdown" style="margin-top: 8px;">${countdown === 'Past' ? '⏰ Exam has passed' : '⏰ ' + countdown}</div>
+                    </div>
+                    <button class="btn-danger" onclick="deleteExam(${e.id})" style="padding: 8px 12px; font-size: 14px;">Delete</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+}
                     
                     const recentStudents = document.getElementById('recentStudents');
                     if (state.students.length === 0) {
@@ -1897,6 +2255,323 @@
             }
 
         }, 1000);
+
+        // NEW: Year/Level System
+const yearConfig = {
+    gcse: ['year10', 'year11'],
+    alevel: ['as', 'a2'],
+    university: ['year1', 'year2', 'year3', 'year4', 'year5']
+};
+
+function renderYearTabs() {
+    if (state.accountType === 'teacher') {
+        document.getElementById('yearSelector').classList.add('hidden');
+        return;
+    }
+    
+    document.getElementById('yearSelector').classList.remove('hidden');
+    const years = yearConfig[state.studyLevel] || [];
+    const labels = {
+        year10: 'Year 10', year11: 'Year 11',
+        as: 'AS (Year 12)', a2: 'A2 (Year 13)',
+        year1: 'Year 1', year2: 'Year 2', year3: 'Year 3', year4: 'Year 4', year5: 'Year 5'
+    };
+    
+    let html = '';
+    years.forEach(year => {
+        const active = state.currentYear === year ? 'active' : '';
+        html += `<div class="year-tab ${active}" onclick="switchYear('${year}')">${labels[year]}</div>`;
+    });
+    
+    document.getElementById('yearTabs').innerHTML = html;
+}
+
+window.switchYear = function(year) {
+    state.currentYear = year;
+    saveData();
+    renderApp();
+};
+        // NEW: Flashcard Functions
+window.showAddFlashcard = function() {
+    const select = document.getElementById('flashcardSubject');
+    select.innerHTML = '<option value="">Select subject...</option>';
+    state.subjects.forEach(s => {
+        select.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+    });
+    document.getElementById('addFlashcardModal').classList.add('show');
+};
+
+window.addFlashcard = function() {
+    const subject = document.getElementById('flashcardSubject').value;
+    const front = document.getElementById('flashcardFront').value.trim();
+    const back = document.getElementById('flashcardBack').value.trim();
+    
+    if (!subject || !front || !back) {
+        alert('Please fill all fields');
+        return;
+    }
+    
+    if (!state.flashcards) state.flashcards = [];
+    
+    state.flashcards.push({
+        id: Date.now(),
+        subject,
+        front,
+        back,
+        mastered: false,
+        year: state.currentYear
+    });
+    
+    saveData();
+    closeModal('addFlashcardModal');
+    renderApp();
+    
+    document.getElementById('flashcardFront').value = '';
+    document.getElementById('flashcardBack').value = '';
+};
+
+window.deleteFlashcard = function(id) {
+    if (confirm('Delete this flashcard?')) {
+        state.flashcards = state.flashcards.filter(f => f.id !== id);
+        saveData();
+        renderApp();
+    }
+};
+        // NEW: Flashcard Study Mode
+let currentCardIndex = 0;
+let studyCards = [];
+
+window.showStudyMode = function() {
+    studyCards = state.flashcards.filter(f => f.year === state.currentYear && !f.mastered);
+    if (studyCards.length === 0) {
+        alert('No flashcards to study! Add some first or all cards are mastered.');
+        return;
+    }
+    
+    studyCards = studyCards.sort(() => Math.random() - 0.5); // Shuffle
+    currentCardIndex = 0;
+    
+    document.getElementById('flashcardList').classList.add('hidden');
+    document.getElementById('studyMode').classList.remove('hidden');
+    document.getElementById('studyModeBtn').style.display = 'none';
+    
+    loadCard();
+};
+
+window.exitStudyMode = function() {
+    document.getElementById('studyMode').classList.add('hidden');
+    document.getElementById('flashcardList').classList.remove('hidden');
+    document.getElementById('studyModeBtn').style.display = 'block';
+    renderApp();
+};
+
+function loadCard() {
+    if (studyCards.length === 0) return;
+    
+    const card = studyCards[currentCardIndex];
+    document.getElementById('cardFront').textContent = card.front;
+    document.getElementById('cardBack').textContent = card.back;
+    document.getElementById('currentCardNum').textContent = currentCardIndex + 1;
+    document.getElementById('totalCards').textContent = studyCards.length;
+    document.getElementById('flashcard').classList.remove('flipped');
+}
+
+window.flipCard = function() {
+    document.getElementById('flashcard').classList.toggle('flipped');
+};
+
+window.nextCard = function() {
+    currentCardIndex = (currentCardIndex + 1) % studyCards.length;
+    loadCard();
+};
+
+window.prevCard = function() {
+    currentCardIndex = (currentCardIndex - 1 + studyCards.length) % studyCards.length;
+    loadCard();
+};
+
+window.markMastered = function() {
+    const card = studyCards[currentCardIndex];
+    const originalCard = state.flashcards.find(f => f.id === card.id);
+    if (originalCard) originalCard.mastered = true;
+    
+    studyCards.splice(currentCardIndex, 1);
+    
+    if (studyCards.length === 0) {
+        alert('All cards mastered! Great job! 🎉');
+        exitStudyMode();
+    } else {
+        if (currentCardIndex >= studyCards.length) currentCardIndex = 0;
+        loadCard();
+    }
+    
+    saveData();
+};
+        // NEW: Pomodoro Timer
+let timerInterval = null;
+let timeLeft = 25 * 60; // 25 minutes in seconds
+let isRunning = false;
+
+window.startTimer = function() {
+    isRunning = true;
+    document.getElementById('startBtn').style.display = 'none';
+    document.getElementById('pauseBtn').style.display = 'inline-block';
+    document.getElementById('studyPet').classList.add('studying');
+    
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        
+        if (timeLeft <= 0) {
+            completeSession();
+        }
+    }, 1000);
+};
+
+window.pauseTimer = function() {
+    isRunning = false;
+    clearInterval(timerInterval);
+    document.getElementById('startBtn').style.display = 'inline-block';
+    document.getElementById('pauseBtn').style.display = 'none';
+    document.getElementById('studyPet').classList.remove('studying');
+};
+
+window.resetTimer = function() {
+    pauseTimer();
+    timeLeft = 25 * 60;
+    updateTimerDisplay();
+};
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timerDisplay').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function completeSession() {
+    pauseTimer();
+    
+    if (!state.pomodoro) state.pomodoro = { sessionsToday: 0, streak: 0, coins: 0, lastStudyDate: null };
+    
+    state.pomodoro.sessionsToday++;
+    state.pomodoro.coins += 10;
+    
+    const today = new Date().toDateString();
+    if (state.pomodoro.lastStudyDate !== today) {
+        const yesterday = new Date(Date.now() - 86400000).toDateString();
+        if (state.pomodoro.lastStudyDate === yesterday) {
+            state.pomodoro.streak++;
+        } else {
+            state.pomodoro.streak = 1;
+        }
+        state.pomodoro.lastStudyDate = today;
+    }
+    
+    upgradePet();
+    saveData();
+    renderApp();
+    
+    alert('🎉 Session complete! +10 coins earned!');
+    timeLeft = 25 * 60;
+    updateTimerDisplay();
+}
+
+function upgradePet() {
+    const sessions = state.pomodoro.sessionsToday;
+    const pets = ['🌱', '🌿', '🌳', '🌸', '🌺', '🌻', '🦋', '🦄'];
+    const petIndex = Math.min(Math.floor(sessions / 2), pets.length - 1);
+    document.getElementById('studyPet').textContent = pets[petIndex];
+    
+    const statuses = [
+        'Water me by studying!',
+        'Growing! Keep going!',
+        'Blooming beautifully!',
+        'So proud of you!',
+        'Amazing progress!',
+        'You\'re unstoppable!',
+        'Study champion!',
+        'Legendary focus! 🏆'
+    ];
+    document.getElementById('petStatus').textContent = statuses[petIndex];
+}
+        // NEW: Exam Functions
+window.showAddExam = function() {
+    const select = document.getElementById('examSubject');
+    select.innerHTML = '<option value="">Select subject...</option>';
+    state.subjects.forEach(s => {
+        select.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+    });
+    document.getElementById('addExamModal').classList.add('show');
+};
+
+window.addExam = function() {
+    const subject = document.getElementById('examSubject').value;
+    const name = document.getElementById('examName').value.trim();
+    const date = document.getElementById('examDate').value;
+    const time = document.getElementById('examTime').value;
+    
+    if (!subject || !name || !date) {
+        alert('Please fill all required fields');
+        return;
+    }
+    
+    if (!state.exams) state.exams = [];
+    
+    state.exams.push({
+        id: Date.now(),
+        subject,
+        name,
+        date,
+        time: time || '09:00',
+        year: state.currentYear
+    });
+    
+    state.exams.sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
+    
+    saveData();
+    closeModal('addExamModal');
+    renderApp();
+    
+    document.getElementById('examName').value = '';
+    document.getElementById('examDate').value = '';
+    document.getElementById('examTime').value = '';
+};
+
+window.deleteExam = function(id) {
+    if (confirm('Delete this exam?')) {
+        state.exams = state.exams.filter(e => e.id !== id);
+        saveData();
+        renderApp();
+    }
+};
+
+function getExamCountdown(examDate, examTime) {
+    const now = new Date();
+    const exam = new Date(examDate + ' ' + examTime);
+    const diff = exam - now;
+    
+    if (diff < 0) return 'Past';
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    
+    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ${hours}h`;
+    return `${hours} hour${hours > 1 ? 's' : ''}`;
+}
+
+function getExamUrgency(examDate, examTime) {
+    const now = new Date();
+    const exam = new Date(examDate + ' ' + examTime);
+    const diff = exam - now;
+    const days = diff / (1000 * 60 * 60 * 24);
+    
+    if (days < 0) return '';
+    if (days <= 3) return 'urgent';
+    if (days <= 7) return 'soon';
+    return '';
+}
+        
     </script>
 </body>
 </html>
