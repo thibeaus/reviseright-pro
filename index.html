@@ -871,12 +871,15 @@ Have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bo
 </div>
 </div>
 
-<div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
-<button class="btn-secondary" onclick="prevCard()">← Previous</button>
-<button class="btn-success" onclick="markMastered()">✓ Mastered</button>
-<button class="btn-primary" onclick="nextCard()">Next →</button>
-<button class="btn-secondary" onclick="exitStudyMode()">Exit Study</button>
-</div>
+<div id="cardFeedback" style="text-align: center; margin-top: 15px; font-weight: 600; min-height: 20px;"></div>
+        
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+          <button class="btn-danger" onclick="markWrong()">✗ Got it Wrong</button>
+          <button class="btn-secondary" onclick="prevCard()">← Previous</button>
+          <button class="btn-success" onclick="markMastered()">✓ Mastered</button>
+          <button class="btn-primary" onclick="nextCard()">Next →</button>
+          <button class="btn-secondary" onclick="exitStudyMode()">Exit Study</button>
+        </div>
 </div>
 
 <!-- Flashcard List -->
@@ -1547,6 +1550,12 @@ state.subjects = data.subjects || [];
 state.topics = data.topics || [];
 state.schedule = data.schedule || [];
 state.flashcards = data.flashcards || [];
+        // Migrate old flashcards to have difficulty property
+        if (state.flashcards) {
+          state.flashcards.forEach(f => {
+            if (f.difficulty === undefined) f.difficulty = 0;
+          });
+        }
 state.exams = data.exams || [];
 state.students = data.students || [];
 state.progress8 = data.progress8 || state.progress8;
@@ -2007,7 +2016,8 @@ front,
 back,
 mastered: false,
 year: state.currentYear
-});
+,
+    difficulty: 0});
 
 saveData();
 closeModal('addFlashcardModal');
@@ -2030,22 +2040,45 @@ let currentCardIndex = 0;
 let studyCards = [];
 
 window.showStudyMode = function() {
-studyCards = state.flashcards.filter(f => f.year === state.currentYear && !f.mastered);
+  // Include ALL cards (mastered and unmastered) but weight by difficulty
+  const allCards = state.flashcards.filter(f => f.year === state.currentYear);
 
-if (studyCards.length === 0) {
-alert('No flashcards to study! Add some first or all cards are mastered.');
-return;
+  if (allCards.length === 0) {
+    alert('No flashcards to study! Add some first.');
+    return;
+  }
+
+  // Create a weighted deck - cards with more "wrong" marks appear more often
+  studyCards = [];
+  allCards.forEach(card => {
+    // Ensure card has difficulty property
+    if (!card.difficulty) card.difficulty = 0;
+    
+    // Add card multiple times based on difficulty
+    // difficulty 0 (new/mastered) = 1 time
+    // difficulty 1-2 = 2 times  
+    // difficulty 3-4 = 3 times
+    // difficulty 5+ = 4 times
+    let frequency = 1;
+    if (card.difficulty >= 1) frequency = 2;
+    if (card.difficulty >= 3) frequency = 3;
+    if (card.difficulty >= 5) frequency = 4;
+    
+    for (let i = 0; i < frequency; i++) {
+      studyCards.push(card);
+    }
+  });
+
+  // Shuffle the weighted deck
+  studyCards = studyCards.sort(() => Math.random() - 0.5);
+  currentCardIndex = 0;
+
+  document.getElementById('flashcardList').classList.add('hidden');
+  document.getElementById('studyMode').classList.remove('hidden');
+  document.getElementById('studyModeBtn').style.display = 'none';
+
+  loadCard();
 }
-
-studyCards = studyCards.sort(() => Math.random() - 0.5);
-currentCardIndex = 0;
-
-document.getElementById('flashcardList').classList.add('hidden');
-document.getElementById('studyMode').classList.remove('hidden');
-document.getElementById('studyModeBtn').style.display = 'none';
-
-loadCard();
-};
 
 window.exitStudyMode = function() {
 document.getElementById('studyMode').classList.add('hidden');
@@ -2080,22 +2113,28 @@ loadCard();
 };
 
 window.markMastered = function() {
-const card = studyCards[currentCardIndex];
-const originalCard = state.flashcards.find(f => f.id === card.id);
-if (originalCard) originalCard.mastered = true;
+  const card = studyCards[currentCardIndex];
+  const originalCard = state.flashcards.find(f => f.id === card.id);
+  
+  if (originalCard) {
+    originalCard.mastered = true;
+    // Reset difficulty when mastered
+    originalCard.difficulty = 0;
+  }
 
-studyCards.splice(currentCardIndex, 1);
+  // Remove all instances of this card from study deck
+  studyCards = studyCards.filter(c => c.id !== card.id);
 
-if (studyCards.length === 0) {
-alert('All cards mastered! Great job! 🎉');
-exitStudyMode();
-} else {
-if (currentCardIndex >= studyCards.length) currentCardIndex = 0;
-loadCard();
+  if (studyCards.length === 0) {
+    alert('All cards reviewed! Great job! 🎉');
+    exitStudyMode();
+  } else {
+    if (currentCardIndex >= studyCards.length) currentCardIndex = 0;
+    loadCard();
+  }
+
+  saveData();
 }
-
-saveData();
-};
 
 // Pomodoro Timer
 let timerInterval = null;
@@ -2116,6 +2155,28 @@ completeSession();
 }
 }, 1000);
 };
+
+window.markWrong = function() {
+  const card = studyCards[currentCardIndex];
+  const originalCard = state.flashcards.find(f => f.id === card.id);
+  
+  if (originalCard) {
+    // Increase difficulty and unmark as mastered
+    originalCard.difficulty = (originalCard.difficulty || 0) + 1;
+    originalCard.mastered = false;
+    
+    // Show feedback
+    const feedback = document.getElementById('cardFeedback');
+    if (feedback) {
+      feedback.textContent = `Marked as difficult. This card will appear more often.`;
+      feedback.style.color = 'var(--warning)';
+      setTimeout(() => feedback.textContent = '', 2000);
+    }
+  }
+
+  saveData();
+  nextCard();
+}
 
 window.pauseTimer = function() {
 isRunning = false;
@@ -2718,6 +2779,9 @@ ${cards.map(f => `
 <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
 <div>
 <div style="font-weight: 500;">${f.front}</div>
+              <div style="font-size: 12px; margin-top: 5px;">
+                ${f.mastered ? '<span style="color: var(--success);">✓ Mastered</span>' : ''}
+                ${(f.difficulty || 0) > 0 ? `<span style="color: var(--warning); margin-left: 10px;">⚠ Difficulty: ${f.difficulty}</span>` : ''}
 ${f.mastered ? '<span style="color: var(--success); font-size: 12px;">✓ Mastered</span>' : ''}
 </div>
 <button class="btn-danger" onclick="deleteFlashcard(${f.id})" style="padding: 6px 10px; font-size: 12px;">Delete</button>
