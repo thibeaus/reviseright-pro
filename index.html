@@ -1594,7 +1594,14 @@
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    
+    // Find and activate the clicked button
+    const navBtns = document.querySelectorAll('.nav-btn');
+    navBtns.forEach(btn => {
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tab)) {
+            btn.classList.add('active');
+        }
+    });
     
     renderApp();
 };
