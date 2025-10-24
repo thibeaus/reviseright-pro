@@ -1565,9 +1565,10 @@
                 state.activeTab = tab;
                 
                 const tabs = ['dashboard', 'progress8', 'subjects', 'topics', 'flashcards', 'pomodoro', 'exams', 'schedule', 'settings', 'teacher'];
-                    const el = document.getElementById(t + 'Tab');
-                    if (el) el.classList.add('hidden');
-                });
+tabs.forEach(t => {
+    const el = document.getElementById(t + 'Tab');
+    if (el) el.classList.add('hidden');
+});
                 
                 if (tab === 'dashboard') {
                     if (state.accountType === 'teacher') {
