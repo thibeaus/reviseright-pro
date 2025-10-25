@@ -621,18 +621,18 @@ Have an account? <a onclick="showLogin()" style="color: #667eea; font-weight: bo
 <input type="text" id="schoolName" placeholder="Your school" style="border: 1px solid #ddd;">
 </div>
 <div id="studentFields" class="hidden" style="margin-bottom: 15px;">
-<label style="display: block; color: #666; margin-bottom: 5px;">Current Study Level</label>
-<select id="studyLevel" style="border: 1px solid #ddd;">
-<option value="gcse">GCSE (Free)</option>
-<option value="alevel">A-Level (Premium)</option>
-<option value="university">University (Premium)</option>
-</select>
-</div>
-
-<div style="margin-bottom: 15px;">
-<label style="display: block; color: #666; margin-bottom: 5px;">Teacher's Class Code (Optional)</label>
-<input type="text" id="signupClassCode" placeholder="e.g., SMITH-MATH-Y11-X4K2" style="border: 1px solid #ddd; text-transform: uppercase;">
-<p style="font-size: 12px; color: #999; margin-top: 5px;">Have a code from your teacher? Enter it here to link your account.</p>
+  <label style="display: block; color: #666; margin-bottom: 5px;">Current Study Level</label>
+  <select id="studyLevel" style="border: 1px solid #ddd;">
+    <option value="gcse">GCSE (Free)</option>
+    <option value="alevel">A-Level (Premium)</option>
+    <option value="university">University (Premium)</option>
+  </select>
+  
+  <div style="margin-top: 15px;">
+    <label style="display: block; color: #666; margin-bottom: 5px;">Teacher's Class Code (Optional)</label>
+    <input type="text" id="signupClassCode" placeholder="e.g., SMITH-MATH-Y11-X4K2" style="border: 1px solid #ddd; text-transform: uppercase;">
+    <p style="font-size: 12px; color: #999; margin-top: 5px;">Have a code from your teacher? Enter it here to link your account.</p>
+  </div>
 </div>
 
 <button onclick="handleSignup()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px; border-radius: 10px; font-weight: bold; margin-top: 10px;">Create Account</button>
