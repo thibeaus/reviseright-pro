@@ -10,6 +10,79 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+/* PRINTABLE CLASS CODE STYLES */
+.print-page {
+  display: none;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-page, .print-page * {
+    visibility: visible;
+  }
+  .print-page {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    display: block !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+.printable-code-card {
+  background: white;
+  padding: 60px 40px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+  border: 4px solid #667eea;
+  color: #000;
+}
+
+.code-display-large {
+  font-size: 56px;
+  font-weight: bold;
+  letter-spacing: 6px;
+  color: #667eea;
+  padding: 40px 20px;
+  margin: 30px 0;
+  border: 5px dashed #667eea;
+  border-radius: 12px;
+  background: #f0f0ff;
+}
+
+.print-instructions {
+  text-align: left;
+  margin-top: 40px;
+  padding: 30px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.print-instructions h3 {
+  color: #667eea;
+  margin-bottom: 15px;
+}
+
+.print-instructions ol {
+  margin-left: 20px;
+  line-height: 1.8;
+}
+
+.print-instructions li {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+
 <style>
 * {
 margin: 0;
@@ -551,6 +624,32 @@ margin-top: 10px;
   50% { transform: scale(1.1) rotate(5deg); }
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
+
+/* PRINTABLE CLASS CODE */
+.print-page { display: none; }
+@media print {
+  body * { visibility: hidden; }
+  .print-page, .print-page * { visibility: visible; }
+  .print-page { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
+}
+.printable-code-card {
+  background: white; padding: 60px 40px; border-radius: 12px;
+  text-align: center; max-width: 700px; margin: 0 auto;
+  border: 4px solid #667eea; color: #000;
+}
+.code-display-large {
+  font-size: 56px; font-weight: bold; letter-spacing: 6px;
+  color: #667eea; padding: 40px 20px; margin: 30px 0;
+  border: 5px dashed #667eea; border-radius: 12px; background: #f0f0ff;
+}
+.print-instructions {
+  text-align: left; margin-top: 40px; padding: 30px;
+  background: #f9f9f9; border-radius: 8px; border-left: 4px solid #667eea;
+}
+.print-instructions h3 { color: #667eea; margin-bottom: 15px; }
+.print-instructions ol { margin-left: 20px; line-height: 1.8; }
+.print-instructions li { margin-bottom: 10px; color: #333; }
+
 </style>
 </head>
 <body>
@@ -1459,6 +1558,44 @@ Get this code from your teacher. It's usually written on the board or in your Go
   </div>
 </div>
 
+<div id="printablePage" class="print-page">
+<div class="printable-code-card">
+<div style="text-align: center; margin-bottom: 30px;">
+<div style="font-size: 60px; margin-bottom: 15px;">📚</div>
+<h1 style="font-size: 36px; color: #667eea;">ReviseRight Pro</h1>
+<h2 style="font-size: 24px; color: #666;">Class Code</h2>
+</div>
+<div style="margin: 40px 0;">
+<div style="font-size: 18px; color: #666;">Teacher:</div>
+<div id="printTeacherName" style="font-size: 24px; font-weight: bold; margin-bottom: 30px;"></div>
+<div style="font-size: 18px; color: #666;">Subject:</div>
+<div id="printSubject" style="font-size: 28px; font-weight: bold; margin-bottom: 30px;"></div>
+<div style="font-size: 18px; color: #666;">Year Group:</div>
+<div id="printYear" style="font-size: 24px; font-weight: bold; margin-bottom: 30px;"></div>
+<div id="printExamBoard" style="display: none; margin-bottom: 30px;">
+<div style="font-size: 18px; color: #666;">Exam Board:</div>
+<div id="printExamBoardValue" style="font-size: 24px; font-weight: bold;"></div>
+</div>
+</div>
+<div style="font-size: 22px; font-weight: bold; color: #667eea;">Your Class Code:</div>
+<div class="code-display-large" id="printCode"></div>
+<div class="print-instructions">
+<h3>📝 How to Use This Code:</h3>
+<ol>
+<li><strong>Create an account:</strong> Go to <span style="color: #667eea; font-weight: bold;">reviseright-pro.pages.dev</span></li>
+<li><strong>Sign up as a Student</strong> using your school email</li>
+<li><strong>Enter this class code</strong> when prompted</li>
+<li><strong>Start tracking your progress!</strong></li>
+</ol>
+</div>
+<div style="margin-top: 40px; padding: 20px; background: #fff3cd; border-radius: 8px;">
+<p style="margin: 0; color: #856404; font-weight: 600;">⚠️ Keep this code safe!</p>
+</div>
+<div style="margin-top: 30px; color: #999; font-size: 14px;">
+<p>Generated: <span id="printDate"></span></p>
+</div>
+</div>
+</div>í
 
 <script>
 setTimeout(function() {
@@ -3124,6 +3261,26 @@ window.unlinkTeacher = async function(teacherId, subject) {
   }
 }
 
+window.printClassCode = function(code, subject, year, className, examBoard) {
+  document.getElementById('printTeacherName').textContent = currentUser.name;
+  document.getElementById('printSubject').textContent = subject + (className ? ' - ' + className : '');
+  document.getElementById('printYear').textContent = 'Year ' + year;
+  document.getElementById('printCode').textContent = code;
+  document.getElementById('printDate').textContent = new Date().toLocaleDateString('en-GB');
+  if (examBoard) {
+    document.getElementById('printExamBoard').style.display = 'block';
+    document.getElementById('printExamBoardValue').textContent = examBoard;
+  } else {
+    document.getElementById('printExamBoard').style.display = 'none';
+  }
+  document.getElementById('printablePage').style.display = 'block';
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => { document.getElementById('printablePage').style.display = 'none'; }, 100);
+  }, 100);
+}
+
+
 // Main render function
 function renderApp() {
 if (!currentUser) return;
@@ -3479,16 +3636,12 @@ ${code.active ? '<span style="background: var(--success); color: white; padding:
 </div>
 </div>
 <div style="display: flex; gap: 10px;">
-<button class="btn-primary" onclick="copyClassCode('${code.code}')" style="flex: 1; padding: 10px; font-size: 13px;">📋 Copy Code</button>
-<button class="btn-secondary" onclick="viewStudentTiers('${code.code}', '${code.className || ''}', '${code.subject}')" style="flex: 1; padding: 10px; font-size: 13px;">📊 View Tiers</button>
+<button class="btn-primary" onclick="printClassCode('${code.code}', '${code.subject}', '${code.year}', '${code.className || ''}', '${code.examBoard || ''}')" style="flex: 1; padding: 10px; font-size: 13px;">🖨️ Print</button>
+<button class="btn-secondary" onclick="copyClassCode('${code.code}')" style="flex: 1; padding: 10px; font-size: 13px;">📋 Copy</button>
+<button class="btn-secondary" onclick="viewStudentTiers('${code.code}', '${code.className || ''}', '${code.subject}')" style="flex: 1; padding: 10px; font-size: 13px;">📊 Tiers</button>
 ${code.active ? `<button class="btn-secondary" onclick="deactivateClassCode('${code.code}')" style="flex: 1; padding: 10px; font-size: 13px;">🔒 Deactivate</button>` : ''}
-</div>
-<p style="margin-top: 15px; font-size: 13px; color: var(--text-secondary);">
-💡 <strong>Share this code</strong> with your ${code.subject} students. They'll enter it during signup or from their dashboard to link to you.
-</p>
-</div>
+</div></div>
 `).join('');
-}
 }
 }
   
@@ -3551,6 +3704,7 @@ return `
 }
 
 }, 1000);
+
 </script>
 </body>
 </html>
